@@ -1,0 +1,8 @@
+admin
+Passi123
+
+manager
+Passi123
+
+librarian
+Passi123
