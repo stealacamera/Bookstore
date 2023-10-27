@@ -4,14 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Set;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 import exceptions.EmptyInputException;
 import exceptions.ExistingObjectException;
@@ -38,7 +46,7 @@ public class Employee implements Serializable, Comparable<Employee> {
 	
 	private Employee() {};
 	
-	public Employee(File newUserFile) throws EmptyInputException, WrongFormatException, NonPositiveInputException, InputMismatchException, IOException {
+	public Employee(File newUserFile) throws Exception {
 		try(Scanner scan = new Scanner(newUserFile, Charset.forName("UTF-8"))) {			
 			setUsername(scan.nextLine());
 			setFullName(scan.nextLine());
@@ -55,6 +63,8 @@ public class Employee implements Serializable, Comparable<Employee> {
 			throw new WrongFormatException("input", "character input for text fields, numeric input for price fields");
 		} catch (IOException e) {
 			throw new IOException("Illegal/unrecognizable character(s) used");
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			throw new Exception("Something went wrong: try again later");
 		} finally {
 			if(!newUserFile.getName().contains("base")) {
 				if(newUserFile.delete())
@@ -81,6 +91,7 @@ public class Employee implements Serializable, Comparable<Employee> {
 		}
 		
 		permissions = copy.getPermissions();
+		password = copy.getPassword();
 	}
 	
 	//Class methods
@@ -192,16 +203,30 @@ public class Employee implements Serializable, Comparable<Employee> {
 	}
 	
 	public boolean isCorrectPassword(String password) {
-		return this.password.equals(password);
+		try {
+			return this.password.equals(hashPassword(password));
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return false;
 	}
 	
-	public void setPassword(String password) throws EmptyInputException, WrongFormatException {
+	public String getPassword() {
+		return this.password;
+	}
+	
+	public void setPassword(String password) throws Exception {
 		if(password.isBlank())
 			throw new EmptyInputException("password");
 		
-		if(password.matches("\\w+.{6,}\\w+"))
-			this.password = password;
-		else
+		if(password.matches("\\w+.{6,}\\w+")) {
+			try {
+				this.password = hashPassword(password);
+			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+				throw new Exception("Something went wrong: try again later");
+			}
+		} else
 			throw new WrongFormatException("password", "at least 8 characters (digits, lowercase letters, uppercase letters)");
 	}
 	
@@ -316,5 +341,17 @@ public class Employee implements Serializable, Comparable<Employee> {
 	@Override
 	public int compareTo(Employee obj) {
 		return getUsername().compareToIgnoreCase(obj.getUsername());
+	}
+	
+	private String hashPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		SecureRandom random = new SecureRandom();
+		byte[] salt = new byte[16];
+		random.nextBytes(salt);
+		
+		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 10000, 128);
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		
+		byte[] hash = factory.generateSecret(spec).getEncoded();
+		return Base64.getEncoder().encodeToString(hash);
 	}
 }

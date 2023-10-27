@@ -8,7 +8,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import exceptions.EmptyInputException;
-import exceptions.ExistingObjectException;
 import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
 import javafx.collections.ObservableList;
@@ -125,7 +124,7 @@ public class EmployeesController {
 				Node node = (Node) e.getSource();
 				Stage currentStage = (Stage) node.getScene().getWindow();
 				currentStage.close();
-			} catch(IOException | ExistingObjectException | WrongFormatException | EmptyInputException | NonPositiveInputException ex) {
+			} catch(Exception ex) {
 				view.displayError(ex.getLocalizedMessage());
 			}
 		});

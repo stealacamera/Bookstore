@@ -6,9 +6,7 @@ import java.util.Map;
 
 import controllers.books.BillController;
 import controllers.books.BookController;
-import exceptions.EmptyInputException;
 import exceptions.ExistingObjectException;
-import exceptions.WrongFormatException;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -35,7 +33,7 @@ public class HomepageController {
 	private Employee currentUser;
 	
 	public HomepageController(Employee currentUser) {
-		this.currentUser = currentUser;
+		this.currentUser = new Employee(currentUser);
 		
 		Employee.setList();
 		Bill.setList();
@@ -77,7 +75,7 @@ public class HomepageController {
 					newStage.close();
 				else
 					view.displayError("Incorrect current password");
-			} catch(EmptyInputException | WrongFormatException ex) {
+			} catch(Exception ex) {
 				view.displayError(ex.getLocalizedMessage());
 			}
 		});
@@ -87,7 +85,7 @@ public class HomepageController {
 		newStage.showAndWait();
 	}
 	
-	private boolean changePassword(String currentPassword, String newPassword) throws EmptyInputException, WrongFormatException {
+	private boolean changePassword(String currentPassword, String newPassword) throws Exception {
 		if(currentUser.isCorrectPassword(currentPassword)) {
 			currentUser.setPassword(newPassword);
 			ListIO.writeToFile(Employee.FILE_NAME, new ArrayList<>(Employee.getAll()));
