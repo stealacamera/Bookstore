@@ -14,7 +14,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import ui.BaseView;
@@ -103,10 +102,5 @@ public class CashFlowStatsView extends BaseView {
 		pane.setLeft(fieldsPane);;
 		pane.setCenter(cashFlowChart);
 		pane.setPadding(new Insets(25));
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

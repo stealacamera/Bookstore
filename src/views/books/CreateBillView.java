@@ -1,5 +1,7 @@
 package views.books;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,7 +24,6 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
@@ -73,9 +74,16 @@ public class CreateBillView extends BaseView {
 		});
 				
 		submitBt.setOnAction(e -> {
-			controller.submitBill(new ArrayList<>(billTv.getItems()));
-			billTv.getItems().clear();
-			booksTv.refresh();
+			try {
+				controller.submitBill(new ArrayList<>(billTv.getItems()));
+				billTv.getItems().clear();
+				booksTv.refresh();
+			} catch(FileNotFoundException ex) {
+				this.displayError("Something went wrong: file could not be created. Try again later");
+			} catch (IOException e1) {
+				this.displayError("Illegal/unrecognizable character(s) was used");
+			}
+			
 		});
 		
 		removeBt.setOnAction(e -> billTv.getItems().removeAll(billTv.getSelectionModel().getSelectedItems()));
@@ -165,10 +173,5 @@ public class CreateBillView extends BaseView {
 			throw new NonPositiveInputException("quantity");
 		
 		return stock < requestQuantity ? false : true;
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

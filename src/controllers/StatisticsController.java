@@ -7,6 +7,7 @@ import models.Bill;
 import models.BookPurchase;
 import models.CashFlow;
 import models.Employee;
+import models.LibrarianPerformance;
 import models.helpers.CustomDate;
 
 public class StatisticsController {
@@ -70,58 +71,5 @@ public class StatisticsController {
 	
 	public double getTotalSalaries() {
 		return CashFlow.getTotalSalaries(new ArrayList<>(Employee.getAll()));
-	}
-	
-	public class LibrarianPerformance {
-		private String employee;
-		private int numOfBills, numOfBooks;
-		private double salesAmount;
-		
-		public LibrarianPerformance(Employee employee, int numOfBooks, double salesAmount) {
-			this.employee = employee.toString();
-			setNumOfBills(1);
-			setNumOfBooks(numOfBooks);
-			setSalesAmount(salesAmount);
-		}
-
-		public String getEmployee() {
-			return employee;
-		}
-
-		public int getNumOfBills() {
-			return numOfBills;
-		}
-
-		private void setNumOfBills(int numOfBills) {
-			this.numOfBills = numOfBills;
-		}
-		
-		private void addNumOfBills() {
-			numOfBills++;
-		}
-
-		public int getNumOfBooks() {
-			return numOfBooks;
-		}
-
-		private void setNumOfBooks(int numOfBooks) {
-			this.numOfBooks = numOfBooks;
-		}
-		
-		private void addNumOfBooks(int numOfBooks) {
-			this.numOfBooks += numOfBooks;
-		}
-
-		public double getSalesAmount() {
-			return salesAmount;
-		}
-
-		private void setSalesAmount(double salesAmount) {
-			this.salesAmount = salesAmount;
-		}
-		
-		private void addSalesAmount(double salesAmount) {
-			this.salesAmount += salesAmount;
-		}
 	}
 }

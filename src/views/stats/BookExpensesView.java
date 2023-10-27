@@ -19,7 +19,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import ui.BaseView;
 
@@ -131,10 +130,5 @@ public class BookExpensesView extends BaseView {
 		
 		totalChart = new PieChart(data);
 		totalChart.setTitle("Total cash flow");
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

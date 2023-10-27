@@ -9,7 +9,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.converter.IntegerStringConverter;
@@ -74,10 +73,5 @@ public class ManageBooksView extends BaseView {
 		pane.getChildren().addAll(btPane, booksTv, instructionTxt);
 		pane.setSpacing(20);
 		pane.setPadding(new Insets(30));
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

@@ -1,12 +1,13 @@
 package views;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -59,12 +60,7 @@ public class LoginView extends BaseView {
 		return passwordTf.getText();
 	}
 		
-	public Button getLoginBt() {
-		return loginBt;
-	}
-	
-	@Override
-	public Pane getView() {
-		return pane;
+	public void setLoginAction(EventHandler<ActionEvent> action) {
+		loginBt.setOnAction(action);
 	}
 }

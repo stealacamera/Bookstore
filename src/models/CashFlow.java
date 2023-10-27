@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import models.helpers.CustomDate;
 
@@ -57,7 +59,7 @@ public class CashFlow {
 	}
 	
 	public static double[] getMonthlyBookPurchases() {
-		return monthlyBookPurchases;
+		return Arrays.copyOf(monthlyBookPurchases, monthlyBookPurchases.length);
 	}
 	
 	private static void setMonthlyBookSales(double[] newMonthlyBookSales) {
@@ -65,7 +67,7 @@ public class CashFlow {
 	}
 	
 	public static double[] getMonthlyBookSales() {
-		return monthlyBookSales;
+		return Arrays.copyOf(monthlyBookSales, monthlyBookSales.length);
 	}
 	
 	public static double getTotalBookSales() {
@@ -98,7 +100,7 @@ public class CashFlow {
 		monthlyBookSales[bill.getDate().getMonthValue() - 1] += bill.getAmount();
 	}
 	
-	public static double getDailyPurchases(ArrayList<BookPurchase> bookPurchases, LocalDate date) {
+	public static double getDailyPurchases(List<BookPurchase> bookPurchases, LocalDate date) {
 		double booksBought = 0;
 		
 		for(BookPurchase purchase: bookPurchases) {
@@ -109,7 +111,7 @@ public class CashFlow {
 		return booksBought;
 	}
 	
-	public static double getDailySales(ArrayList<Bill> bills, LocalDate date) {
+	public static double getDailySales(List<Bill> bills, LocalDate date) {
 		double booksSold = 0;
 		
 		for(Bill bill: bills) {
@@ -129,7 +131,7 @@ public class CashFlow {
 		return salaries;
 	}
 	
-	public static double getPeriodBookPurchases(LocalDate startDate, LocalDate endDate, ArrayList<BookPurchase> bookPurchases) {
+	public static double getPeriodBookPurchases(LocalDate startDate, LocalDate endDate, List<BookPurchase> bookPurchases) {
 		double total = 0;
 		
 		for(BookPurchase purchase: bookPurchases) {
@@ -140,7 +142,7 @@ public class CashFlow {
 		return total;
 	}
 	
-	public static double getPeriodBookSales(LocalDate startDate, LocalDate endDate, ArrayList<Bill> bookSales) {
+	public static double getPeriodBookSales(LocalDate startDate, LocalDate endDate, List<Bill> bookSales) {
 		double total = 0;
 		
 		for(Bill sale: bookSales) {

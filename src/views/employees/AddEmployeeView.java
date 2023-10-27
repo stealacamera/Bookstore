@@ -1,5 +1,7 @@
 package views.employees;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
@@ -8,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import models.helpers.CustomDate;
 import ui.BaseView;
@@ -45,8 +46,8 @@ public class AddEmployeeView extends BaseView implements Form {
 		pane.getChildren().add(addBtn);
 	}
 	
-	public Button getAddBt() {
-		return addBtn;
+	public void setAddAction(EventHandler<ActionEvent> action) {
+		addBtn.setOnAction(action);
 	}
 	
 	public String getUsername() {
@@ -79,10 +80,5 @@ public class AddEmployeeView extends BaseView implements Form {
 	
 	public Integer getAccessLvl() {
 		return accessLvlMenu.getSelectionModel().getSelectedItem();
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

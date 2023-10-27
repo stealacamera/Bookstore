@@ -3,6 +3,8 @@ package models;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import models.helpers.CustomDate;
 import models.helpers.ListIO;
@@ -30,8 +32,8 @@ public class Bill implements Serializable {
 		bills = currentList == null ? new ArrayList<>() : currentList;
 	}
 	
-	public static ArrayList<Bill> getAll() {
-		return bills;
+	public static List<Bill> getAll() {
+		return Collections.unmodifiableList(bills);
 	}
 	
 	public static boolean add(Bill bill) {
@@ -61,6 +63,6 @@ public class Bill implements Serializable {
 	}
 	
 	public Employee getSeller() {
-		return seller;
+		return new Employee(seller);
 	}
 }

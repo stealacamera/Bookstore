@@ -17,7 +17,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -130,10 +129,5 @@ public class HomepageView extends BaseView {
 		buttonsPane.setHgap(10);
 		buttonsPane.setVgap(10);
 		return buttonsPane;
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

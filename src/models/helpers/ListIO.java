@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public interface ListIO {
 	@SuppressWarnings("unchecked")
@@ -28,7 +29,7 @@ public interface ListIO {
 		return data;
 	}
 	
-	static <T extends Serializable> void writeToFile(String fileName, ArrayList<T> objects) {
+	static <T extends Serializable> void writeToFile(String fileName, List<T> objects) {
 		File booksFile = new File(fileName);
 		
 		try(FileOutputStream stream = new FileOutputStream(booksFile)) {

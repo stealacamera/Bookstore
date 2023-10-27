@@ -2,12 +2,13 @@ package controllers.books;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Map;
 
 import exceptions.NonPositiveInputException;
-import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.collections.ObservableList;
 import models.Bill;
 import models.Book;
@@ -23,10 +24,10 @@ public class BillController {
 	}
 	
 	public ObservableList<Book> getBooks() {
-		return new ReadOnlyListWrapper<>(Book.getAll());
+		return Book.getAll();
 	}
 	
-	public void submitBill(ArrayList<Map.Entry<Book, Integer>> bill) {
+	public void submitBill(ArrayList<Map.Entry<Book, Integer>> bill) throws FileNotFoundException, IOException {
 		double priceTotal = 0;
 		int numOfBooks = 0;
 		
@@ -51,11 +52,11 @@ public class BillController {
 		CashFlow.writeToFile();
 	}
 	
-	private void createBillFile(ArrayList<Map.Entry<Book, Integer>> bill, double billTotal) {
+	private void createBillFile(ArrayList<Map.Entry<Book, Integer>> bill, double billTotal) throws FileNotFoundException, IOException {
 		String userHome = System.getProperty("user.home") ;
 		File billFile = new File(userHome, (Bill.listSize() + 1) + ".txt");
 		
-		try(PrintWriter write = new PrintWriter(billFile)) {		
+		try(PrintWriter write = new PrintWriter(billFile, Charset.forName("UTF-8"))) {		
 			for(Map.Entry<Book, Integer> soldBook: bill) {
 				write.printf("%-3d x %-30s\t", soldBook.getValue(), soldBook.getKey().getTitle());
 				write.printf("%.3f\n", soldBook.getValue() * soldBook.getKey().getSellingPrice());
@@ -63,8 +64,6 @@ public class BillController {
 			
 			write.println("------------------------------------------------");
 			write.printf("%-36s\t%.3f", "TOTAL:", billTotal);
-		} catch(FileNotFoundException ex) {
-			System.out.println(ex);
 		}
 	}
 }

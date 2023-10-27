@@ -1,11 +1,12 @@
 package views;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import ui.BaseView;
@@ -49,12 +50,7 @@ public class ChangePasswordView extends BaseView {
 		return newPasswordTf.getText();
 	}
 	
-	public Button getSubmitBt() {
-		return submitBt;
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
+	public void setSubmitAction(EventHandler<ActionEvent> action) {
+		submitBt.setOnAction(action);
 	}
 }

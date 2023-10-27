@@ -6,7 +6,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -72,26 +71,5 @@ public class ManageEmployeesView extends BaseView {
 				};
 			}
 		});
-	}
-	
-	public Button getAddBt() {
-		return addBt;
-	}
-	
-	public Button getModifyBt() {
-		return modifyBt;
-	}
-	
-	public Button getDeleteBt() {
-		return deleteBt;
-	}
-	
-	public ListView<Employee> getEmployeesLv() {
-		return employeesLv;
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

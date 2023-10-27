@@ -9,9 +9,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.Pane;
 import javafx.util.converter.IntegerStringConverter;
 
-abstract public class BaseView {
-	public abstract Pane getView();
-	
+abstract public class BaseView extends Pane {
 	public TextFormatter<Integer> getPositiveNumberFormatter() {
 		UnaryOperator<TextFormatter.Change> filter = change -> {
 			String newText = change.getControlNewText();

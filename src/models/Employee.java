@@ -1,9 +1,11 @@
 package models;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,8 +38,8 @@ public class Employee implements Serializable, Comparable<Employee> {
 	
 	private Employee() {};
 	
-	public Employee(File newUserFile) throws FileNotFoundException, EmptyInputException, WrongFormatException, NonPositiveInputException, InputMismatchException {
-		try(Scanner scan = new Scanner(newUserFile)) {			
+	public Employee(File newUserFile) throws EmptyInputException, WrongFormatException, NonPositiveInputException, InputMismatchException, IOException {
+		try(Scanner scan = new Scanner(newUserFile, Charset.forName("UTF-8"))) {			
 			setUsername(scan.nextLine());
 			setFullName(scan.nextLine());
 			setEmail(scan.nextLine());
@@ -51,10 +53,34 @@ public class Employee implements Serializable, Comparable<Employee> {
 			setPermissions(this.accessLvl);
 		} catch(InputMismatchException ex) {
 			throw new WrongFormatException("input", "character input for text fields, numeric input for price fields");
+		} catch (IOException e) {
+			throw new IOException("Illegal/unrecognizable character(s) used");
 		} finally {
-			if(!newUserFile.getName().contains("base"))
-				newUserFile.delete();
+			if(!newUserFile.getName().contains("base")) {
+				if(newUserFile.delete())
+					throw new IOException("File could not be deleted");
+			}
 		}
+	}
+	
+	// Copy constructor
+	public Employee(Employee copy) {
+		// Since an existing object is being used, we don't need to use the setter methods for validation
+		username = copy.getUsername();
+		fullName = copy.getFullName();
+		email = copy.getEmail();
+		phoneNum = copy.getPhoneNum();
+		
+		salary = copy.getSalary();
+		accessLvl = copy.getAccessLvl();
+		
+		try {
+			birthdate = new CustomDate(copy.getBirthdate().format(CustomDate.dateFormat));
+		} catch (DateTimeParseException | WrongFormatException e) {
+			e.printStackTrace();
+		}
+		
+		permissions = copy.getPermissions();
 	}
 	
 	//Class methods
@@ -256,7 +282,7 @@ public class Employee implements Serializable, Comparable<Employee> {
 	}
 	
 	public HashMap<Role, Boolean> getPermissions() {
-		return permissions;
+		return new HashMap<>(permissions);
 	}
 	
 	@Override
@@ -280,6 +306,11 @@ public class Employee implements Serializable, Comparable<Employee> {
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.email.hashCode();
 	}
 
 	@Override

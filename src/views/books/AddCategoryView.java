@@ -1,10 +1,11 @@
 package views.books;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import ui.BaseView;
@@ -41,12 +42,7 @@ public class AddCategoryView extends BaseView {
 		return categoryTf.getText();
 	}
 	
-	public Button getAddBtn() {
-		return addBt;
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
+	public void setAddAction(EventHandler<ActionEvent> action) {
+		addBt.setOnAction(action);
 	}
 }

@@ -23,7 +23,7 @@ public class Main extends Application {
 		Stage loginStage = new Stage();
 		
 		loginStage.setTitle("Log in");
-		loginStage.setScene(new Scene(loginView.getView()));
+		loginStage.setScene(new Scene(loginView));
 		loginStage.showAndWait();
 		
 		//Set up home page
@@ -32,7 +32,7 @@ public class Main extends Application {
 		HomepageView homepageView = new HomepageView(homepageCtrl);
 		
 		primaryStage.setTitle("Homepage");
-		primaryStage.setScene(new Scene(homepageView.getView()));
+		primaryStage.setScene(new Scene(homepageView));
 		primaryStage.show();
 	}
 }

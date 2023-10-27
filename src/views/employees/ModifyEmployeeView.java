@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Control;
@@ -12,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import models.helpers.CustomDate;
 import models.helpers.Role;
@@ -82,8 +83,8 @@ public class ModifyEmployeeView extends BaseView implements Form {
 		}
 	}
 	
-	public Button getSubmitBt() {
-		return submitBt;
+	public void setSubmitAction(EventHandler<ActionEvent> action) {
+		submitBt.setOnAction(action);
 	}
 	
 	public String getUsername() {
@@ -117,10 +118,5 @@ public class ModifyEmployeeView extends BaseView implements Form {
 			permissionBoxesValues[i] = ((CheckBox)(permissionBoxes.getChildren().get(i))).isSelected();
 		
 		return permissionBoxesValues;
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

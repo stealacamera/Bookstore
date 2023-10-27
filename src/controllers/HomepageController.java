@@ -70,8 +70,8 @@ public class HomepageController {
 	public void showChangePasswordForm() {
 		ChangePasswordView view = new ChangePasswordView();
 		Stage newStage = new Stage();
-		
-		view.getSubmitBt().setOnAction(e -> {
+
+		view.setSubmitAction(e -> {
 			try {
 				if(changePassword(view.getCurrentPassword(), view.getNewPassword()))
 					newStage.close();
@@ -83,7 +83,7 @@ public class HomepageController {
 		});
 		
 		newStage.setTitle("Change password");
-		newStage.setScene(new Scene(view.getView()));
+		newStage.setScene(new Scene(view));
 		newStage.showAndWait();
 	}
 	
@@ -102,7 +102,7 @@ public class HomepageController {
 		AddCategoryView view = new AddCategoryView();
 		Stage newStage = new Stage();
 		
-		view.getAddBtn().setOnAction(e -> {
+		view.setAddAction(e -> {
 			try {
 				CategoryList.add(view.getCategory());
 				ListIO.writeToFile(CategoryList.FILE_NAME, new ArrayList<>(CategoryList.getAll()));
@@ -113,7 +113,7 @@ public class HomepageController {
 		});
 		
 		newStage.setTitle("Add new category");
-		newStage.setScene(new Scene(view.getView()));
+		newStage.setScene(new Scene(view));
 		newStage.show();
 	}
 	
@@ -125,7 +125,7 @@ public class HomepageController {
 					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 					
 					currentStage.setTitle("Create a bill");
-					mainPane.setCenter(view.getView());
+					mainPane.setCenter(view);
 					backButton.setVisible(true);
 				});
 				break;
@@ -135,7 +135,7 @@ public class HomepageController {
 					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 					
 					currentStage.setTitle("Manage books");
-					mainPane.setCenter(view.getView());
+					mainPane.setCenter(view);
 					backButton.setVisible(true);
 				});
 				break;
@@ -145,7 +145,7 @@ public class HomepageController {
 					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 					
 					currentStage.setTitle("Book cash flow");
-					mainPane.setCenter(view.getView());
+					mainPane.setCenter(view);
 					backButton.setVisible(true);
 				});
 				break;
@@ -155,7 +155,7 @@ public class HomepageController {
 					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 					
 					currentStage.setTitle("Bookstore cash flow");
-					mainPane.setCenter(view.getView());
+					mainPane.setCenter(view);
 					backButton.setVisible(true);
 				});
 				break;
@@ -165,7 +165,7 @@ public class HomepageController {
 					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 					
 					currentStage.setTitle("Librarians' performance");
-					mainPane.setCenter(view.getView());
+					mainPane.setCenter(view);
 					backButton.setVisible(true);
 				});
 				break;
@@ -175,7 +175,7 @@ public class HomepageController {
 					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 					
 					currentStage.setTitle("Manage employees");
-					mainPane.setCenter(view.getView());
+					mainPane.setCenter(view);
 					backButton.setVisible(true);
 				});
 			}

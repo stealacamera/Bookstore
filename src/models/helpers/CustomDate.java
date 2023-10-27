@@ -9,7 +9,7 @@ import exceptions.WrongFormatException;
 
 public class CustomDate implements Serializable {
 	private static final long serialVersionUID = -1352994897167226152L;
-	private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/uuuu");
+	public static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/uuuu");
 	private LocalDate date;
 	
 	public CustomDate() {

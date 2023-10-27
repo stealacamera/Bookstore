@@ -3,7 +3,6 @@ package views.stats;
 import java.time.LocalDate;
 
 import controllers.StatisticsController;
-import controllers.StatisticsController.LibrarianPerformance;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,8 +15,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import models.LibrarianPerformance;
 import ui.BaseView;
 
 public class LibrarianPerformanceView extends BaseView {
@@ -33,17 +32,17 @@ public class LibrarianPerformanceView extends BaseView {
 	
 	public LibrarianPerformanceView(StatisticsController controller) {
 		this.controller = controller;
-		setperformanceDataTv();
-		setsubmitBt();
+		setPerformanceDataTv();
+		setSubmitBt();
 		createLayout();
 	}
 	
-	private void setsubmitBt() {
+	private void setSubmitBt() {
 		submitBt.setOnAction(e -> performanceDataTv.setItems(FXCollections.
 				observableArrayList(controller.getLibrariansPerformance(startDateDp.getValue(), endDateDp.getValue()))));
 	}
 	
-	private void setperformanceDataTv() {		
+	private void setPerformanceDataTv() {		
 		tcEmployee.setCellValueFactory(new PropertyValueFactory<LibrarianPerformance, String>("employee"));
 		tcBills.setCellValueFactory(new PropertyValueFactory<LibrarianPerformance, Integer>("numOfBills"));
 		tcBooks.setCellValueFactory(new PropertyValueFactory<LibrarianPerformance, Integer>("numOfBooks"));
@@ -90,10 +89,5 @@ public class LibrarianPerformanceView extends BaseView {
 		pane.setSpacing(20);
 		
 		pane.getChildren().addAll(fieldsPane, performanceDataTv);
-	}
-
-	@Override
-	public Pane getView() {
-		return pane;
 	}
 }

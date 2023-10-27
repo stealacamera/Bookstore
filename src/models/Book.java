@@ -1,8 +1,9 @@
 package models;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -27,8 +28,8 @@ public class Book implements Serializable {
 	private double purchasedPrice, originalPrice, sellingPrice;
 	private int stock;
 	
-	public Book(File newBookFile) throws FileNotFoundException, EmptyInputException, WrongFormatException, NonPositiveInputException {
-		try(Scanner scan = new Scanner(newBookFile)) {
+	public Book(File newBookFile) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {
+		try(Scanner scan = new Scanner(newBookFile, Charset.forName("UTF-8"))) {
 			setIsbn(scan.nextLine());
 			setTitle(scan.nextLine());
 			setAuthor(scan.nextLine());
@@ -43,8 +44,11 @@ public class Book implements Serializable {
 			setStock(scan.nextInt());
 		} catch(InputMismatchException ex) {
 			throw new WrongFormatException("input", "character input for text fields, numeric input for price fields");
+		} catch (IOException e) {
+			throw new IOException("Illegal/unrecognizable character(s) used");
 		} finally {
-			newBookFile.delete();
+			if(!newBookFile.delete())
+				throw new IOException("File could not be deleted");
 		}
 	}
 	
@@ -198,6 +202,11 @@ public class Book implements Serializable {
 			return ((Book) obj).getIsbn().equals(getIsbn());
 		
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.isbn.hashCode();
 	}
 	
 	@Override

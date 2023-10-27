@@ -15,7 +15,7 @@ public class LoginController {
 	
 	public LoginController(LoginView view) {
 		this.view = view;
-		this.view.getLoginBt().setOnAction(new LoginBtnListener());
+		this.view.setLoginAction(new LoginBtnListener());
 	}
 	
 	public int getLoggedInUserIndex() {

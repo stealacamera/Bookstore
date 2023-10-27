@@ -2,7 +2,9 @@ package controllers.books;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import exceptions.EmptyInputException;
@@ -48,7 +50,7 @@ public class BookController {
 		
 		newStage.setTitle("Add new category");
 		newStage.initModality(Modality.APPLICATION_MODAL);
-		newStage.setScene(new Scene(view.getView()));
+		newStage.setScene(new Scene(view));
 		newStage.show();
 	}
 	
@@ -62,7 +64,7 @@ public class BookController {
 	}
 	
 	private void setSubmitBookListener(AddBookView view) {
-		view.getSubmitBt().setOnAction(e -> {
+		view.setSubmitAction(e -> {
 			try {
 				Book.add(new Book(createBookInputFile(view)));
 				ListIO.writeToFile(Book.FILE_NAME, new ArrayList<>(Book.getAll()));
@@ -77,7 +79,7 @@ public class BookController {
 				Node node = (Node) e.getSource();
 				Stage currentStage = (Stage) node.getScene().getWindow();
 				currentStage.close();
-			} catch(FileNotFoundException | ExistingObjectException | EmptyInputException | WrongFormatException | NonPositiveInputException ex) {
+			} catch(IOException | ExistingObjectException | EmptyInputException | WrongFormatException | NonPositiveInputException ex) {
 				view.displayError(ex.getLocalizedMessage());
 			}
 		});
@@ -86,12 +88,14 @@ public class BookController {
 	private File createBookInputFile(AddBookView view) {
 		File newBookFile = new File("New Book.txt");
 		
-		try(PrintWriter write = new PrintWriter(newBookFile)) {
+		try(PrintWriter write = new PrintWriter(newBookFile, Charset.forName("UTF-8"))) {
 			write.println(view.getIsbn() + "\n" + view.getBookTitle() + "\n" + view.getAuthor());
 			write.println(view.getCategory() + "\n" + view.getSupplier() + "\n" + view.getPurchasedDate());
 			write.println(view.getPurchasedPrice() + "\n" + view.getOriginalPrice() + "\n" + view.getSellingPrice() + "\n" + view.getStock());
 		} catch(FileNotFoundException ex) {
 			view.displayError(ex.getLocalizedMessage());
+		} catch (IOException e) {
+			view.displayError("Illegal/unrecognizable character(s) used");
 		}
 		
 		return newBookFile;

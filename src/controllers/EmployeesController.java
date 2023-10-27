@@ -2,7 +2,9 @@ package controllers;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 import exceptions.EmptyInputException;
@@ -33,7 +35,7 @@ public class EmployeesController {
 		
 		setSubmitEmployeeListener(addView);
 		newStage.setTitle("Add new employee");
-		newStage.setScene(new Scene(addView.getView()));
+		newStage.setScene(new Scene(addView));
 		newStage.initModality(Modality.APPLICATION_MODAL);
 		
 		newStage.showAndWait();
@@ -53,7 +55,7 @@ public class EmployeesController {
 		modifyView.setExistingSalary(employee.getSalary());
 		modifyView.setExistingPermissions(employee.getPermissions());
 			
-		modifyView.getSubmitBt().setOnAction(e -> {
+		modifyView.setSubmitAction(e -> {
 			try {
 				employee.setUsername(modifyView.getUsername());
 				employee.setFullName(modifyView.getFullName());
@@ -74,7 +76,7 @@ public class EmployeesController {
 		});
 		
 		newStage.setTitle("Modify employee information");
-		newStage.setScene(new Scene(modifyView.getView()));
+		newStage.setScene(new Scene(modifyView));
 		newStage.initModality(Modality.APPLICATION_MODAL);
 		
 		newStage.showAndWait();
@@ -115,7 +117,7 @@ public class EmployeesController {
 	}
 	
 	private void setSubmitEmployeeListener(AddEmployeeView view) {
-		view.getAddBt().setOnAction(e -> {
+		view.setAddAction(e -> {
 			try {	
 				Employee.add(new Employee(createNewEmployeeFile(view)));
 				ListIO.writeToFile(Employee.FILE_NAME, new ArrayList<>(Employee.getAll()));
@@ -123,7 +125,7 @@ public class EmployeesController {
 				Node node = (Node) e.getSource();
 				Stage currentStage = (Stage) node.getScene().getWindow();
 				currentStage.close();
-			} catch(FileNotFoundException | ExistingObjectException | WrongFormatException | EmptyInputException | NonPositiveInputException ex) {
+			} catch(IOException | ExistingObjectException | WrongFormatException | EmptyInputException | NonPositiveInputException ex) {
 				view.displayError(ex.getLocalizedMessage());
 			}
 		});
@@ -132,11 +134,13 @@ public class EmployeesController {
 	private File createNewEmployeeFile(AddEmployeeView view) {
 		File addEmployeeFile = new File("New Employee.txt");
 		
-		try(PrintWriter write = new PrintWriter(addEmployeeFile)) {
+		try(PrintWriter write = new PrintWriter(addEmployeeFile, Charset.forName("UTF-8"))) {
 			write.println(view.getUsername() + "\n" + view.getFullName() + "\n" + view.getEmail() + "\n" + view.getPassword());
 			write.println(view.getBirthdate() + "\n" + view.getPhoneNum() + "\n" + view.getSalary() + "\n" + view.getAccessLvl());
 		} catch(FileNotFoundException ex) {
 			view.displayError(ex.getLocalizedMessage());
+		} catch (IOException e) {
+			view.displayError("Illegal/unrecognizable character(s) used");
 		}
 		
 		return addEmployeeFile;
