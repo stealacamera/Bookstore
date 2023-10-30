@@ -13,16 +13,10 @@ import javafx.collections.ObservableList;
 import models.Bill;
 import models.Book;
 import models.CashFlow;
-import models.Employee;
 import models.helpers.ListIO;
+import models.helpers.Session;
 
-public class BillController {
-	private Employee seller;
-	
-	public BillController(Employee currentUser) {
-		this.seller = currentUser;
-	}
-	
+public class BillController {	
 	public ObservableList<Book> getBooks() {
 		return Book.getAll();
 	}
@@ -43,7 +37,7 @@ public class BillController {
 		}
 		
 		createBillFile(bill, priceTotal);
-		Bill newSale = new Bill(seller, priceTotal, numOfBooks);
+		Bill newSale = new Bill(Session.getCurrentUser(), priceTotal, numOfBooks);
 		Bill.add(newSale);
 		CashFlow.addBookSale(newSale);		
 		
@@ -59,7 +53,7 @@ public class BillController {
 		try(PrintWriter write = new PrintWriter(billFile, Charset.forName("UTF-8"))) {		
 			for(Map.Entry<Book, Integer> soldBook: bill) {
 				write.printf("%-3d x %-30s\t", soldBook.getValue(), soldBook.getKey().getTitle());
-				write.printf("%.3f\n", soldBook.getValue() * soldBook.getKey().getSellingPrice());
+				write.printf("%.3f%n", soldBook.getValue() * soldBook.getKey().getSellingPrice());
 			}
 			
 			write.println("------------------------------------------------");

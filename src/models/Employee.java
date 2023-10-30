@@ -37,6 +37,8 @@ public class Employee implements Serializable, Comparable<Employee> {
 	public static final String FILE_NAME = "employees.dat";
 	private static ObservableList<Employee> employees;
 	
+	private static SecureRandom random = new SecureRandom();
+	
 	private String username, fullName, email, password, phoneNum;
 	private double salary;
 	private int accessLvl;
@@ -344,7 +346,6 @@ public class Employee implements Serializable, Comparable<Employee> {
 	}
 	
 	private String hashPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		SecureRandom random = new SecureRandom();
 		byte[] salt = new byte[16];
 		random.nextBytes(salt);
 		

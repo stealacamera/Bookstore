@@ -57,7 +57,7 @@ public class LibrarianPerformanceView extends BaseView {
 					setText(null);
 					setGraphic(null);
 				} else
-					setText(String.format("%.3f", sales.doubleValue()));
+					setText(String.format("%.3f", sales));
 			}
 		});
 		

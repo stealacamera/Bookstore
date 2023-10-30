@@ -2,7 +2,7 @@ package controllers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 
 import controllers.books.BillController;
 import controllers.books.BookController;
@@ -20,6 +20,7 @@ import models.CategoryList;
 import models.Employee;
 import models.helpers.ListIO;
 import models.helpers.Role;
+import models.helpers.Session;
 import views.ChangePasswordView;
 import views.books.AddCategoryView;
 import views.books.CreateBillView;
@@ -30,11 +31,8 @@ import views.stats.CashFlowStatsView;
 import views.stats.LibrarianPerformanceView;
 
 public class HomepageController {
-	private Employee currentUser;
 	
-	public HomepageController(Employee currentUser) {
-		this.currentUser = new Employee(currentUser);
-		
+	public HomepageController() {
 		Employee.setList();
 		Bill.setList();
 		Book.setList();
@@ -43,26 +41,14 @@ public class HomepageController {
 		CategoryList.setList();
 	}
 	
-	public String getUsername() {
-		return currentUser.getUsername();
-	}
-	
-	public int getAccessLvl() {
-		return currentUser.getAccessLvl();
-	}
-	
-	public Map<Role, Boolean> getUserPermissionStatus() {
-		return Collections.unmodifiableMap(currentUser.getPermissions());
-	}
-	
-	public ArrayList<String> getLowStockBooks() {
+	public List<String> getLowStockBooks() {
 		ArrayList<String> bookTitles = new ArrayList<>();
 		
 		for(Book book: Book.getAll())
 			if(book.getStock() <= 5)
 				bookTitles.add(book.getTitle());
 		
-		return bookTitles;
+		return Collections.unmodifiableList(bookTitles);
 	}	
 	
 	public void showChangePasswordForm() {
@@ -70,8 +56,8 @@ public class HomepageController {
 		Stage newStage = new Stage();
 
 		view.setSubmitAction(e -> {
-			try {
-				if(changePassword(view.getCurrentPassword(), view.getNewPassword()))
+			try {				
+				if(Session.changePassword(view.getCurrentPassword(), view.getNewPassword()))
 					newStage.close();
 				else
 					view.displayError("Incorrect current password");
@@ -83,17 +69,6 @@ public class HomepageController {
 		newStage.setTitle("Change password");
 		newStage.setScene(new Scene(view));
 		newStage.showAndWait();
-	}
-	
-	private boolean changePassword(String currentPassword, String newPassword) throws Exception {
-		if(currentUser.isCorrectPassword(currentPassword)) {
-			currentUser.setPassword(newPassword);
-			ListIO.writeToFile(Employee.FILE_NAME, new ArrayList<>(Employee.getAll()));
-			
-			return true;
-		}
-		
-		return false;
 	}
 	
 	public void showAddCategoryForm() {
@@ -119,7 +94,7 @@ public class HomepageController {
 		switch(permission) {
 			case CREATE_BILL: 
 				button.setOnAction(e -> {
-					CreateBillView view = new CreateBillView(new BillController(currentUser));
+					CreateBillView view = new CreateBillView(new BillController());
 					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
 					
 					currentStage.setTitle("Create a bill");

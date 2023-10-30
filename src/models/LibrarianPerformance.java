@@ -1,19 +1,19 @@
 package models;
 
 public class LibrarianPerformance {
-	private String employee;
+	private String employeeDescription;
 	private int numOfBills, numOfBooks;
 	private double salesAmount;
 	
-	public LibrarianPerformance(Employee employee, int numOfBooks, double salesAmount) {
-		this.employee = employee.toString();
+	public LibrarianPerformance(String employeeDescription, int numOfBooks, double salesAmount) {
+		this.employeeDescription = employeeDescription;
 		setNumOfBills(1);
 		setNumOfBooks(numOfBooks);
 		setSalesAmount(salesAmount);
 	}
 
-	public String getEmployee() {
-		return employee;
+	public String getEmployeeDescription() {
+		return employeeDescription;
 	}
 
 	public int getNumOfBills() {

@@ -20,7 +20,7 @@ public class Bill implements Serializable {
 	private CustomDate date;
 	
 	public Bill(Employee seller, double saleAmount, int numOfBooks) {
-		this.seller = seller;
+		this.seller = new Employee(seller);
 		this.saleAmount = saleAmount;
 		this.numOfBooks = numOfBooks;
 		this.date = new CustomDate();

@@ -22,8 +22,10 @@ public class StatisticsController {
 			int index = -1;
 			
 			for(int i = 0; i < data.size(); i++)
-				if(bill.getSeller().toString().equals(data.get(i).getEmployee()))
+				if(bill.getSeller().toString().equals(data.get(i).getEmployeeDescription())) {
 					index = i;
+					break;
+				}
 			
 			if(index != -1) {
 				LibrarianPerformance librarian = data.get(index);
@@ -31,7 +33,7 @@ public class StatisticsController {
 				librarian.addNumOfBooks(bill.getNumberOfBooks());
 				librarian.addSalesAmount(bill.getAmount());
 			} else
-				data.add(new LibrarianPerformance(bill.getSeller(), bill.getNumberOfBooks(), bill.getAmount()));
+				data.add(new LibrarianPerformance(bill.getSeller().toString(), bill.getNumberOfBooks(), bill.getAmount()));
 		}
 		
 		return data;

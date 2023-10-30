@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import models.Employee;
+import models.helpers.Session;
 
 public class Main extends Application {
 	
@@ -28,8 +29,9 @@ public class Main extends Application {
 		
 		//Set up home page
 		int currentUserIndex = loginCtrl.getLoggedInUserIndex();
-		HomepageController homepageCtrl = new HomepageController(Employee.get(currentUserIndex));
-		HomepageView homepageView = new HomepageView(homepageCtrl);
+		Session.setCurrentUser(currentUserIndex);
+		
+		HomepageView homepageView = new HomepageView(new HomepageController());
 		
 		primaryStage.setTitle("Homepage");
 		primaryStage.setScene(new Scene(homepageView));
