@@ -1,8 +1,0 @@
-manager
-Name Surname
-manager@gmail.com
-Passi123
-10/01/1999
-069 123 123
-100
-2
