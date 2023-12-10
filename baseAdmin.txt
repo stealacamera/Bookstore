@@ -1,8 +1,0 @@
-admin
-Name Surname
-admin@gmail.com
-Passi123
-10/12/2001
-069 123 123
-325
-3
