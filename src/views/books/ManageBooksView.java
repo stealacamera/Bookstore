@@ -1,10 +1,14 @@
 package views.books;
 
-import controllers.books.BookController;
-import exceptions.NonPositiveInputException;
+import bll.dto.BookInventoryDTO;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -12,38 +16,51 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.converter.IntegerStringConverter;
-import models.Book;
-import ui.BaseView;
+import views.IView;
 
-public class ManageBooksView extends BaseView {
-	private BookController controller;
+public class ManageBooksView extends IView {
 	private VBox pane = new VBox();
 	private Button addBt = new Button("Add new book"), deleteBt = new Button("Delete");
 	
-	private TableView<Book> booksTv = new TableView<Book>();
-	private TableColumn<Book, String> isbnTc = new TableColumn<>("ISBN"), titleTc = new TableColumn<>("Title");
-	private TableColumn<Book, Integer> tcStock = new TableColumn<>("Stock");
+	private TableView<BookInventoryDTO> booksTv = new TableView<>();
+	private TableColumn<BookInventoryDTO, String> isbnTc = new TableColumn<>("ISBN"), titleTc = new TableColumn<>("Title");
+	private TableColumn<BookInventoryDTO, Integer> tcStock = new TableColumn<>("Stock");
 	
-	public ManageBooksView(BookController controller) {
-		this.controller = controller;
-		setTvBooks();
-		setBtListeners();
+	public ManageBooksView(ObservableList<BookInventoryDTO> books) {
+		setTvBooks(books);
 		createLayout();
+		getChildren().add(pane);
+	}
+		
+	public void setStockListener(EventHandler<CellEditEvent<BookInventoryDTO, Integer>> action) {
+		tcStock.setOnEditCommit(action);
 	}
 	
-	private void setTvBooks() {		
-		isbnTc.setCellValueFactory(new PropertyValueFactory<Book, String>("isbn"));
-		titleTc.setCellValueFactory(new PropertyValueFactory<Book, String>("title"));
+	public void setAddListener(EventHandler<ActionEvent> action) {
+		addBt.setOnAction(action);
+	}
+	
+	public void setDeleteListener(EventHandler<ActionEvent> action) {
+		deleteBt.setOnAction(action);
+	}
+	
+	public void refreshTable(ObservableList<BookInventoryDTO> books) {
+		if(books != null)
+			booksTv.setItems(books);
+			
+		booksTv.refresh();
+	}
+	
+	public int getSelectedIndex() {
+		return booksTv.getSelectionModel().getSelectedIndex();
+	}
+	
+	private void setTvBooks(ObservableList<BookInventoryDTO> books) {		
+		isbnTc.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getBook().getIsbn()));
+		titleTc.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getBook().getTitle()));
 		
-		tcStock.setCellValueFactory(new PropertyValueFactory<Book, Integer>("stock"));
+		tcStock.setCellValueFactory(new PropertyValueFactory<BookInventoryDTO, Integer>("stock"));
 		tcStock.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-		tcStock.setOnEditCommit(e -> {
-			try {
-				controller.setStock(e.getRowValue(), e.getNewValue());
-			} catch(NonPositiveInputException ex) {
-				displayError(ex.getLocalizedMessage());
-			}
-		});
 		
 		booksTv.getColumns().add(isbnTc);
 		booksTv.getColumns().add(titleTc);
@@ -52,12 +69,7 @@ public class ManageBooksView extends BaseView {
 		
 		booksTv.setPrefWidth(350);
 		booksTv.setEditable(true);
-		booksTv.setItems(controller.getBooks());
-	}
-	
-	private void setBtListeners() {
-		addBt.setOnAction(e -> controller.add());
-		deleteBt.setOnAction(e -> controller.delete(booksTv.getSelectionModel().getSelectedIndex()));
+		booksTv.setItems(books);
 	}
 	
 	private void createLayout() {

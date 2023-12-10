@@ -2,76 +2,204 @@ package controllers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import models.Bill;
-import models.BookPurchase;
-import models.CashFlow;
-import models.Employee;
-import models.LibrarianPerformance;
-import models.helpers.CustomDate;
+import bll.IServices.IBillService;
+import bll.IServices.IBookPurchaseService;
+import bll.IServices.IEmployeeService;
+import bll.dto.BillDTO;
+import bll.dto.BookPurchaseDTO;
+import bll.dto.EmployeeDTO;
+import bll.dto.LibrarianPerformanceDTO;
+import exceptions.EmptyInputException;
+import models.utilities.CustomDate;
+import views.IView;
+import views.stats.BookExpensesView;
+import views.stats.CashFlowStatsView;
+import views.stats.LibrarianPerformanceView;
 
 public class StatisticsController {
+	private IBillService billService;
+	private IBookPurchaseService bookPurchaseService;
+	private IEmployeeService employeeService;
 	
-	public ArrayList<LibrarianPerformance> getLibrariansPerformance(LocalDate startDate, LocalDate endDate) {
-		ArrayList<LibrarianPerformance> data = new ArrayList<>();
+	public StatisticsController(IBillService billService, IEmployeeService employeeService, IBookPurchaseService bookPurchaseService) {
+		this.billService = billService;
+		this.bookPurchaseService = bookPurchaseService;
+		this.employeeService = employeeService;
+	}
+	
+	public IView getBookExpensesView() {
+		BookExpensesView view = new BookExpensesView();
 		
-		for(Bill bill: Bill.getAll()) {
-			if(bill.getSeller().getAccessLvl() != 1 || !CustomDate.inDate(startDate, endDate, bill.getDate()))
+		view.setDailyChart(getDailySales(view.getDateValue()), getDailyPurchases(view.getDateValue()));
+		view.setMonthlyChart(getMonthlySales(), getMonthlyPurchases());
+		view.setTotalChart(getTotalSales(), getTotalPurchases());
+		
+		view.setDateListener((observable, oldValue, newValue) -> view.setDailyChart(
+			getDailySales(newValue), getDailyPurchases(newValue)
+		));
+		
+		return view;
+	}
+	
+	public IView getCashFlowStatsView() {
+		CashFlowStatsView view = new CashFlowStatsView();
+		
+		view.setSubmitListener(e -> {
+			try {
+				LocalDate startDate = view.getStartDate(), endDate = view.getEndDate();
+			
+				if(startDate == null || endDate == null)
+					throw new EmptyInputException("date range");
+				else if(endDate.isBefore(startDate))
+					throw new Exception("Ending date should be after starting date");
+				
+				double totalBookSales = getTotalBookSales(startDate, endDate), 
+						totalBookPurchases = getTotalBookPurchases(startDate, endDate),
+						totalSalaries = getTotalSalaries();
+				
+				view.setData(totalBookSales, totalBookPurchases, totalSalaries);
+			} catch(Exception ex) {
+				view.displayError(ex.getMessage());
+			}
+		});
+		
+		return view;
+	}
+	
+	public IView getLibrarianPerformanceView() {
+		LibrarianPerformanceView view = new LibrarianPerformanceView();
+		
+		view.setSubmitListener(e -> {
+			try {
+				view.setPerformanceList(getLibrariansPerformance(view.getStartDate(), view.getEndDate()));
+			} catch(Exception ex) {
+				view.displayError(ex.getMessage());
+			}
+		});
+		
+		return view;
+	}
+	
+	private List<LibrarianPerformanceDTO> getLibrariansPerformance(LocalDate startDate, LocalDate endDate) throws Exception {
+		if(endDate.isBefore(startDate))
+			throw new Exception("Ending date should follow the starting date");
+			
+		Map<Integer, LibrarianPerformanceDTO> data = new HashMap<>();
+		
+		for(BillDTO bill: billService.getAll()) {
+			EmployeeDTO seller = employeeService.getById(bill.getSellerId());
+			
+			if(seller.getAccessLvl() != 1 || !CustomDate.inDate(startDate, endDate, bill.getDate().getDate()))
 				continue;
 			
-			int index = -1;
+			int key = seller.getId();
 			
-			for(int i = 0; i < data.size(); i++)
-				if(bill.getSeller().toString().equals(data.get(i).getEmployeeDescription())) {
-					index = i;
-					break;
-				}
-			
-			if(index != -1) {
-				LibrarianPerformance librarian = data.get(index);
+			if(data.containsKey(key)) {
+				LibrarianPerformanceDTO librarian = data.get(key);
 				librarian.addNumOfBills();
-				librarian.addNumOfBooks(bill.getNumberOfBooks());
-				librarian.addSalesAmount(bill.getAmount());
+				librarian.addNumOfBooks(bill.getNumOfBooks());
+				librarian.addSalesAmount(bill.getSaleAmount());
 			} else
-				data.add(new LibrarianPerformance(bill.getSeller().toString(), bill.getNumberOfBooks(), bill.getAmount()));
+				data.put(key, new LibrarianPerformanceDTO(
+						seller.getFullName() + "(" + seller.getUsername() + ")", 
+						bill.getNumOfBooks(), 
+						bill.getSaleAmount())
+				);
 		}
 		
-		return data;
+		return new ArrayList<>(data.values());
 	}
 	
-	public double getDailyPurchases(LocalDate date) {
-		return CashFlow.getDailyPurchases(BookPurchase.getAll(), date);
+	private double getDailyPurchases(LocalDate date) {
+		double booksBought = 0;
+		
+		for(BookPurchaseDTO purchase: bookPurchaseService.getAll()) {
+			if(purchase.getDate().getDate().equals(date))
+				booksBought += purchase.getAmount();
+		}
+		
+		return booksBought;
 	}
 	
-	public double getDailySales(LocalDate date) {
-		return CashFlow.getDailySales(Bill.getAll(), date);
+	private double getDailySales(LocalDate date) {
+		double booksSold = 0;
+		
+		for(BillDTO bill: billService.getAll()) {
+			if(bill.getDate().getDate().equals(date))
+				booksSold += bill.getSaleAmount();
+		}
+		
+		return booksSold;
 	}
 	
-	public double[] getMonthlyPurchases() {
-		return CashFlow.getMonthlyBookPurchases();
+	private double[] getMonthlyPurchases() {
+		double[] monthlyBookPurchases = new double[12];
+		
+		for(BookPurchaseDTO purchase: bookPurchaseService.getAll())
+			monthlyBookPurchases[purchase.getDate().getDate().getMonthValue() - 1] += purchase.getAmount();
+		
+		return monthlyBookPurchases;
 	}
 	
-	public double[] getMonthlySales() {
-		return CashFlow.getMonthlyBookSales();
+	private double[] getMonthlySales() {
+		double[] monthlyBookSales = new double[12];
+		
+		for(BillDTO bill: billService.getAll())
+			monthlyBookSales[bill.getDate().getDate().getMonthValue() - 1] += bill.getSaleAmount();
+		
+		return monthlyBookSales;
 	}
 	
-	public double getTotalPurchases() {
-		return CashFlow.getTotalBookPurchases();
+	private double getTotalPurchases() {
+		double totalBookPurchases = 0;
+		
+		for(double purchase: getMonthlyPurchases())
+			totalBookPurchases += purchase;
+		
+		return totalBookPurchases;
 	}
 	
-	public double getTotalSales() {
-		return CashFlow.getTotalBookSales();
+	private double getTotalSales() {
+		double totalBookSales = 0;
+		
+		for(double sale: getMonthlySales())
+			totalBookSales += sale;
+		
+		return totalBookSales;
 	}
 	
-	public double getTotalBookSales(LocalDate startDate, LocalDate endDate) { 
-		return CashFlow.getPeriodBookSales(startDate, endDate, Bill.getAll());
+	private double getTotalBookSales(LocalDate startDate, LocalDate endDate) { 
+		double total = 0;
+		
+		for(BillDTO bill: billService.getAll()) {
+			if(CustomDate.inDate(startDate, endDate, bill.getDate().getDate()))
+				total += bill.getSaleAmount();
+		}
+		
+		return total;
 	}
 	
-	public double getTotalBookPurchases(LocalDate startDate, LocalDate endDate) {
-		return CashFlow.getPeriodBookPurchases(startDate, endDate, BookPurchase.getAll());
+	private double getTotalBookPurchases(LocalDate startDate, LocalDate endDate) {
+		double total = 0;
+		
+		for(BookPurchaseDTO purchase: bookPurchaseService.getAll()) {
+			if(CustomDate.inDate(startDate, endDate, purchase.getDate().getDate()))
+				total += purchase.getAmount();
+		}
+		
+		return total;
 	}
 	
-	public double getTotalSalaries() {
-		return CashFlow.getTotalSalaries(new ArrayList<>(Employee.getAll()));
+	private double getTotalSalaries() {
+		double salaries = 0;
+		
+		for(EmployeeDTO employee: employeeService.getAll())
+			salaries += employee.getSalary();
+		
+		return salaries;
 	}
 }

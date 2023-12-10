@@ -1,91 +1,107 @@
 package controllers.books;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.time.LocalDate;
 
+import bll.IServices.IBookInventoryService;
+import bll.IServices.IBookPurchaseService;
+import bll.IServices.ICategoryService;
+import bll.dto.BookInventoryDTO;
+import bll.dto.BookPurchaseDTO;
 import exceptions.EmptyInputException;
 import exceptions.ExistingObjectException;
+import exceptions.IncorrectPermissionsException;
 import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
-import javafx.beans.property.ReadOnlyListWrapper;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import models.Book;
-import models.BookPurchase;
-import models.CashFlow;
-import models.CategoryList;
-import models.helpers.ListIO;
+import exceptions.WrongLengthException;
+import models.utilities.CustomDate;
+import utils.Utils;
+import views.IView;
 import views.books.AddBookView;
+import views.books.ManageBooksView;
 
 public class BookController {
+	private IBookInventoryService bookService;
+	private IBookPurchaseService bookPurchaseService;
+	private ICategoryService categoryService;
 	
-	public ObservableList<Book> getBooks() {
-		return new ReadOnlyListWrapper<>(Book.getAll());
+	public BookController(IBookInventoryService bookService, IBookPurchaseService bookPurchaseService, ICategoryService categoryService) {
+		this.bookService = bookService;
+		this.bookPurchaseService = bookPurchaseService;
+		this.categoryService = categoryService;
 	}
 	
-	public void setStock(Book book, int stock) throws NonPositiveInputException {
-		book.setStock(stock);
-		BookPurchase.add(book.getSellingPrice() * stock);
-		CashFlow.addBookPurchase(new BookPurchase(book.getSellingPrice() * stock));
+	public ManageBooksView getIndexView() {
+		ManageBooksView view = new ManageBooksView(bookService.getAll());
 		
-		ListIO.writeToFile(BookPurchase.FILE_NAME, BookPurchase.getAll());
-		ListIO.writeToFile(Book.FILE_NAME, new ArrayList<>(Book.getAll()));
-		CashFlow.writeToFile();
-	}
-	
-	public void add() {
-		AddBookView	view = new AddBookView();
-		Stage newStage = new Stage();
-		
-		view.setCategoryLv(new ReadOnlyListWrapper<>(FXCollections.observableArrayList(CategoryList.getAll())));
-		setSubmitBookListener(view);
-		
-		newStage.setTitle("Add new category");
-		newStage.initModality(Modality.APPLICATION_MODAL);
-		newStage.setScene(new Scene(view));
-		newStage.show();
-	}
-	
-	public void delete(int index) {
-		try {
-			Book.remove(index);
-			ListIO.writeToFile(Book.FILE_NAME, new ArrayList<>(Book.getAll()));
-		} catch(IndexOutOfBoundsException ex) {
-			//do nothing
-		}
-	}
-	
-	private void setSubmitBookListener(AddBookView view) {
-		view.setSubmitAction(e -> {
+		view.setStockListener(e -> {
 			try {
-				Book.add(new Book(createBookInputFile(view)));
-				ListIO.writeToFile(Book.FILE_NAME, new ArrayList<>(Book.getAll()));
+				if(e.getNewValue() == null)
+					throw new EmptyInputException("stock");
 				
-				double purchaseCost = Double.parseDouble(view.getSellingPrice()) * view.getStock();
-				BookPurchase.add(purchaseCost);
-				ListIO.writeToFile(BookPurchase.FILE_NAME, BookPurchase.getAll());
-				
-				CashFlow.addBookPurchase(new BookPurchase(purchaseCost));				
-				CashFlow.writeToFile();
-				
-				Node node = (Node) e.getSource();
-				Stage currentStage = (Stage) node.getScene().getWindow();
-				currentStage.close();
-			} catch(IOException | ExistingObjectException | EmptyInputException | WrongFormatException | NonPositiveInputException ex) {
+				updateStock(e.getRowValue(), e.getNewValue());
+			} catch(NonPositiveInputException | ExistingObjectException | EmptyInputException | WrongFormatException | WrongLengthException | IncorrectPermissionsException ex) {
+				e.getTableView().getColumns().get(2).setVisible(false);
+				e.getTableView().getColumns().get(2).setVisible(true);
 				view.displayError(ex.getLocalizedMessage());
 			}
 		});
+		
+		view.setAddListener(e -> {
+			Utils.createPopupStage("Add new book", getInsertView()).showAndWait();
+			view.refreshTable(bookService.getAll());
+		});
+		
+		view.setDeleteListener(e -> {
+			try {
+				delete(view.getSelectedIndex());
+				view.refreshTable(bookService.getAll());
+			} catch (Exception exc) {
+				view.displayError(exc.getMessage());
+			}
+		});
+		
+		return view;
 	}
 	
-	private File createBookInputFile(AddBookView view) {
+	public IView getInsertView() {
+		AddBookView	view = new AddBookView();
+		view.setCategoryLv(categoryService.getAll());
+		
+		view.setSubmitAction(e -> {
+			try {
+				addBook(view.submitValues());
+				Utils.getCurrentStage(e).close();
+			} catch (ExistingObjectException | EmptyInputException | NonPositiveInputException | WrongFormatException
+					| WrongLengthException | IncorrectPermissionsException exc) {
+				view.displayError(exc.getMessage());
+			}
+		});
+		
+		return view;
+	}
+	
+	private void updateStock(BookInventoryDTO book, int stock) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException, ExistingObjectException, IncorrectPermissionsException {
+		bookService.updateStock(book, stock);
+		
+		BookPurchaseDTO purchase = new BookPurchaseDTO(book.getSellingPrice() * stock, new CustomDate(LocalDate.now()));
+		bookPurchaseService.add(purchase);
+	}
+	
+	private void delete(int index) throws Exception {
+		if(index == -1)
+			throw new Exception("Please select an item");
+		
+		bookService.remove(index);
+	}
+	
+	private void addBook(BookInventoryDTO model) throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+		bookService.add(model);
+
+		double purchaseCost = model.getSellingPrice() * model.getStock();
+		bookPurchaseService.add(new BookPurchaseDTO(purchaseCost, new CustomDate(LocalDate.now())));
+	}
+	
+	/*private File createBookInputFile(AddBookView view) {
 		File newBookFile = new File("New Book.txt");
 		
 		try(PrintWriter write = new PrintWriter(newBookFile, Charset.forName("UTF-8"))) {
@@ -99,5 +115,5 @@ public class BookController {
 		}
 		
 		return newBookFile;
-	}
+	}*/
 }

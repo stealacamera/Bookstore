@@ -1,9 +1,12 @@
 package views.stats;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import controllers.StatisticsController;
+import bll.dto.LibrarianPerformanceDTO;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -16,39 +19,39 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import models.LibrarianPerformance;
-import ui.BaseView;
+import views.IView;
 
-public class LibrarianPerformanceView extends BaseView {
-	private StatisticsController controller;
+public class LibrarianPerformanceView extends IView {
 	private VBox pane = new VBox();
 	private DatePicker startDateDp = new DatePicker(LocalDate.now()), endDateDp = new DatePicker(LocalDate.now());
 	private Button submitBt = new Button("Submit");
 	
-	private TableView<LibrarianPerformance> performanceDataTv = new TableView<>();
-	private TableColumn<LibrarianPerformance, String> tcEmployee = new TableColumn<>("Employee");
-	private	TableColumn<LibrarianPerformance, Integer> tcBills = new TableColumn<>("No. of bills"), tcBooks = new TableColumn<>("No. of books sold");
-	private TableColumn<LibrarianPerformance, Double> tcSalesAmount = new TableColumn<>("Sales amount");
+	private TableView<LibrarianPerformanceDTO> performanceDataTv = new TableView<>();
+	private TableColumn<LibrarianPerformanceDTO, String> tcEmployee = new TableColumn<>("Employee");
+	private	TableColumn<LibrarianPerformanceDTO, Integer> tcBills = new TableColumn<>("No. of bills"), tcBooks = new TableColumn<>("No. of books sold");
+	private TableColumn<LibrarianPerformanceDTO, Double> tcSalesAmount = new TableColumn<>("Sales amount");
 	
-	public LibrarianPerformanceView(StatisticsController controller) {
-		this.controller = controller;
-		setPerformanceDataTv();
-		setSubmitBt();
+	public LibrarianPerformanceView() {
 		createLayout();
+		getChildren().add(pane);
 	}
 	
-	private void setSubmitBt() {
-		submitBt.setOnAction(e -> performanceDataTv.setItems(FXCollections.
-				observableArrayList(controller.getLibrariansPerformance(startDateDp.getValue(), endDateDp.getValue()))));
+	public LocalDate getStartDate() { return startDateDp.getValue(); }
+	public LocalDate getEndDate() { return endDateDp.getValue(); }
+	
+	public void setSubmitListener(EventHandler<ActionEvent> action) { submitBt.setOnAction(action); }
+	
+	public void setPerformanceList(List<LibrarianPerformanceDTO> list) {
+		performanceDataTv.setItems(FXCollections.observableArrayList(list));
 	}
 	
 	private void setPerformanceDataTv() {		
-		tcEmployee.setCellValueFactory(new PropertyValueFactory<LibrarianPerformance, String>("employee"));
-		tcBills.setCellValueFactory(new PropertyValueFactory<LibrarianPerformance, Integer>("numOfBills"));
-		tcBooks.setCellValueFactory(new PropertyValueFactory<LibrarianPerformance, Integer>("numOfBooks"));
+		tcEmployee.setCellValueFactory(new PropertyValueFactory<LibrarianPerformanceDTO, String>("employeeDescription"));
+		tcBills.setCellValueFactory(new PropertyValueFactory<LibrarianPerformanceDTO, Integer>("numOfBills"));
+		tcBooks.setCellValueFactory(new PropertyValueFactory<LibrarianPerformanceDTO, Integer>("numOfBooks"));
 		
-		tcSalesAmount.setCellValueFactory(new PropertyValueFactory<LibrarianPerformance, Double>("salesAmount"));
-		tcSalesAmount.setCellFactory(cell -> new TableCell<LibrarianPerformance, Double>() {
+		tcSalesAmount.setCellValueFactory(new PropertyValueFactory<LibrarianPerformanceDTO, Double>("salesAmount"));
+		tcSalesAmount.setCellFactory(cell -> new TableCell<LibrarianPerformanceDTO, Double>() {
 			@Override
 			protected void updateItem(Double sales, boolean empty) {
 				super.updateItem(sales, empty);
@@ -73,6 +76,7 @@ public class LibrarianPerformanceView extends BaseView {
 	private void createLayout() {
 		GridPane dpPane = new GridPane();
 		HBox fieldsPane = new HBox(dpPane, submitBt);
+		setPerformanceDataTv();
 		
 		dpPane.add(new Label("Start date:"), 0, 0);
 		dpPane.add(new Label("End date:"), 1, 0);

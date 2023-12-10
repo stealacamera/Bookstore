@@ -1,64 +1,96 @@
 package controllers;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import bll.IServices.IBillService;
+import bll.IServices.IBookInventoryService;
+import bll.IServices.IBookPurchaseService;
+import bll.IServices.ICategoryService;
+import bll.IServices.IEmployeeService;
+import bll.dto.BookInventoryDTO;
 import controllers.books.BillController;
 import controllers.books.BookController;
+import exceptions.EmptyInputException;
 import exceptions.ExistingObjectException;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
-import models.Bill;
-import models.Book;
-import models.BookPurchase;
-import models.CashFlow;
-import models.CategoryList;
-import models.Employee;
-import models.helpers.ListIO;
-import models.helpers.Role;
-import models.helpers.Session;
+import exceptions.IncorrectPermissionsException;
+import exceptions.NonPositiveInputException;
+import exceptions.WrongFormatException;
+import exceptions.WrongLengthException;
+import models.utilities.Role;
+import startup.Session;
+import utils.Utils;
 import views.ChangePasswordView;
+import views.HomepageView;
+import views.IView;
 import views.books.AddCategoryView;
-import views.books.CreateBillView;
-import views.books.ManageBooksView;
-import views.employees.ManageEmployeesView;
-import views.stats.BookExpensesView;
-import views.stats.CashFlowStatsView;
-import views.stats.LibrarianPerformanceView;
 
 public class HomepageController {
+	private IBookInventoryService bookInventoryService;
+	private ICategoryService categoryService;
+	private IBillService billService;
+	private IBookPurchaseService bookPurchaseService;
+	private IEmployeeService employeeService;
 	
-	public HomepageController() {
-		Employee.setList();
-		Bill.setList();
-		Book.setList();
-		BookPurchase.setList();
-		CashFlow.readFromFile();
-		CategoryList.setList();
+	public HomepageController(
+			IBookInventoryService bookInventoryService, ICategoryService categoryService,
+			IBillService billService, IBookPurchaseService bookPurchaseService,
+			IEmployeeService employeeService) {
+		this.bookInventoryService = bookInventoryService;
+		this.categoryService = categoryService;
+		this.billService = billService;
+		this.bookPurchaseService = bookPurchaseService;
+		this.employeeService = employeeService;
 	}
 	
-	public List<String> getLowStockBooks() {
+	public IView getIndexView() {
+		HomepageView view = new HomepageView();
+		
+		List<String> lowStockBookTitles = getLowStockBooks();
+		if(Session.getCurrentUser().getAccessLvl() == 2 && lowStockBookTitles.size() != 0)
+			view.showLowStockWarning(getLowStockBooks());
+		
+		view.setChangePasswordListener(e -> Utils.createPopupStage("Change password", getChangePasswordView()).showAndWait());
+		view.setCategoryFormListener(e -> Utils.createPopupStage("Add new category", getAddCategoryView()).showAndWait());
+		
+		view.createButtons(
+			Session.getCurrentUser().getPermissions(), 
+			(permission, pane, goBackBtn) -> {
+				Map.Entry<String, IView> result = getHomeActionView(permission);
+				
+				return (e -> {
+					if(view != null) {
+						Utils.getCurrentStage(e).setTitle(result.getKey());
+						pane.setCenter(result.getValue());
+						goBackBtn.setVisible(true);
+					}
+				});			
+			}
+		);
+		
+		return view;
+	}
+	
+	private List<String> getLowStockBooks() {
 		ArrayList<String> bookTitles = new ArrayList<>();
 		
-		for(Book book: Book.getAll())
+		for(BookInventoryDTO book: bookInventoryService.getAll())
 			if(book.getStock() <= 5)
-				bookTitles.add(book.getTitle());
+				bookTitles.add(book.getBook().getTitle());
 		
 		return Collections.unmodifiableList(bookTitles);
-	}	
+	}
 	
-	public void showChangePasswordForm() {
+	private IView getChangePasswordView() {
 		ChangePasswordView view = new ChangePasswordView();
-		Stage newStage = new Stage();
 
 		view.setSubmitAction(e -> {
 			try {				
-				if(Session.changePassword(view.getCurrentPassword(), view.getNewPassword()))
-					newStage.close();
+				if(employeeService.changePassword(Session.getCurrentUser(), view.getCurrentPassword(), view.getNewPassword()))
+					Utils.getCurrentStage(e).close();
 				else
 					view.displayError("Incorrect current password");
 			} catch(Exception ex) {
@@ -66,91 +98,57 @@ public class HomepageController {
 			}
 		});
 		
-		newStage.setTitle("Change password");
-		newStage.setScene(new Scene(view));
-		newStage.showAndWait();
+		return view;
 	}
 	
-	public void showAddCategoryForm() {
+	private IView getAddCategoryView() {
 		AddCategoryView view = new AddCategoryView();
-		Stage newStage = new Stage();
 		
 		view.setAddAction(e -> {
 			try {
-				CategoryList.add(view.getCategory());
-				ListIO.writeToFile(CategoryList.FILE_NAME, new ArrayList<>(CategoryList.getAll()));
+				categoryService.add(view.submitForm());
 				view.clearForm();
-			} catch(ExistingObjectException ex) {
-				view.displayError(ex.getLocalizedMessage());
+			} catch(ExistingObjectException | EmptyInputException | NonPositiveInputException | WrongFormatException | WrongLengthException
+					| IncorrectPermissionsException ex) {
+				view.displayError(ex.getMessage());
 			}
 		});
-		
-		newStage.setTitle("Add new category");
-		newStage.setScene(new Scene(view));
-		newStage.show();
+
+		return view;
 	}
 	
-	public void setBtListener(Button button, Role permission, BorderPane mainPane, Button backButton) {
+	private Map.Entry<String, IView> getHomeActionView(Role permission) {
+		String viewTitle = null;
+		IView view = null;
+		
 		switch(permission) {
-			case CREATE_BILL: 
-				button.setOnAction(e -> {
-					CreateBillView view = new CreateBillView(new BillController());
-					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-					
-					currentStage.setTitle("Create a bill");
-					mainPane.setCenter(view);
-					backButton.setVisible(true);
-				});
+			case CREATE_BILL:
+				view = new BillController(billService, bookInventoryService).getIndexView();
+				viewTitle = "Create a bill";
 				break;
 			case MANAGE_BOOKS:
-				button.setOnAction(e -> {
-					ManageBooksView view = new ManageBooksView(new BookController());
-					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-					
-					currentStage.setTitle("Manage books");
-					mainPane.setCenter(view);
-					backButton.setVisible(true);
-				});
+				view = new BookController(bookInventoryService, bookPurchaseService, categoryService).getIndexView();
+				viewTitle = "Manage books";
 				break;
 			case GET_BOOK_STATS:
-				button.setOnAction(e -> {
-					BookExpensesView view = new BookExpensesView(new StatisticsController());
-					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-					
-					currentStage.setTitle("Book cash flow");
-					mainPane.setCenter(view);
-					backButton.setVisible(true);
-				});
+				view = new StatisticsController(billService, employeeService, bookPurchaseService).getBookExpensesView();
+				viewTitle = "Book cash flow";
 				break;
-			case GET_REVENUE_STATS: 
-				button.setOnAction(e -> {
-					CashFlowStatsView view = new CashFlowStatsView(new StatisticsController());
-					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-					
-					currentStage.setTitle("Bookstore cash flow");
-					mainPane.setCenter(view);
-					backButton.setVisible(true);
-				});
+			case GET_REVENUE_STATS:
+				view = new StatisticsController(billService, employeeService, bookPurchaseService).getCashFlowStatsView();
+				viewTitle = "Bookstore cash flow";
 				break;
-			case GET_LIBR_PERFORMANCE: 
-				button.setOnAction(e -> {
-					LibrarianPerformanceView view = new LibrarianPerformanceView(new StatisticsController());
-					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-					
-					currentStage.setTitle("Librarians' performance");
-					mainPane.setCenter(view);
-					backButton.setVisible(true);
-				});
+			case GET_LIBR_PERFORMANCE:
+				view = new StatisticsController(billService, employeeService, bookPurchaseService).getLibrarianPerformanceView();
+				viewTitle = "Librarians' performance";
 				break;
-			default:
-				button.setOnAction(e -> {
-					ManageEmployeesView view = new ManageEmployeesView(new EmployeesController());
-					Stage currentStage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-					
-					currentStage.setTitle("Manage employees");
-					mainPane.setCenter(view);
-					backButton.setVisible(true);
-				});
-			}
+			case MANAGE_EMPLOYEES:
+				view = new EmployeesController(employeeService).getIndexView();
+				viewTitle = "Manage employees";
+				break;
+			default: break;
+		}
+		
+		return new AbstractMap.SimpleEntry<String, IView>(viewTitle, view);
 	}
 }

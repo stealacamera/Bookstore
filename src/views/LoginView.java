@@ -11,10 +11,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import ui.BaseView;
 import javafx.scene.paint.Color;
 
-public class LoginView extends BaseView {
+public class LoginView extends IView {
 	private VBox pane = new VBox();
 	private TextField usernameTf = new TextField();
 	private PasswordField passwordTf = new PasswordField();
@@ -22,6 +21,7 @@ public class LoginView extends BaseView {
 	
 	public LoginView() {
 		createLayout();
+		getChildren().add(pane);
 	}
 		
 	private void createLayout() {		

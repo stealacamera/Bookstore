@@ -1,147 +1,93 @@
 package controllers;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-
+import bll.IServices.IEmployeeService;
+import bll.dto.EmployeeDTO;
 import exceptions.EmptyInputException;
+import exceptions.ExistingObjectException;
+import exceptions.IncorrectPermissionsException;
 import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import models.Employee;
-import models.helpers.ListIO;
-import views.employees.AddEmployeeView;
-import views.employees.ModifyEmployeeView;
+import exceptions.WrongLengthException;
+import utils.Utils;
+import views.IView;
+import views.employees.ManageEmployeesView;
+import views.employees.UpsertView;
 
 public class EmployeesController {
+	private IEmployeeService employeeService;
 	
-	public ObservableList<Employee> getEmployees() {
-		return Employee.getAll();
+	public EmployeesController(IEmployeeService employeeService) {
+		this.employeeService = employeeService;
 	}
 	
-	private void add() {
-		AddEmployeeView addView = new AddEmployeeView();
-		Stage newStage = new Stage();
+	public IView getIndexView() {
+		ManageEmployeesView view = new ManageEmployeesView(employeeService.getAll());
 		
-		setSubmitEmployeeListener(addView);
-		newStage.setTitle("Add new employee");
-		newStage.setScene(new Scene(addView));
-		newStage.initModality(Modality.APPLICATION_MODAL);
+		view.setInsertListener(e -> {
+			Utils.createPopupStage("Add new employee", getInsertView()).showAndWait();
+			view.refreshList(employeeService.getAll());
+		});
 		
-		newStage.showAndWait();
-	}
-	
-	private void modify(int employeeIndex) {
-		ModifyEmployeeView modifyView = new ModifyEmployeeView();
-		Stage newStage = new Stage();
-		
-		Employee employee = Employee.get(employeeIndex);
-		
-		modifyView.setExistingUsername(employee.getUsername());
-		modifyView.setExistingFullName(employee.getFullName());
-		modifyView.setExistingEmail(employee.getEmail());
-		modifyView.setExistingPhoneNum(employee.getPhoneNum());
-		modifyView.setExistingBirthdate(employee.getBirthdate());
-		modifyView.setExistingSalary(employee.getSalary());
-		modifyView.setExistingPermissions(employee.getPermissions());
-			
-		modifyView.setSubmitAction(e -> {
+		view.setModifyListener(e -> {
 			try {
-				employee.setUsername(modifyView.getUsername());
-				employee.setFullName(modifyView.getFullName());
-				employee.setEmail(modifyView.getEmail());
-				employee.setPhoneNum(modifyView.getPhoneNum());
-				employee.setBirthdate(modifyView.getBirthdate());
-				employee.setSalary(modifyView.getSalary());
-				employee.setPermissions(modifyView.getPermissions());
+				EmployeeDTO model = view.getSelectedItem();
 				
-				Employee.reposition(employeeIndex, employee);
-				ListIO.writeToFile(Employee.FILE_NAME, new ArrayList<>(Employee.getAll()));
-				newStage.close();
-			} catch(NumberFormatException ex) {
-					modifyView.displayError("Salary is required to be a decimal number.");
-			} catch(EmptyInputException | NonPositiveInputException | WrongFormatException ex) {
-				modifyView.displayError(ex.getLocalizedMessage());
-			}
-		});
-		
-		newStage.setTitle("Modify employee information");
-		newStage.setScene(new Scene(modifyView));
-		newStage.initModality(Modality.APPLICATION_MODAL);
-		
-		newStage.showAndWait();
-	}
-	
-	private void delete(int index) {
-		Employee.remove(index);
-		ListIO.writeToFile(Employee.FILE_NAME, new ArrayList<>(Employee.getAll()));
-	}
-	
-	public void setAddListener(ListView<Employee> employeesLv, Button bt) {
-		bt.setOnAction(e -> {
-			add();
-			employeesLv.refresh();
-		});
-	}
-	
-	public void setModifyListener(ListView<Employee> employeesLv, Button bt) {
-		bt.setOnAction(e -> {
-			try {
-				modify(employeesLv.getSelectionModel().getSelectedIndex());
-				employeesLv.refresh();
-			} catch(IndexOutOfBoundsException ex) {
-				//do nothing
-			}
-		});
-	}
-	
-	public void setDeleteListener(ListView<Employee> employeesLv, Button bt) {
-		bt.setOnAction(e -> {
-			try {
-				delete(employeesLv.getSelectionModel().getSelectedIndex());
-				employeesLv.refresh();
-			} catch(IndexOutOfBoundsException ex) {
-				//do nothing
-			}
-		});
-	}
-	
-	private void setSubmitEmployeeListener(AddEmployeeView view) {
-		view.setAddAction(e -> {
-			try {	
-				Employee.add(new Employee(createNewEmployeeFile(view)));
-				ListIO.writeToFile(Employee.FILE_NAME, new ArrayList<>(Employee.getAll()));
+				if(model == null)
+					throw new Exception("Please select an employee");
 				
-				Node node = (Node) e.getSource();
-				Stage currentStage = (Stage) node.getScene().getWindow();
-				currentStage.close();
+				Utils.createPopupStage("Modify employee information", getModifyView(model)).showAndWait();
+				view.refreshList(employeeService.getAll());
 			} catch(Exception ex) {
-				view.displayError(ex.getLocalizedMessage());
+				view.displayError(ex.getMessage());
 			}
 		});
+		
+		view.setDeleteListener(e -> {
+			try {
+				int index = view.getSelectedIndex();
+				
+				if(index == -1)
+					throw new Exception("Please select an employee");
+				
+				employeeService.remove(index);
+				view.refreshList(employeeService.getAll());
+			} catch(Exception ex) {
+				view.displayError(ex.getMessage());
+			} 
+		});
+		
+		return view;
 	}
 	
-	private File createNewEmployeeFile(AddEmployeeView view) {
-		File addEmployeeFile = new File("New Employee.txt");
+	public IView getInsertView() {
+		UpsertView view = new UpsertView(new EmployeeDTO());
 		
-		try(PrintWriter write = new PrintWriter(addEmployeeFile, Charset.forName("UTF-8"))) {
-			write.println(view.getUsername() + "\n" + view.getFullName() + "\n" + view.getEmail() + "\n" + view.getPassword());
-			write.println(view.getBirthdate() + "\n" + view.getPhoneNum() + "\n" + view.getSalary() + "\n" + view.getAccessLvl());
-		} catch(FileNotFoundException ex) {
-			view.displayError(ex.getLocalizedMessage());
-		} catch (IOException e) {
-			view.displayError("Illegal/unrecognizable character(s) used");
-		}
+		view.setSubmitAction(e -> {
+			try {
+				employeeService.add(view.submitValues());
+				Utils.getCurrentStage(e).close();
+			} catch (ExistingObjectException | EmptyInputException | NonPositiveInputException | WrongFormatException
+					| WrongLengthException | IncorrectPermissionsException exc) {
+				view.displayError(exc.getMessage());
+			}
+		});
 		
-		return addEmployeeFile;
+		return view;
+	}
+	
+	public IView getModifyView(EmployeeDTO employee) {
+		UpsertView view = new UpsertView(employee);
+		
+		view.setSubmitAction(e -> {
+			try {
+				employeeService.update(employee, view.submitValues());
+				Utils.getCurrentStage(e).close();
+			} catch (ExistingObjectException | EmptyInputException | NonPositiveInputException
+					| WrongFormatException | WrongLengthException | IncorrectPermissionsException exc) {
+				view.displayError(exc.getMessage());
+			}
+		});
+		
+		return view;
 	}
 }

@@ -1,68 +1,59 @@
 package models;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-import models.helpers.CustomDate;
-import models.helpers.ListIO;
+import exceptions.NonPositiveInputException;
+import models.utilities.CustomDate;
 
 public class Bill implements Serializable {
 	private static final long serialVersionUID = 3285272564248001502L;
-	public static final String FILE_NAME = "bills.dat";
-	private static ArrayList<Bill> bills;
 	
 	private double saleAmount;
 	private int numOfBooks;
-	private Employee seller;
+	private int sellerId;
 	private CustomDate date;
 	
-	public Bill(Employee seller, double saleAmount, int numOfBooks) {
-		this.seller = new Employee(seller);
-		this.saleAmount = saleAmount;
-		this.numOfBooks = numOfBooks;
+	public Bill(int sellerId, double saleAmount, int numOfBooks) throws NonPositiveInputException {
+		setSellerId(sellerId);
+		setSaleAmount(saleAmount); 
+		setNumOfBooks(numOfBooks);
 		this.date = new CustomDate();
 	}
-	
-	//Class methods
-	public static void setList() {
-		ArrayList<Bill> currentList = ListIO.readFromFile(FILE_NAME);
-		bills = currentList == null ? new ArrayList<>() : currentList;
-	}
-	
-	public static List<Bill> getAll() {
-		return Collections.unmodifiableList(bills);
-	}
-	
-	public static boolean add(Bill bill) {
-		if(bill != null) {
-			bills.add(bill);
-			return true;
-		}
-		
-		return false;
-	}
-	
-	public static int listSize() {
-		return bills.size();
-	}
 
-	//Getters & setters
-	public double getAmount() {
+	public double getSaleAmount() {
 		return saleAmount;
 	}
 
-	public int getNumberOfBooks() {
+	public void setSaleAmount(double saleAmount) throws NonPositiveInputException {
+		if(saleAmount <= 0)
+			throw new NonPositiveInputException("sale amount");
+		
+		this.saleAmount = saleAmount;
+	}
+
+	public int getNumOfBooks() {
 		return numOfBooks;
 	}
-	
-	public LocalDate getDate() {
-		return date.getDate();
+
+	public void setNumOfBooks(int numOfBooks) throws NonPositiveInputException {
+		if(numOfBooks <= 0)
+			throw new NonPositiveInputException("nr. of books");
+		
+		this.numOfBooks = numOfBooks;
 	}
-	
-	public Employee getSeller() {
-		return new Employee(seller);
+
+	public int getSellerId() {
+		return sellerId;
 	}
+
+	public void setSellerId(int sellerId) throws NonPositiveInputException {
+		if(sellerId <= 0)
+			throw new NonPositiveInputException("seller id");
+		
+		this.sellerId = sellerId;
+	}
+
+	public CustomDate getDate() {
+		return date;
+	}	
 }

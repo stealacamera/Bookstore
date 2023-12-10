@@ -1,5 +1,6 @@
 package views.books;
 
+import bll.dto.CategoryDTO;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -8,15 +9,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import ui.BaseView;
+import views.IView;
 
-public class AddCategoryView extends BaseView {
+public class AddCategoryView extends IView {
 	private VBox pane = new VBox();
 	private TextField categoryTf = new TextField();
 	private Button addBt = new Button("Add");
 	
 	public AddCategoryView() {
 		createLayout();
+		getChildren().add(pane);
 	}
 	
 	private void createLayout() {
@@ -38,8 +40,8 @@ public class AddCategoryView extends BaseView {
 		categoryTf.clear();
 	}
 	
-	public String getCategory() {
-		return categoryTf.getText();
+	public CategoryDTO submitForm() {
+		return new CategoryDTO(0, categoryTf.getText());
 	}
 	
 	public void setAddAction(EventHandler<ActionEvent> action) {

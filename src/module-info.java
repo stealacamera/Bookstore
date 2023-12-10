@@ -5,7 +5,13 @@ module BookstoreRE {
     requires javafx.media;
     requires javafx.web;
 	requires java.desktop;
+	
 	requires junit;
+	requires org.junit.jupiter.api;
+	
+	exports startup;
+    exports utils;
+    exports exceptions;
 	
     exports views;
     exports views.employees;
@@ -15,8 +21,15 @@ module BookstoreRE {
     exports controllers;
     exports controllers.books;
     
-    exports exceptions;
-    
     exports models;
-    exports models.helpers;
+    exports models.utilities;
+    
+    exports dal;
+    exports dal.IRepositories;
+    
+    exports bll;
+    exports bll.IServices;
+    exports bll.dto;
+    
+    exports test;
 }

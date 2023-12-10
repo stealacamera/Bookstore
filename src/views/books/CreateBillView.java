@@ -1,102 +1,103 @@
 package views.books;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.AbstractMap;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import controllers.books.BillController;
-import exceptions.EmptyInputException;
-import exceptions.ExistingObjectException;
-import exceptions.NonPositiveInputException;
+import bll.dto.BookInventoryDTO;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
-import models.Book;
-import ui.BaseView;
+import utils.Forms;
+import views.IView;
 
-public class CreateBillView extends BaseView {
-	private BillController controller;
+public class CreateBillView extends IView {
 	private HBox pane = new HBox();
 	private TextField quantityTf = new TextField();
 	private Button addBt = new Button("Add book"), removeBt = new Button("Remove"), submitBt = new Button("Submit");
 	
-	private TableView<Book> booksTv = new TableView<>();
-	private TableView<Map.Entry<Book, Integer>> billTv = new TableView<>();
+	private TableView<BookInventoryDTO> booksTv = new TableView<>();
+	private TableView<Map.Entry<BookInventoryDTO, Integer>> billTv = new TableView<>();
+	TableColumn<Map.Entry<BookInventoryDTO, Integer>, Integer> tcQuantity = new TableColumn<>("Quantity");
 	
-	public CreateBillView(BillController controller) {
-		this.controller = controller;
-		quantityTf.setTextFormatter(getPositiveNumberFormatter());
+	public CreateBillView(ObservableList<BookInventoryDTO> books) {
+		quantityTf.setTextFormatter(Forms.getPositiveNumberFormatter());
 		
-		setbooksTv();
+		setbooksTv(books);
 		setbillTv();
-		setBtListener();
 		createLayout();
+		
+		getChildren().add(pane);
 	}
 	
-	private void setBtListener() {
-		addBt.setOnAction(e -> {			
-			try {
-				Book bookSelected = booksTv.getSelectionModel().getSelectedItem();
-				int quantity = Integer.parseInt(quantityTf.getText());
-				
-				if(bookSelected == null)
-					throw new Exception("Please select a book");
-				
-				if(!inStock(bookSelected.getStock(), quantity))
-					throw new Exception("Not enough stock");
-				
-				for(Map.Entry<Book, Integer> entry: billTv.getItems())
-					if(entry.getKey().equals(bookSelected))
-						throw new ExistingObjectException("book entity");
-					
-				billTv.getItems().add(new AbstractMap.SimpleEntry<Book, Integer>(bookSelected, quantity));
-			} catch(NumberFormatException ex) {
-				displayError(new EmptyInputException("stock").getLocalizedMessage());
-			} catch(Exception ex) {
-				displayError(ex.getLocalizedMessage());
-			}
-		});
-				
-		submitBt.setOnAction(e -> {
-			try {
-				controller.submitBill(new ArrayList<>(billTv.getItems()));
-				billTv.getItems().clear();
-				booksTv.refresh();
-			} catch(FileNotFoundException ex) {
-				this.displayError("Something went wrong: file could not be created. Try again later");
-			} catch (IOException e1) {
-				this.displayError("Illegal/unrecognizable character(s) was used");
-			}
-			
-		});
-		
-		removeBt.setOnAction(e -> billTv.getItems().removeAll(billTv.getSelectionModel().getSelectedItems()));
+	public void setInsertListener(EventHandler<ActionEvent> action) { addBt.setOnAction(action); }
+	public void setSubmitBillListener(EventHandler<ActionEvent> action) { submitBt.setOnAction(action); }
+	public void setDeleteListener(EventHandler<ActionEvent> action) { removeBt.setOnAction(action); }
+	
+	public void setBillItemStockListener(EventHandler<CellEditEvent<Entry<BookInventoryDTO, Integer>, Integer>> action) {
+		tcQuantity.setOnEditCommit(action);
 	}
 	
-	private void setbooksTv() {
-		TableColumn<Book, String> tcIsbn = new TableColumn<>("ISBN");
-		TableColumn<Book, String> tcTitle = new TableColumn<>("Title");
-		TableColumn<Book, Integer> tcStock = new TableColumn<>("Stock");
+	public int getQuantity() { return Integer.parseInt(quantityTf.getText()); }
+	
+	public int getSelectedBillItemIndex() { return billTv.getSelectionModel().getSelectedIndex(); }
+	
+	public BookInventoryDTO getSelectedBookItem() { return booksTv.getSelectionModel().getSelectedItem(); }
+	
+	public List<Map.Entry<BookInventoryDTO, Integer>> getBill() { return billTv.getItems(); }
+	
+	public boolean billContainsBook(BookInventoryDTO instance) {
+		for(Map.Entry<BookInventoryDTO, Integer> entry: billTv.getItems())
+			if(entry.getKey().equals(instance))
+				return true;
 		
-		tcIsbn.setCellValueFactory(new PropertyValueFactory<Book, String>("isbn"));
-		tcTitle.setCellValueFactory(new PropertyValueFactory<Book, String>("title"));
-		tcStock.setCellValueFactory(new PropertyValueFactory<Book, Integer>("stock"));
+		return false;
+	}
+	
+	public void addItemToBill(BookInventoryDTO instance, int quantity) { 
+		billTv.getItems().add(new AbstractMap.SimpleEntry<BookInventoryDTO, Integer>(instance, quantity)); 
+	}
+	
+	public void removeBillItem(int index) {
+		billTv.getItems().remove(index);
+	}
+	
+	public void refreshBillView() {
+		billTv.refresh();
+	}
+	
+	public void refreshView(ObservableList<BookInventoryDTO> list) {
+		billTv.getItems().clear();
+		booksTv.getItems().clear();
+		booksTv.setItems(list);
+	}
+	
+	private void setbooksTv(ObservableList<BookInventoryDTO> books) {
+		TableColumn<BookInventoryDTO, String> tcIsbn = new TableColumn<>("ISBN");
+		TableColumn<BookInventoryDTO, String> tcTitle = new TableColumn<>("Title");
+		TableColumn<BookInventoryDTO, Integer> tcStock = new TableColumn<>("Stock");
+		
+		tcIsbn.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getBook().getIsbn()));
+		tcTitle.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().getBook().getTitle()));
+		tcStock.setCellValueFactory(new PropertyValueFactory<BookInventoryDTO, Integer>("stock"));
 		
 		booksTv.getColumns().add(tcIsbn);
 		booksTv.getColumns().add(tcTitle);
@@ -104,45 +105,35 @@ public class CreateBillView extends BaseView {
 		
 		booksTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		booksTv.setPrefSize(350, 500);
-		booksTv.setItems(controller.getBooks());
+		booksTv.setItems(books);
 	}
 	
-	private void setbillTv() {		
-		TableColumn<Map.Entry<Book, Integer>, String> tcIsbn = new TableColumn<>("ISBN");
-		TableColumn<Map.Entry<Book, Integer>, String> tcTitle = new TableColumn<>("Title");
-		TableColumn<Map.Entry<Book, Integer>, Integer> tcQuantity = new TableColumn<>("Quantity");
-		
-		tcIsbn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<Book,Integer>,String>, ObservableValue<String>>() {
+	private void setbillTv() {
+		TableColumn<Map.Entry<BookInventoryDTO, Integer>, String> tcIsbn = new TableColumn<>("ISBN");
+		TableColumn<Map.Entry<BookInventoryDTO, Integer>, String> tcTitle = new TableColumn<>("Title");
+
+		tcIsbn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>,String>, ObservableValue<String>>() {
 			@Override
-			public ObservableValue<String> call(CellDataFeatures<Entry<Book, Integer>, String> book) {
-				return new SimpleStringProperty(book.getValue().getKey().getIsbn());
+			public ObservableValue<String> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, String> book) {
+				return new SimpleStringProperty(book.getValue().getKey().getBook().getIsbn());
 			}
 		});
 		
-		tcTitle.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<Book,Integer>,String>, ObservableValue<String>>() {
+		tcTitle.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>,String>, ObservableValue<String>>() {
 			@Override
-			public ObservableValue<String> call(CellDataFeatures<Entry<Book, Integer>, String> book) {
-				return new SimpleStringProperty(book.getValue().getKey().getTitle());
+			public ObservableValue<String> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, String> book) {
+				return new SimpleStringProperty(book.getValue().getKey().getBook().getTitle());
 			}
 		});
 		
-		tcQuantity.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<Book,Integer>,Integer>, ObservableValue<Integer>>() {
+		tcQuantity.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>,Integer>, ObservableValue<Integer>>() {
 			@Override
-			public ObservableValue<Integer> call(CellDataFeatures<Entry<Book, Integer>, Integer> value) {
+			public ObservableValue<Integer> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, Integer> value) {
 				return new SimpleIntegerProperty(value.getValue().getValue()).asObject();
 				}
 			});
 		
 		tcQuantity.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-		
-		tcQuantity.setOnEditCommit(e -> {
-			try {
-				inStock(e.getRowValue().getKey().getStock(), e.getNewValue());
-			} catch(Exception ex) {
-				billTv.refresh();
-				displayError(ex.getLocalizedMessage());
-			}
-		});
 		
 		billTv.getColumns().add(tcIsbn);
 		billTv.getColumns().add(tcTitle);
@@ -166,12 +157,5 @@ public class CreateBillView extends BaseView {
 		pane.setPadding(new Insets(20));
 		pane.setSpacing(10);
 		pane.getChildren().addAll(bookListPane, billPane);
-	}
-	
-	private boolean inStock(int stock, int requestQuantity) throws NonPositiveInputException {
-		if(requestQuantity <= 0)
-			throw new NonPositiveInputException("quantity");
-		
-		return stock < requestQuantity ? false : true;
 	}
 }

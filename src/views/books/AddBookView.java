@@ -2,6 +2,9 @@ package views.books;
 
 import java.time.LocalDate;
 
+import bll.dto.BookDTO;
+import bll.dto.BookInventoryDTO;
+import bll.dto.CategoryDTO;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,13 +15,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import models.helpers.CustomDate;
-import ui.BaseView;
-import ui.Form;
+import models.utilities.CustomDate;
+import utils.Forms;
+import views.IView;
 
-public class AddBookView extends BaseView implements Form {
+public class AddBookView extends IView {
 	private VBox pane = new VBox();
-	private ListView<String> categoryLv = new ListView<>();
+	private ListView<CategoryDTO> categoryLv = new ListView<>();
 	private Button submitBt = new Button("Submit");
 	
 	private DatePicker purchasedDateDp = new DatePicker(LocalDate.now());
@@ -27,65 +30,45 @@ public class AddBookView extends BaseView implements Form {
 			sellingPriceTf = new TextField(), stockTf = new TextField();
 	
 	public AddBookView() {
-		stockTf.setTextFormatter(getPositiveNumberFormatter());
+		stockTf.setTextFormatter(Forms.getPositiveNumberFormatter());
+		purchasedPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
+		originalPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
+		sellingPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
+		
 		createLayout();
+		getChildren().add(pane);
 	}
 	
-	private void createLayout() {
-		categoryLv.setMaxHeight(100);
+	private void createLayout() {		
+		Control[] fields = {isbnTf, titleTf, authorTf, categoryLv, supplierTf, purchasedDateDp, purchasedPriceTf, originalPriceTf, sellingPriceTf, stockTf};
+		String[] fieldLabels = {"ISBN:", "Title:", "Author:", "Category:", "Supplier:", "Purchased date:", "Purchased price:", "Original price:", "Selling price:", "Stock:"};
 		
-		pane = createPane("New book form", new GridPane(), 
-				new Control[] {isbnTf, titleTf, authorTf, categoryLv, supplierTf, purchasedDateDp, purchasedPriceTf, originalPriceTf, sellingPriceTf, stockTf}, 
-				new String[] {"ISBN:", "Title:", "Author:", "Category:", "Supplier:", "Purchased date:", "Purchased price:", "Original price:", "Selling price:", "Stock:"});
+		categoryLv.setMaxHeight(100);
+		pane = Forms.createPane("New book form", new GridPane(), fields, fieldLabels);
 		pane.getChildren().add(submitBt);
+	}
+	
+	public BookInventoryDTO submitValues() {
+		CategoryDTO selectedCategory = categoryLv.getSelectionModel().getSelectedItem();
+		
+		BookDTO instanceBase = new BookDTO(
+				isbnTf.getText(), titleTf.getText(), 
+				authorTf.getText(), supplierTf.getText(), 
+				selectedCategory == null ? 0 : selectedCategory.getId());
+		
+		BookInventoryDTO instance = new BookInventoryDTO(
+				instanceBase, Double.parseDouble(purchasedPriceTf.getText()), 
+				Double.parseDouble(originalPriceTf.getText()), Double.parseDouble(sellingPriceTf.getText()),
+				Integer.parseInt(stockTf.getText()), new CustomDate(purchasedDateDp.getValue()));
+		
+		return instance;
 	}
 	
 	public void setSubmitAction(EventHandler<ActionEvent> action) {
 		submitBt.setOnAction(action);
 	}
 	
-	public void setCategoryLv(ObservableList<String> categories) {
+	public void setCategoryLv(ObservableList<CategoryDTO> categories) {
 		categoryLv.setItems(categories);
-	}
-	
-	public String getIsbn() {
-		return isbnTf.getText();
-	}
-	
-	public String getBookTitle() {
-		return titleTf.getText();
-	}
-	
-	public String getAuthor() {
-		return authorTf.getText();
-	}
-	
-	public String getCategory() {
-		String category = categoryLv.getSelectionModel().getSelectedItem();
-		return category == null ? "" : category;
-	}
-	
-	public String getSupplier() {
-		return supplierTf.getText();
-	}
-	
-	public String getPurchasedDate() {
-		return purchasedDateDp.getValue() == null ? "" : CustomDate.format(purchasedDateDp.getValue());
-	}
-	
-	public String getPurchasedPrice() {
-		return purchasedPriceTf.getText();
-	}
-	
-	public String getOriginalPrice() {
-		return originalPriceTf.getText();
-	}
-	
-	public String getSellingPrice() {
-		return sellingPriceTf.getText();
-	}
-	
-	public int getStock() {
-		return stockTf.getText().isBlank() ? 0 : Integer.parseInt(stockTf.getText());
 	}
 }

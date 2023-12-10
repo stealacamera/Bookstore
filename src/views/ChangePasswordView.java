@@ -9,15 +9,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import ui.BaseView;
 
-public class ChangePasswordView extends BaseView {
+public class ChangePasswordView extends IView {
 	private VBox pane = new VBox();
 	private PasswordField currentPasswordTf = new PasswordField(), newPasswordTf = new PasswordField();
 	private Button submitBt = new Button("Submit");
 	
 	public ChangePasswordView() {
 		createLayout();
+		getChildren().add(pane);
 	}
 	
 	private void createLayout() {

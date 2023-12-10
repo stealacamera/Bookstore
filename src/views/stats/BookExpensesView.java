@@ -3,7 +3,7 @@ package views.stats;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 
-import controllers.StatisticsController;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -13,17 +13,16 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.DatePicker;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import ui.BaseView;
+import views.IView;
 
-public class BookExpensesView extends BaseView {
-	private StatisticsController controller;
+public class BookExpensesView extends IView {
 	private BorderPane pane = new BorderPane();
 	private FlowPane chartPane = new FlowPane();
 	private PieChart dailyChart = new PieChart(), totalChart = new PieChart();
@@ -31,22 +30,23 @@ public class BookExpensesView extends BaseView {
 	
 	private DatePicker dateDp = new DatePicker(LocalDate.now());
 	private RadioButton dailyBox = new RadioButton("Daily"), monthlyBox = new RadioButton("Monthly"), totalBox = new RadioButton("Total");
-	private boolean clickedRepeatedlyDaily = false, clickedRepeatedlyMonthly = false, clickedRepeatedlyTotal = false;
 	
-	public BookExpensesView(StatisticsController controller) {
-		this.controller = controller;
-		
+	public BookExpensesView() {		
 		ToggleGroup radios = new ToggleGroup();
 		dailyBox.setToggleGroup(radios);
 		monthlyBox.setToggleGroup(radios);
 		totalBox.setToggleGroup(radios);
+
+		dailyBox.setOnAction(e -> pane.setCenter(dailyChart));
+		monthlyBox.setOnAction(e -> pane.setCenter(monthlyChart));
+		totalBox.setOnAction(e -> pane.setCenter(totalChart));
 		
-		dateDp.valueProperty().addListener((observable, oldValue, newValue) ->
-			setDailyChart(controller.getDailySales(newValue), controller.getDailyPurchases(newValue)));
-		
-		setRadioListeners();
 		createLayout();
+		getChildren().add(pane);
 	}
+	
+	public LocalDate getDateValue() { return dateDp.getValue(); }
+	public void setDateListener(ChangeListener<LocalDate> action) { dateDp.valueProperty().addListener(action); }
 	
 	private void createLayout() {
 		HBox dailyOptionPane = new HBox(dailyBox, dateDp);
@@ -62,36 +62,7 @@ public class BookExpensesView extends BaseView {
 		pane.setPrefSize(600, 600);
 	}
 	
-	private void setRadioListeners() {
-		dailyBox.setOnAction(e -> {
-			if(!clickedRepeatedlyDaily) {
-				setDailyChart(controller.getDailySales(dateDp.getValue()), controller.getDailyPurchases(dateDp.getValue()));
-				clickedRepeatedlyDaily = true;
-			}
-			
-			pane.setCenter(dailyChart);
-		});
-		
-		monthlyBox.setOnAction(e -> {
-			if(!clickedRepeatedlyMonthly) {
-				setMonthlyChart(controller.getMonthlySales(), controller.getMonthlyPurchases());
-				clickedRepeatedlyMonthly = true;
-			}
-			
-			pane.setCenter(monthlyChart);
-		});
-		
-		totalBox.setOnAction(e -> {
-			if(!clickedRepeatedlyTotal) {
-				setTotalChart(controller.getTotalSales(), controller.getTotalPurchases());
-				clickedRepeatedlyTotal = true;
-			}
-			
-			pane.setCenter(totalChart);
-		});
-	}
-	
-	private void setDailyChart(double sales, double purchases) {
+	public void setDailyChart(double sales, double purchases) {
 		ObservableList<PieChart.Data> data = FXCollections.observableArrayList(
 				new PieChart.Data("Book sales", sales),
 				new PieChart.Data("Book stock costs", purchases));
@@ -100,7 +71,7 @@ public class BookExpensesView extends BaseView {
 		dailyChart.setTitle("Daily cash flow");
 	}
 	
-	private void setMonthlyChart(double[] sales, double[] purchases) {
+	public void setMonthlyChart(double[] sales, double[] purchases) {
 		CategoryAxis xAxis = new CategoryAxis();
 		NumberAxis yAxis = new NumberAxis();
 		xAxis.setLabel("Month");
@@ -123,7 +94,7 @@ public class BookExpensesView extends BaseView {
 		monthlyChart.getData().add(purchasesSeries);		
 	}
 	
-	private void setTotalChart(double sales, double purchases) {
+	public void setTotalChart(double sales, double purchases) {
 		ObservableList<PieChart.Data> data = FXCollections.observableArrayList(
 				new PieChart.Data("Book sales", sales),
 				new PieChart.Data("Book stock purchases", purchases));

@@ -3,7 +3,8 @@ package views.stats;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
-import controllers.StatisticsController;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -16,11 +17,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import ui.BaseView;
+import views.IView;
 
-public class CashFlowStatsView extends BaseView {
+public class CashFlowStatsView extends IView {
 	private BorderPane pane = new BorderPane();
-	private StatisticsController controller;
 	
 	private DatePicker startDateDp = new DatePicker(LocalDate.now()), endDateDp = new DatePicker(LocalDate.now());
 	private Text totalIncomeTxt = new Text(), totalCostsTxt = new Text();
@@ -29,17 +29,9 @@ public class CashFlowStatsView extends BaseView {
 	private BarChart<String, Number> cashFlowChart;
 	private XYChart.Series<String, Number> incomeSeries = new XYChart.Series<>(), costsSeries = new XYChart.Series<>();
 	
-	public CashFlowStatsView(StatisticsController controller) {
-		this.controller = controller;
-		setCashFlowChart();
+	public CashFlowStatsView() {
 		createLayout();
-		
-		submitBt.setOnAction(e -> {
-			LocalDate startDate = startDateDp.getValue(), endDate = endDateDp.getValue();
-			
-			if(startDate != null && endDate != null)
-				setData(startDate, endDate);
-		});
+		getChildren().add(pane);
 	}
 	
 	private void setCashFlowChart() {
@@ -58,11 +50,11 @@ public class CashFlowStatsView extends BaseView {
 		cashFlowChart.getData().add(costsSeries);
 	}
 	
-	private void setData(LocalDate startDate, LocalDate endDate) {
-		double totalBookSales = controller.getTotalBookSales(startDate, endDate), 
-				totalBookPurchases = controller.getTotalBookPurchases(startDate, endDate),
-				totalSalaries = controller.getTotalSalaries();
-		
+	public LocalDate getStartDate() { return startDateDp.getValue(); }
+	public LocalDate getEndDate() { return endDateDp.getValue(); }
+	public void setSubmitListener(EventHandler<ActionEvent> action) { submitBt.setOnAction(action); }
+	
+	public void setData(double totalBookSales, double totalBookPurchases, double totalSalaries) {
 		incomeSeries.getData().clear();
 		costsSeries.getData().clear();
 		
@@ -80,10 +72,12 @@ public class CashFlowStatsView extends BaseView {
 	private void createLayout() {
 		GridPane totalsPane = new GridPane();
 		VBox startDatePane = new VBox(new Label("Start date:"), startDateDp),
-				endDatePane = new VBox(new Label("End date:"), endDateDp),
-				dpPane = new VBox(startDatePane, endDatePane),
-				inputPane = new VBox(dpPane, submitBt),
-				fieldsPane = new VBox(inputPane, totalsPane);
+			endDatePane = new VBox(new Label("End date:"), endDateDp),
+			dpPane = new VBox(startDatePane, endDatePane),
+			inputPane = new VBox(dpPane, submitBt),
+			fieldsPane = new VBox(inputPane, totalsPane);
+		
+		setCashFlowChart();
 		
 		totalsPane.add(new Label("Total income:"), 0, 0);
 		totalsPane.add(totalIncomeTxt, 1, 0);
@@ -99,7 +93,7 @@ public class CashFlowStatsView extends BaseView {
 		totalsPane.setVgap(3);
 		fieldsPane.setSpacing(70);
 		
-		pane.setLeft(fieldsPane);;
+		pane.setLeft(fieldsPane);
 		pane.setCenter(cashFlowChart);
 		pane.setPadding(new Insets(25));
 	}
