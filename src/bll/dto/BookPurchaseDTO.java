@@ -1,12 +1,12 @@
 package bll.dto;
 
-import models.utilities.CustomDate;
+import java.time.LocalDate;
 
 public class BookPurchaseDTO {
 	private double amount;
-	private CustomDate date;
+	private LocalDate date;
 	
-	public BookPurchaseDTO(double amount, CustomDate date) {
+	public BookPurchaseDTO(double amount, LocalDate date) {
 		setAmount(amount);
 		setDate(date);
 	}
@@ -17,10 +17,10 @@ public class BookPurchaseDTO {
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
-	public CustomDate getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
-	public void setDate(CustomDate date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 }

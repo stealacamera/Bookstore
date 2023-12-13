@@ -1,7 +1,7 @@
 package dal;
 
 import dal.IRepositories.IBookInventoryRepository;
-import models.BookInventory;
+import dal.models.BookInventory;
 
 public class BookInventoryRepository extends Repository<BookInventory> implements IBookInventoryRepository {
 	

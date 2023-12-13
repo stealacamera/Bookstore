@@ -23,7 +23,7 @@ public class ManageEmployeesView extends IView {
 	public ManageEmployeesView(ObservableList<EmployeeDTO> employees) {
 		setList(employees);
 		createLayout();
-		getChildren().add(pane);
+		super.getChildren().add(pane);
 	}
 	
 	public void setInsertListener(EventHandler<ActionEvent> action) {

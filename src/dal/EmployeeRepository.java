@@ -4,9 +4,9 @@ import dal.IRepositories.IEmployeeRepository;
 import exceptions.EmptyInputException;
 import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
-import models.Employee;
-import models.User;
-import models.utilities.CustomDate;
+import dal.models.Employee;
+import dal.models.User;
+import dal.models.utilities.CustomDate;
 
 public class EmployeeRepository extends Repository<Employee> implements IEmployeeRepository {
 	// Instances are saved in ascending alphabetical order of username
@@ -30,15 +30,15 @@ public class EmployeeRepository extends Repository<Employee> implements IEmploye
 			User librarian, manager, admin;
 			
 			try {
-				librarian = new User("librarian", "Name Surname", "librarian@gmail.com", "Password123", "069 123 123", new CustomDate());
-				manager = new User("manager", "Name Surname", "manager@gmail.com", "Password123", "069 123 123", new CustomDate());
-				admin = new User("admin", "Name Surname", "admin@gmail.com", "Password123", "069 123 123", new CustomDate());
+				librarian = new User("librarian", "Name Surname", "librarian@gmail.com", "Password123", "069 123 1233", new CustomDate());
+				manager = new User("manager", "Name Surname", "manager@gmail.com", "Password123", "069 123 3123", new CustomDate());
+				admin = new User("admin", "Name Surname", "admin@gmail.com", "Password123", "069 123 1323", new CustomDate());
 				
 				add(new Employee(admin, 1400.89, 3));
 				add(new Employee(librarian, 500, 1));
 				add(new Employee(manager, 655.45, 2));
 				
-				saveChanges();
+				super.saveChanges();
 			} catch (EmptyInputException | NonPositiveInputException | WrongFormatException e) {
 				e.printStackTrace();
 			}

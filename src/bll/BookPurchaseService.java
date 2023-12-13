@@ -5,7 +5,8 @@ import bll.dto.BookPurchaseDTO;
 import dal.IRepositories.IBookPurchaseRepository;
 import exceptions.EmptyInputException;
 import exceptions.NonPositiveInputException;
-import models.BookPurchase;
+import dal.models.BookPurchase;
+import dal.models.utilities.CustomDate;
 
 public class BookPurchaseService extends Service<BookPurchase, BookPurchaseDTO> implements IBookPurchaseService {
 	@SuppressWarnings("unused")
@@ -18,11 +19,11 @@ public class BookPurchaseService extends Service<BookPurchase, BookPurchaseDTO> 
 
 	@Override
 	protected BookPurchaseDTO convertToDTO(BookPurchase model) {
-		return new BookPurchaseDTO(model.getAmount(), model.getDate());
+		return new BookPurchaseDTO(model.getAmount(), model.getDate().getDate());
 	}
 
 	@Override
 	protected BookPurchase convertToDAO(BookPurchaseDTO model) throws NonPositiveInputException, EmptyInputException {
-		return new BookPurchase(model.getAmount(), model.getDate());
+		return new BookPurchase(model.getAmount(), new CustomDate(model.getDate()));
 	}
 }

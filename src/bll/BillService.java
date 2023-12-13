@@ -4,7 +4,7 @@ import bll.IServices.IBillService;
 import bll.dto.BillDTO;
 import dal.IRepositories.IBillRepository;
 import exceptions.NonPositiveInputException;
-import models.Bill;
+import dal.models.Bill;
 
 public class BillService extends Service<Bill ,BillDTO> implements IBillService {
 	private final IBillRepository db;

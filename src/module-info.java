@@ -16,16 +16,14 @@ module BookstoreRE {
     exports views;
     exports views.employees;
     exports views.books;
-    exports views.stats;
+    exports views.statistics;
     
     exports controllers;
-    exports controllers.books;
-    
-    exports models;
-    exports models.utilities;
     
     exports dal;
     exports dal.IRepositories;
+    exports dal.models;
+    exports dal.models.utilities;
     
     exports bll;
     exports bll.IServices;

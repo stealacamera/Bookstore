@@ -12,8 +12,9 @@ import exceptions.ExistingObjectException;
 import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
 import exceptions.WrongLengthException;
-import models.Book;
-import models.BookInventory;
+import dal.models.Book;
+import dal.models.BookInventory;
+import dal.models.utilities.CustomDate;
 import utils.Utils;
 
 public class BookInventoryService extends Service<BookInventory, BookInventoryDTO> implements IBookInventoryService {
@@ -71,7 +72,7 @@ public class BookInventoryService extends Service<BookInventory, BookInventoryDT
 		BookInventoryDTO instance = new BookInventoryDTO(
 				instanceBook, model.getPurchasedPrice(), 
 				model.getOriginalPrice(), model.getSellingPrice(), 
-				model.getStock(), model.getPurchasedDate());
+				model.getStock(), model.getPurchasedDate().getDate());
 		
 		return instance;
 	}
@@ -83,6 +84,9 @@ public class BookInventoryService extends Service<BookInventory, BookInventoryDT
 				model.getBook().getAuthor(), model.getBook().getSupplier(), 
 				model.getBook().getCategoryId());
 		
-		return new BookInventory(instanceBook, model.getPurchasedPrice(), model.getOriginalPrice(), model.getSellingPrice(), model.getStock(), model.getPurchasedDate());
+		return new BookInventory(
+				instanceBook, model.getPurchasedPrice(), 
+				model.getOriginalPrice(), model.getSellingPrice(), 
+				model.getStock(), new CustomDate(model.getPurchasedDate()));
 	}
 }

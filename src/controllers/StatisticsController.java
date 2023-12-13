@@ -14,11 +14,12 @@ import bll.dto.BookPurchaseDTO;
 import bll.dto.EmployeeDTO;
 import bll.dto.LibrarianPerformanceDTO;
 import exceptions.EmptyInputException;
-import models.utilities.CustomDate;
+import exceptions.NonSequentialDatesException;
+import dal.models.utilities.CustomDate;
 import views.IView;
-import views.stats.BookExpensesView;
-import views.stats.CashFlowStatsView;
-import views.stats.LibrarianPerformanceView;
+import views.statistics.BookExpensesView;
+import views.statistics.CashFlowStatsView;
+import views.statistics.LibrarianPerformanceView;
 
 public class StatisticsController {
 	private IBillService billService;
@@ -55,14 +56,14 @@ public class StatisticsController {
 				if(startDate == null || endDate == null)
 					throw new EmptyInputException("date range");
 				else if(endDate.isBefore(startDate))
-					throw new Exception("Ending date should be after starting date");
+					throw new NonSequentialDatesException();
 				
 				double totalBookSales = getTotalBookSales(startDate, endDate), 
 						totalBookPurchases = getTotalBookPurchases(startDate, endDate),
 						totalSalaries = getTotalSalaries();
-				
+
 				view.setData(totalBookSales, totalBookPurchases, totalSalaries);
-			} catch(Exception ex) {
+			} catch(NonSequentialDatesException | EmptyInputException ex) {
 				view.displayError(ex.getMessage());
 			}
 		});
@@ -76,7 +77,7 @@ public class StatisticsController {
 		view.setSubmitListener(e -> {
 			try {
 				view.setPerformanceList(getLibrariansPerformance(view.getStartDate(), view.getEndDate()));
-			} catch(Exception ex) {
+			} catch(NonSequentialDatesException ex) {
 				view.displayError(ex.getMessage());
 			}
 		});
@@ -84,16 +85,16 @@ public class StatisticsController {
 		return view;
 	}
 	
-	private List<LibrarianPerformanceDTO> getLibrariansPerformance(LocalDate startDate, LocalDate endDate) throws Exception {
+	private List<LibrarianPerformanceDTO> getLibrariansPerformance(LocalDate startDate, LocalDate endDate) throws NonSequentialDatesException {
 		if(endDate.isBefore(startDate))
-			throw new Exception("Ending date should follow the starting date");
+			throw new NonSequentialDatesException();
 			
 		Map<Integer, LibrarianPerformanceDTO> data = new HashMap<>();
 		
 		for(BillDTO bill: billService.getAll()) {
 			EmployeeDTO seller = employeeService.getById(bill.getSellerId());
 			
-			if(seller.getAccessLvl() != 1 || !CustomDate.inDate(startDate, endDate, bill.getDate().getDate()))
+			if(seller.getAccessLvl() != 1 || !CustomDate.isInDate(startDate, endDate, bill.getDate()))
 				continue;
 			
 			int key = seller.getId();
@@ -105,7 +106,7 @@ public class StatisticsController {
 				librarian.addSalesAmount(bill.getSaleAmount());
 			} else
 				data.put(key, new LibrarianPerformanceDTO(
-						seller.getFullName() + "(" + seller.getUsername() + ")", 
+						String.format("%s (%s)", seller.getFullName(), seller.getUsername()), 
 						bill.getNumOfBooks(), 
 						bill.getSaleAmount())
 				);
@@ -118,7 +119,7 @@ public class StatisticsController {
 		double booksBought = 0;
 		
 		for(BookPurchaseDTO purchase: bookPurchaseService.getAll()) {
-			if(purchase.getDate().getDate().equals(date))
+			if(purchase.getDate().equals(date))
 				booksBought += purchase.getAmount();
 		}
 		
@@ -129,7 +130,7 @@ public class StatisticsController {
 		double booksSold = 0;
 		
 		for(BillDTO bill: billService.getAll()) {
-			if(bill.getDate().getDate().equals(date))
+			if(bill.getDate().equals(date))
 				booksSold += bill.getSaleAmount();
 		}
 		
@@ -140,7 +141,7 @@ public class StatisticsController {
 		double[] monthlyBookPurchases = new double[12];
 		
 		for(BookPurchaseDTO purchase: bookPurchaseService.getAll())
-			monthlyBookPurchases[purchase.getDate().getDate().getMonthValue() - 1] += purchase.getAmount();
+			monthlyBookPurchases[purchase.getDate().getMonthValue() - 1] += purchase.getAmount();
 		
 		return monthlyBookPurchases;
 	}
@@ -149,7 +150,7 @@ public class StatisticsController {
 		double[] monthlyBookSales = new double[12];
 		
 		for(BillDTO bill: billService.getAll())
-			monthlyBookSales[bill.getDate().getDate().getMonthValue() - 1] += bill.getSaleAmount();
+			monthlyBookSales[bill.getDate().getMonthValue() - 1] += bill.getSaleAmount();
 		
 		return monthlyBookSales;
 	}
@@ -164,19 +165,23 @@ public class StatisticsController {
 	}
 	
 	private double getTotalSales() {
-		double totalBookSales = 0;
+		return getTotalBookSales();
+	}
+	
+	private double getTotalBookSales() { 
+		double total = 0;
 		
-		for(double sale: getMonthlySales())
-			totalBookSales += sale;
+		for(BillDTO bill: billService.getAll())
+			total += bill.getSaleAmount();
 		
-		return totalBookSales;
+		return total;
 	}
 	
 	private double getTotalBookSales(LocalDate startDate, LocalDate endDate) { 
 		double total = 0;
 		
 		for(BillDTO bill: billService.getAll()) {
-			if(CustomDate.inDate(startDate, endDate, bill.getDate().getDate()))
+			if(CustomDate.isInDate(startDate, endDate, bill.getDate()))
 				total += bill.getSaleAmount();
 		}
 		
@@ -187,7 +192,7 @@ public class StatisticsController {
 		double total = 0;
 		
 		for(BookPurchaseDTO purchase: bookPurchaseService.getAll()) {
-			if(CustomDate.inDate(startDate, endDate, purchase.getDate().getDate()))
+			if(CustomDate.isInDate(startDate, endDate, purchase.getDate()))
 				total += purchase.getAmount();
 		}
 		

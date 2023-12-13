@@ -18,7 +18,7 @@ public abstract class Repository<T extends Serializable> implements IRepository<
 			
 	@Override
 	public ObservableList<T> getAll() {
-		return instances;
+		return FXCollections.observableList(instances);
 	}
 
 	@Override

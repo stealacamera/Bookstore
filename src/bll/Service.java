@@ -37,7 +37,7 @@ public abstract class Service<DAO extends Serializable, DTO> implements IService
 	}
 
 	@Override
-	public void remove(int index) {
+	public void remove(int index) throws IndexOutOfBoundsException {
 		if(index < 0 || index > db.count())
 			throw new IndexOutOfBoundsException();
 		

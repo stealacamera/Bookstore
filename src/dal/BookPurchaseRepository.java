@@ -1,7 +1,7 @@
 package dal;
 
 import dal.IRepositories.IBookPurchaseRepository;
-import models.BookPurchase;
+import dal.models.BookPurchase;
 
 public class BookPurchaseRepository extends Repository<BookPurchase> implements IBookPurchaseRepository {
 	

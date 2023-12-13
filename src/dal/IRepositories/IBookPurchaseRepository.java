@@ -1,6 +1,6 @@
 package dal.IRepositories;
 
-import models.BookPurchase;
+import dal.models.BookPurchase;
 
 public interface IBookPurchaseRepository extends IRepository<BookPurchase> {
 }

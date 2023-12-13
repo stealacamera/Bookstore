@@ -21,7 +21,7 @@ public class LoginView extends IView {
 	
 	public LoginView() {
 		createLayout();
-		getChildren().add(pane);
+		super.getChildren().add(pane);
 	}
 		
 	private void createLayout() {		

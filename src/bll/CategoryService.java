@@ -9,7 +9,7 @@ import exceptions.IncorrectPermissionsException;
 import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
 import exceptions.WrongLengthException;
-import models.Category;
+import dal.models.Category;
 
 public class CategoryService extends Service<Category, CategoryDTO> implements ICategoryService {
 	private final ICategoryRepository db;
@@ -26,7 +26,7 @@ public class CategoryService extends Service<Category, CategoryDTO> implements I
 		if(existingName != null)
 			throw new ExistingObjectException();
 		
-		return super.add(model);
+		return db.add(convertToDAO(model));
 	}
 	
 	@Override

@@ -29,7 +29,7 @@ public class ManageBooksView extends IView {
 	public ManageBooksView(ObservableList<BookInventoryDTO> books) {
 		setTvBooks(books);
 		createLayout();
-		getChildren().add(pane);
+		super.getChildren().add(pane);
 	}
 		
 	public void setStockListener(EventHandler<CellEditEvent<BookInventoryDTO, Integer>> action) {
@@ -79,7 +79,7 @@ public class ManageBooksView extends IView {
 		HBox btPane = new HBox(addBt, deleteBt);
 		btPane.setSpacing(10);
 		
-		Text instructionTxt = new Text("*Double-click on a book's stock to edit stock.");
+		Text instructionTxt = new Text("*Double-click on a book's stock to edit stock. If stock is increased, it is assumed as a new purchase.");
 		instructionTxt.setStyle("-fx-font-style: italic");
 		
 		pane.getChildren().addAll(btPane, booksTv, instructionTxt);

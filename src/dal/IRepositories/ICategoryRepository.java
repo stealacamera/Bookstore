@@ -1,6 +1,6 @@
 package dal.IRepositories;
 
-import models.Category;
+import dal.models.Category;
 
 public interface ICategoryRepository extends IRepository<Category> {
 

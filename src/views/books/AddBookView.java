@@ -15,7 +15,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import models.utilities.CustomDate;
 import utils.Forms;
 import views.IView;
 
@@ -36,7 +35,7 @@ public class AddBookView extends IView {
 		sellingPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
 		
 		createLayout();
-		getChildren().add(pane);
+		super.getChildren().add(pane);
 	}
 	
 	private void createLayout() {		
@@ -59,7 +58,7 @@ public class AddBookView extends IView {
 		BookInventoryDTO instance = new BookInventoryDTO(
 				instanceBase, Double.parseDouble(purchasedPriceTf.getText()), 
 				Double.parseDouble(originalPriceTf.getText()), Double.parseDouble(sellingPriceTf.getText()),
-				Integer.parseInt(stockTf.getText()), new CustomDate(purchasedDateDp.getValue()));
+				Integer.parseInt(stockTf.getText()), purchasedDateDp.getValue());
 		
 		return instance;
 	}

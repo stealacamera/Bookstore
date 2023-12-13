@@ -1,6 +1,6 @@
 package dal.IRepositories;
 
-import models.Bill;
+import dal.models.Bill;
 
 public interface IBillRepository extends IRepository<Bill> {
 

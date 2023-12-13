@@ -1,18 +1,18 @@
 package bll.dto;
 
-import models.utilities.CustomDate;
+import java.time.LocalDate;
 
 public class BillDTO {
 	private double saleAmount;
 	private int numOfBooks;
 	private int sellerId;
-	private CustomDate date;
+	private LocalDate date;
 	
 	public BillDTO(int sellerId, double saleAmount, int numOfBooks) {
 		setSellerId(sellerId);
 		setSaleAmount(saleAmount);
 		setNumOfBooks(numOfBooks);
-		date = new CustomDate();
+		date = LocalDate.now();
 	}
 
 	public double getSaleAmount() {
@@ -39,11 +39,11 @@ public class BillDTO {
 		this.sellerId = sellerId;
 	}
 
-	public CustomDate getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(CustomDate date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 	

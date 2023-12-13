@@ -12,21 +12,20 @@ import bll.IServices.IBookPurchaseService;
 import bll.IServices.ICategoryService;
 import bll.IServices.IEmployeeService;
 import bll.dto.BookInventoryDTO;
-import controllers.books.BillController;
-import controllers.books.BookController;
+import bll.dto.EmployeeDTO;
 import exceptions.EmptyInputException;
 import exceptions.ExistingObjectException;
 import exceptions.IncorrectPermissionsException;
 import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
 import exceptions.WrongLengthException;
-import models.utilities.Role;
+import dal.models.utilities.Role;
 import startup.Session;
 import utils.Utils;
-import views.ChangePasswordView;
-import views.HomepageView;
 import views.IView;
-import views.books.AddCategoryView;
+import views.homepage.AddCategoryView;
+import views.homepage.ChangePasswordView;
+import views.homepage.HomepageView;
 
 public class HomepageController {
 	private IBookInventoryService bookInventoryService;
@@ -57,10 +56,9 @@ public class HomepageController {
 		view.setCategoryFormListener(e -> Utils.createPopupStage("Add new category", getAddCategoryView()).showAndWait());
 		
 		view.createButtons(
-			Session.getCurrentUser().getPermissions(), 
+			Session.getCurrentUser().getPermissions(),
 			(permission, pane, goBackBtn) -> {
 				Map.Entry<String, IView> result = getHomeActionView(permission);
-				
 				return (e -> {
 					if(view != null) {
 						Utils.getCurrentStage(e).setTitle(result.getKey());
@@ -89,11 +87,12 @@ public class HomepageController {
 
 		view.setSubmitAction(e -> {
 			try {				
-				if(employeeService.changePassword(Session.getCurrentUser(), view.getCurrentPassword(), view.getNewPassword()))
+				if(employeeService.changePassword(new EmployeeDTO(Session.getCurrentUser()), view.getCurrentPassword(), view.getNewPassword()))
 					Utils.getCurrentStage(e).close();
 				else
 					view.displayError("Incorrect current password");
-			} catch(Exception ex) {
+			} catch(EmptyInputException | NonPositiveInputException | WrongFormatException | WrongLengthException
+					| IncorrectPermissionsException ex) {
 				view.displayError(ex.getLocalizedMessage());
 			}
 		});
@@ -123,7 +122,7 @@ public class HomepageController {
 		
 		switch(permission) {
 			case CREATE_BILL:
-				view = new BillController(billService, bookInventoryService).getIndexView();
+				view = new BillController(billService, bookInventoryService).getCreateView();
 				viewTitle = "Create a bill";
 				break;
 			case MANAGE_BOOKS:

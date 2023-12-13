@@ -1,15 +1,16 @@
 package startup;
 
 import bll.dto.EmployeeDTO;
+import bll.dto.IReadOnlyEmployeeDTO;
 
 public class Session {
-	private static EmployeeDTO currentUser;
+	private static IReadOnlyEmployeeDTO currentUser;
 	
 	public static void setCurrentUser(EmployeeDTO employee) {
-		currentUser = employee;
+		currentUser = new EmployeeDTO(employee);
 	}
 	
-	public static EmployeeDTO getCurrentUser() {
+	public static IReadOnlyEmployeeDTO getCurrentUser() {
 		return currentUser;
 	}
 }

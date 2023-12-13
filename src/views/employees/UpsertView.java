@@ -16,13 +16,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import models.utilities.CustomDate;
-import models.utilities.Role;
+import dal.models.utilities.Role;
 import utils.Forms;
 import views.IView;
 
 public class UpsertView extends IView {
-	private EmployeeDTO model;
+	private int modelId;
 	private VBox pane = new VBox();
 	
 	private DatePicker birthdateDp = new DatePicker();
@@ -31,20 +30,20 @@ public class UpsertView extends IView {
 			emailTf = new TextField(), phoneNumTf = new TextField(), salaryTf = new TextField();
 	
 	// Specific to insertion
-	private PasswordField passwordTf;
-	private ComboBox<Integer> accessLvlMenu;
+	private PasswordField passwordTf = new PasswordField();
+	private ComboBox<Integer> accessLvlMenu = new ComboBox<>();
 	
 	// Specific to update
 	private FlowPane permissionBoxes;
 	
 	public UpsertView(EmployeeDTO model) {
-		this.model = model;
-		createLayout(model.getId() == 0);
+		modelId = model.getId();
+		createLayout(modelId == 0);
 		
-		if(model.getId() != 0)
+		if(modelId != 0)
 			prefillUpdateForm(model);
 		
-		getChildren().add(pane);
+		super.getChildren().add(pane);
 	}
 	
 	public void setSubmitAction(EventHandler<ActionEvent> action) {
@@ -97,19 +96,23 @@ public class UpsertView extends IView {
 	}
 	
 	public EmployeeDTO submitValues() {
+		EmployeeDTO model = new EmployeeDTO();
+		
+		model.setId(modelId);
 		model.setUsername(usernameTf.getText());
 		model.setFullName(fullNameTf.getText());
 		model.setEmail(emailTf.getText());
+		model.setBirthdate(birthdateDp.getValue());		
 		model.setPhoneNum(phoneNumTf.getText());
-		model.setBirthdate(birthdateDp.getValue() == null ? null : new CustomDate(birthdateDp.getValue()));		
 		model.setSalary(salaryTf.getText().isBlank() ? 0 : Double.parseDouble(salaryTf.getText()));
 				
 		if(model.getId() == 0) {
 			model.setPassword(passwordTf.getText());
 			model.setAccessLvl(accessLvlMenu.getSelectionModel().getSelectedItem());
-		} else
+		} else {
+			model.setHashedPassword(passwordTf.getText());
 			model.setPermissionStatuses(getPermissions());
-				
+		}		
 		return model;
 	}
 	
@@ -121,7 +124,9 @@ public class UpsertView extends IView {
 		fullNameTf.setText(model.getFullName());
 		emailTf.setText(model.getEmail());
 		phoneNumTf.setText(model.getPhoneNum());
-		birthdateDp.setValue(model.getBirthdate().getDate());
+		birthdateDp.setValue(model.getBirthdate());
+		accessLvlMenu.setValue(model.getAccessLvl());
+		passwordTf.setText(model.getHashedPassword());
 		
 		salaryTf.setText(model.getSalary() + "");
 		setExistingPermissions(model.getPermissions());

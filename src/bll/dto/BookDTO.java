@@ -4,6 +4,10 @@ public class BookDTO {
 	private String isbn, title, author, supplier;
 	private int categoryId;
 	
+	public BookDTO(BookDTO model) {
+		this(model.getIsbn(), model.getTitle(), model.getAuthor(), model.getSupplier(), model.getCategoryId());
+	}
+	
 	public BookDTO(String isbn, String title, String author, String supplier, int categoryId) {
 		setIsbn(isbn);
 		setTitle(title);
@@ -41,5 +45,18 @@ public class BookDTO {
 	}
 	public void setCategoryId(int categoryId) {
 		this.categoryId = categoryId;
-	}	
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof BookDTO))
+			return false;
+		
+		return this.getIsbn().equals(((BookDTO) o).getIsbn());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getTitle().hashCode();
+	}
 }

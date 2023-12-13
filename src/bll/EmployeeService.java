@@ -12,8 +12,9 @@ import exceptions.IncorrectPermissionsException;
 import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
 import exceptions.WrongLengthException;
-import models.Employee;
-import models.User;
+import dal.models.Employee;
+import dal.models.User;
+import dal.models.utilities.CustomDate;
 import utils.Utils;
 
 public class EmployeeService extends Service<Employee, EmployeeDTO> implements IEmployeeService {
@@ -77,7 +78,7 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 	}
 	
 	@Override
-	public boolean changePassword(EmployeeDTO employee, String oldPassword, String newPassword) throws Exception {
+	public boolean changePassword(EmployeeDTO employee, String oldPassword, String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		Employee model = convertToDAO(employee);
 		
 		if(model.isCorrectPassword(oldPassword)) {
@@ -92,11 +93,7 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 	@Override
 	public boolean canLogin(String username, String password) throws EmptyInputException, WrongFormatException {
 		Employee instance = db.getByUsername(username);
-
-		if(instance != null)
-			return instance.isCorrectPassword(password);
-		
-		return false;
+		return instance == null ? false : instance.isCorrectPassword(password);
 	}
 	
 	@Override
@@ -104,7 +101,7 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 		UserDTO instanceUser = new UserDTO(model.getId(),
 				model.getUsername(), model.getFullName(), 
 				model.getEmail(), model.getHashedPassword(),
-				model.getPhoneNum(), model.getBirthdate());
+				model.getPhoneNum(), model.getBirthdate().getDate());
 		
 		EmployeeDTO instance = new EmployeeDTO(instanceUser, model.getSalary(), model.getAccessLvl(), model.getPermissions());
 		return instance;
@@ -118,22 +115,18 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 			instanceUser = new User(
 				model.getUsername(), model.getFullName(), 
 				model.getEmail(), model.getPassword(), 
-				model.getPhoneNum(), model.getBirthdate());
+				model.getPhoneNum(), new CustomDate(model.getBirthdate()));
 		} else
 			instanceUser = new User(model.getId(),
 					model.getUsername(), model.getFullName(), 
 					model.getEmail(), model.getHashedPassword(), 
-					model.getPhoneNum(), model.getBirthdate());
+					model.getPhoneNum(), new CustomDate(model.getBirthdate()));
 		
 		Employee instance = new Employee(instanceUser, model.getSalary(), model.getAccessLvl());
 		
-		if(model.getId() != 0) {
-			if(model.getPermissionStatuses() != null)
-				instance.setPermissionValues(model.getPermissionStatuses());
-			else if(model.getPermissions() != null)
-				instance.setPermissions(model.getPermissions());
-		}
-		
+		if(model.getId() != 0)
+			instance.setPermissions(model.getPermissions());
+
 		return instance;
 	}
 }

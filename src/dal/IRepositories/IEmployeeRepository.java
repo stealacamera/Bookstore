@@ -1,6 +1,6 @@
 package dal.IRepositories;
 
-import models.Employee;
+import dal.models.Employee;
 
 public interface IEmployeeRepository extends IRepository<Employee> {
 	Employee getById(int id);
