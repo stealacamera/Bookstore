@@ -47,5 +47,19 @@ public class BillDTO {
 		this.date = date;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof BillDTO))
+			return false;
+		
+		BillDTO model = (BillDTO) o;
+		
+		return getSellerId() == model.getSellerId() && getSaleAmount() == model.getSaleAmount() &&
+				getNumOfBooks() == model.getNumOfBooks() && getDate().equals(model.getDate());
+	}
 	
+	@Override
+	public int hashCode() {
+		return getSellerId() + (int) getSaleAmount() + getDate().hashCode();
+	}
 }

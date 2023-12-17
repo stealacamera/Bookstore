@@ -62,5 +62,21 @@ public class Bill implements Serializable {
 			e.printStackTrace();
 			return null;
 		}
-	}	
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof Bill))
+			return false;
+		
+		Bill model = (Bill) o;
+		
+		return getSellerId() == model.getSellerId() && getSaleAmount() == model.getSaleAmount() &&
+				getNumOfBooks() == model.getNumOfBooks() && getDate().equals(model.getDate());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getSellerId() + (int) getSaleAmount() + getDate().getDate().hashCode();
+	}
 }

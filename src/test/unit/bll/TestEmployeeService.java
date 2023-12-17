@@ -34,45 +34,34 @@ import exceptions.WrongLengthException;
 import test.unit.bll.mocks.EmployeeRepositoryMock;
 
 public class TestEmployeeService {
-	private static Employee e1, e2, e3, e4, e5, e6;
-	private static EmployeeDTO eDTO1, eDTO2, eDTO4, eDTO3, eDTO5, eDTO6;
+	private static Employee[] models;
+	private static EmployeeDTO[] modelDTOs;
 	private static EmployeeRepositoryMock mockRepository;
-	private static EmployeeService service;
-	
-	private static EmployeeDTO createEquivalentDTO(Employee base) {
-		UserDTO u = new UserDTO(base.getId(), base.getUsername(), base.getFullName(), base.getEmail(), base.getHashedPassword(), base.getPhoneNum(), base.getBirthdate().getDate());
-		EmployeeDTO model = new EmployeeDTO(u, base.getSalary(), base.getAccessLvl(), base.getPermissions());
-		model.setPassword("Password123");
+	private EmployeeService service;
 		
-		return model;
-	}
-	
 	@BeforeAll
 	static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
-		User[] users = new User[6];
+		models = new Employee[7];
+		modelDTOs = new EmployeeDTO[models.length];
 		
-		for(int i = 0; i < users.length; i++)
-			users[i] = new User((((char) (97 + i)) + "").repeat(5), "foo bar", i + "foo@gmail.com", "Password123", "069 123 1233", new CustomDate());
-		
-		e1 = new Employee(users[0], 1, 1);
-		e2 = new Employee(users[1], 1, 1);
-		e3 = new Employee(users[2], 1, 1);
-		e4 = new Employee(users[3], 1, 1);
-		e5 = new Employee(users[4], 1, 1);
-		e6 = new Employee(users[5], 1, 1);
-		
-		eDTO1 = createEquivalentDTO(e1);
-		eDTO2 = createEquivalentDTO(e2);
-		eDTO3 = createEquivalentDTO(e3);
-		eDTO4 = createEquivalentDTO(e4);
-		eDTO5 = createEquivalentDTO(e5);
-		eDTO6 = createEquivalentDTO(e6);
+		for(int i = 0; i < models.length; i++) {
+			User user = new User((((char) (97 + i)) + "").repeat(5), "foo bar", i + "foo@gmail.com", "Password123", "069 123 1233", new CustomDate());
+			models[i] = new Employee(user, 1, 1);
+			
+			UserDTO u = new UserDTO(
+					user.getId(), user.getUsername(), user.getFullName(), 
+					user.getEmail(), user.getHashedPassword(), user.getPhoneNum(), 
+					user.getBirthdate().getDate());
+			
+			modelDTOs[i] = new EmployeeDTO(u, models[i].getSalary(), models[i].getAccessLvl(), models[i].getPermissions());
+			modelDTOs[i].setPassword("Password123");
+		}
 	}
 	
 	@BeforeEach
 	void setuUp() {
 		mockRepository = new EmployeeRepositoryMock();
-		mockRepository.addDummyData(e1, e2, e3, e4, e5, e6);
+		mockRepository.addDummyData(models);
 		
 		service = new EmployeeService(mockRepository);
 	}
@@ -85,7 +74,7 @@ public class TestEmployeeService {
 	
 	@Test
 	void testGetAll_NonEmpty() {
-		assertIterableEquals(Arrays.asList(eDTO1, eDTO2, eDTO3, eDTO4, eDTO5, eDTO6), service.getAll());
+		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 	
 	@ParameterizedTest
@@ -97,7 +86,7 @@ public class TestEmployeeService {
 	@Test
 	void testGetById_NotInDatabase() {
 		assertNull(service.getById(0));
-		assertNull(service.getById(e6.getId() + 1));
+		assertNull(service.getById(models[models.length - 1].getId() + 1));
 	}
 	
 	@ParameterizedTest
@@ -141,7 +130,7 @@ public class TestEmployeeService {
 	@ParameterizedTest
 	@MethodSource("provideValuesForNonExistingUsername")
 	void testAdd_NonExistingUsername(String username, int indexOfInsert) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, ExistingObjectException, IncorrectPermissionsException {
-		EmployeeDTO model = new EmployeeDTO(eDTO1);
+		EmployeeDTO model = new EmployeeDTO(modelDTOs[0]);
 		model.setUsername(username);
 		
 		assertTrue(service.add(model));
@@ -178,20 +167,20 @@ public class TestEmployeeService {
 	
 	@Test
 	void testChangePassword_IncorrectOldPassword() throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
-		assertFalse(service.changePassword(eDTO1, "foobar", ""));
+		assertFalse(service.changePassword(modelDTOs[0], "foobar", ""));
 	}
 	
 	@ParameterizedTest
 	@ValueSource(strings = {"foo", "foobarsample", "1", "123456789", "foo123"})
 	void testChangePassword_CorrectOldPassword_InvalidValues(String newPassword) throws EmptyInputException, WrongFormatException {
-		Exception exception = assertThrows(WrongFormatException.class, () -> service.changePassword(eDTO1, eDTO1.getPassword(), newPassword));
+		Exception exception = assertThrows(WrongFormatException.class, () -> service.changePassword(modelDTOs[0], modelDTOs[0].getPassword(), newPassword));
 		assertTrue(exception.getMessage().contains("Incorrect password format"));
 	}
 	
 	@ParameterizedTest
 	@ValueSource(strings = {"foobarsample1", "1foobarsample", "12345678a", "a12345678", "foobar123sample"})
 	void testChangePassword_CorrectOldPassword_ValidValues(String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
-		assertTrue(service.changePassword(eDTO1, eDTO1.getPassword(), newPassword));
+		assertTrue(service.changePassword(modelDTOs[0], modelDTOs[0].getPassword(), newPassword));
 	}
 	
 	@ParameterizedTest
@@ -223,47 +212,48 @@ public class TestEmployeeService {
 			Arguments.of(null, null),
 			Arguments.of("", null),
 			Arguments.of(" ", null),
-			Arguments.of(e1.getUsername(), null),
-			Arguments.of(e1.getUsername(), ""),
-			Arguments.of(e1.getUsername(), " ")
+			Arguments.of(models[0].getUsername(), null),
+			Arguments.of(models[0].getUsername(), ""),
+			Arguments.of(models[0].getUsername(), " ")
 		);
 	}
 	
 	private static Stream<Arguments> provideValuesForGet() {
 		return Stream.of(
-				Arguments.of(eDTO1, 0), 
-				Arguments.of(eDTO2, 1), 
-				Arguments.of(eDTO3, 2), 
-				Arguments.of(eDTO5, 4), 
-				Arguments.of(eDTO6, 5)
+				Arguments.of(modelDTOs[0], 0), 
+				Arguments.of(modelDTOs[1], 1), 
+				Arguments.of(modelDTOs[3], 3), 
+				Arguments.of(modelDTOs[5], 5),
+				Arguments.of(modelDTOs[6], 6)
 			);
 	}
 	
 	private static Stream<Arguments> provideValuesForChangeToExistingUsername() {
 		return Stream.of(
-			Arguments.of(eDTO1, eDTO2.getUsername()),
-			Arguments.of(eDTO2, eDTO1.getUsername()),
-			Arguments.of(eDTO3, eDTO1.getUsername()),
-			Arguments.of(eDTO5, eDTO1.getUsername()),
-			Arguments.of(eDTO6, eDTO1.getUsername())
+			Arguments.of(modelDTOs[0], modelDTOs[1].getUsername()),
+			Arguments.of(modelDTOs[1], modelDTOs[0].getUsername()),
+			Arguments.of(modelDTOs[3], modelDTOs[0].getUsername()),
+			Arguments.of(modelDTOs[5], modelDTOs[0].getUsername()),
+			Arguments.of(modelDTOs[6], modelDTOs[0].getUsername())
 		);
 	}
 	
 	private static Stream<Arguments> provideValuesForNonExistingUsername() {
 		return Stream.of(
-			Arguments.of(eDTO1.getUsername() + "1", 1), 
-			Arguments.of(eDTO2.getUsername() + "1", 2),
-			Arguments.of(eDTO6.getUsername() + "1", mockRepository.count())
+			Arguments.of(modelDTOs[0].getUsername() + "1", 1), 
+			Arguments.of(modelDTOs[1].getUsername() + "1", 2),
+			Arguments.of(modelDTOs[modelDTOs.length - 2].getUsername() + "1", mockRepository.count() - 1),
+			Arguments.of(modelDTOs[modelDTOs.length - 1].getUsername() + "1", mockRepository.count())
 		);
 	}
 	
 	private static Stream<Arguments> provideValuesForExistingValues() {
 		return Stream.of(
-			Arguments.of(eDTO1), 
-			Arguments.of(eDTO2), 
-			Arguments.of(eDTO3), 
-			Arguments.of(eDTO5), 
-			Arguments.of(eDTO6)
+			Arguments.of(modelDTOs[0]), 
+			Arguments.of(modelDTOs[1]), 
+			Arguments.of(modelDTOs[3]),
+			Arguments.of(modelDTOs[5]),
+			Arguments.of(modelDTOs[6])
 		);
 	}
 	
@@ -276,11 +266,11 @@ public class TestEmployeeService {
 	
 	private static Stream<Arguments> provideValuesForGetByUsername() {
 		return Stream.of(
-			Arguments.of(eDTO1, e1.getUsername()),
-			Arguments.of(eDTO2, e2.getUsername()),
-			Arguments.of(eDTO3, e3.getUsername()),
-			Arguments.of(eDTO5, e5.getUsername()),
-			Arguments.of(eDTO6, e6.getUsername())
+			Arguments.of(modelDTOs[0], models[0].getUsername()),
+			Arguments.of(modelDTOs[1], models[1].getUsername()),
+			Arguments.of(modelDTOs[3], models[3].getUsername()),
+			Arguments.of(modelDTOs[5], models[5].getUsername()),
+			Arguments.of(modelDTOs[6], models[6].getUsername())
 		);
 	}
 }
