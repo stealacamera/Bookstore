@@ -41,7 +41,10 @@ public class User implements Serializable {
 	
 	private static int setIncrementalId() { return User.idOrder++; }
 	
-	public boolean isCorrectPassword(String password) {
+	public boolean isCorrectPassword(String password) throws EmptyInputException {
+		if(password == null || password.isBlank())
+			throw new EmptyInputException("password");
+		
 		return this.hashedPassword.equals(Identity.hashPassword(password));
 	}
 		

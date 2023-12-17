@@ -14,5 +14,5 @@ public interface IEmployeeService extends IService<EmployeeDTO> {
 	void update(EmployeeDTO oldInstance, EmployeeDTO newInstance) throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException;
 	
 	boolean changePassword(EmployeeDTO employee, String oldPassword, String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException;
-	boolean canLogin(String username, String password) throws EmptyInputException, WrongFormatException;
+	boolean canLogin(String username, String password) throws EmptyInputException;
 }

@@ -34,22 +34,24 @@ import test.unit.bll.mocks.CategoryRepositoryMock;
 public class TestCategoryService {
 	private static CategoryService service;
 	private static CategoryRepositoryMock mockRepository;
-	private static Category c1, c2, c3, c4, c5, c6;
-		
+	private static Category[] models;
+	private static CategoryDTO[] modelDTOs;
+	
 	@BeforeAll
 	static void setUpDummyData() throws EmptyInputException {
-		c1 = new Category("foo");
-		c2 = new Category("bar");
-		c3 = new Category("lorem");
-		c4 = new Category("ipsum");
-		c5 = new Category("dolorem");
-		c6 = new Category("maenecas");
+		models = new Category[7];
+		modelDTOs = new CategoryDTO[models.length];
+		
+		for(int i = 0; i < models.length; i++) {
+			models[i] = new Category((((char) 97) + "").repeat(i + 1));
+			modelDTOs[i] = new CategoryDTO(models[i].getId(), models[i].getName());
+		}
 	}
 	
 	@BeforeEach
 	void setUp() {
 		mockRepository = new CategoryRepositoryMock();
-		mockRepository.addDummyData(c1, c2, c3, c4, c5, c6);
+		mockRepository.addDummyData(models);
 		
 		service = new CategoryService(mockRepository);
 	}
@@ -62,12 +64,12 @@ public class TestCategoryService {
 	
 	@Test
 	void testGetAll_NonEmpty() {
-		assertIterableEquals(Arrays.asList(c1, c2, c3, c4, c5, c6), service.getAll());
+		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 	
 	@ParameterizedTest
 	@NullSource
-	@ValueSource(strings = {""})
+	@ValueSource(strings = {"", "  "})
 	void testAdd_InvalidValues(String input) {
 		Exception exception = assertThrows(EmptyInputException.class, () -> service.add(new CategoryDTO(0, input)));
 		assertTrue(exception.getMessage().contains("Input fields cannot be empty: Please enter a value for name"));
@@ -75,8 +77,8 @@ public class TestCategoryService {
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingNames")
-	void testAdd_ExistingName(String input) {
-		Exception exception = assertThrows(ExistingObjectException.class, () -> service.add(new CategoryDTO(0, input)));
+	void testAdd_ExistingName(CategoryDTO model) {
+		Exception exception = assertThrows(ExistingObjectException.class, () -> service.add(model));
 		assertTrue(exception.getMessage().contains("Element with these details already exists"));
 	}
 	
@@ -87,16 +89,16 @@ public class TestCategoryService {
 	
 	@Test
 	void testAdd_NonExistingName() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
-		String input = "sample";
+		CategoryDTO model = new CategoryDTO(0, "nonexisting name");
 		
-		assertTrue(service.add(new CategoryDTO(0, input)));
-		assertEquals(new Category(mockRepository.count(), input), mockRepository.getByName(input));
+		assertTrue(service.add(model));
+		assertEquals(new Category(mockRepository.count(), model.getName()), mockRepository.getByName(model.getName()));
 	}
 	
 	@Test
 	void testGetById_NotInDatabase() {
 		assertNull(service.getById(0));
-		assertNull(service.getById(c6.getId() + 1));
+		assertNull(service.getById(models[models.length - 1].getId() + 1));
 	}
 	
 	@ParameterizedTest
@@ -107,21 +109,21 @@ public class TestCategoryService {
 	
 	private static Stream<Arguments> provideValuesForExistingData() {
 		return Stream.of(
-			Arguments.of(c1),
-			Arguments.of(c2),
-			Arguments.of(c3),
-			Arguments.of(c5),
-			Arguments.of(c6)
+			Arguments.of(models[0]),
+			Arguments.of(models[1]),
+			Arguments.of(models[3]),
+			Arguments.of(models[5]),
+			Arguments.of(models[6])
 		);
 	}
 	
 	private static Stream<Arguments> provideValuesForExistingNames() {
 		return Stream.of(
-			Arguments.of(c1.getName()), 
-			Arguments.of(c2.getName()),
-			Arguments.of(c3.getName()),
-			Arguments.of(c5.getName()),
-			Arguments.of(c6.getName())
+			Arguments.of(modelDTOs[0]), 
+			Arguments.of(modelDTOs[1]),
+			Arguments.of(modelDTOs[3]),
+			Arguments.of(modelDTOs[5]),
+			Arguments.of(modelDTOs[6])
 		);
 	}
 }

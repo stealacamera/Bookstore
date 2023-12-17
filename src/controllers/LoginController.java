@@ -2,7 +2,6 @@ package controllers;
 
 import bll.IServices.IEmployeeService;
 import exceptions.EmptyInputException;
-import exceptions.WrongFormatException;
 import startup.Session;
 import utils.Utils;
 import views.IView;
@@ -28,7 +27,7 @@ public class LoginController {
 					Session.setCurrentUser(employeeService.getByUsername(username));
 					Utils.getCurrentStage(e).close();
 				}
-			} catch(EmptyInputException | WrongFormatException ex) {
+			} catch(EmptyInputException ex) {
 				view.displayError(ex.getLocalizedMessage());					
 			}
 		});

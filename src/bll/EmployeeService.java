@@ -92,7 +92,10 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 	}
 	
 	@Override
-	public boolean canLogin(String username, String password) throws EmptyInputException, WrongFormatException {
+	public boolean canLogin(String username, String password) throws EmptyInputException {
+		if(username == null || username.isBlank())
+			throw new EmptyInputException("username");
+		
 		Employee instance = db.getByUsername(username);
 		return instance == null ? false : instance.isCorrectPassword(password);
 	}

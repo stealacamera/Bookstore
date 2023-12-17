@@ -23,30 +23,24 @@ import test.unit.bll.mocks.BookPurchaseRepositoryMock;
 public class TestBookPurchaseService {
 	private BookPurchaseService service;
 	private BookPurchaseRepositoryMock mockRepository;
-	private static BookPurchase b1, b2, b3, b4, b5, b6;
-	private static BookPurchaseDTO bDTO1, bDTO2, bDTO3, bDTO4, bDTO5, bDTO6;
+	private static BookPurchase[] models;
+	private static BookPurchaseDTO[] modelDTOs;
 	
 	@BeforeAll
 	static void setUpDummyData() throws NonPositiveInputException {
-		b1 = new BookPurchase(1);
-		b2 = new BookPurchase(2);
-		b3 = new BookPurchase(3);
-		b4 = new BookPurchase(4);
-		b5 = new BookPurchase(5);
-		b6 = new BookPurchase(6);
+		models = new BookPurchase[7];
+		modelDTOs = new BookPurchaseDTO[models.length];
 		
-		bDTO1 = new BookPurchaseDTO(b1.getAmount(), b1.getDate().getDate());
-		bDTO2 = new BookPurchaseDTO(b2.getAmount(), b2.getDate().getDate());
-		bDTO3 = new BookPurchaseDTO(b3.getAmount(), b3.getDate().getDate());
-		bDTO4 = new BookPurchaseDTO(b4.getAmount(), b4.getDate().getDate());
-		bDTO5 = new BookPurchaseDTO(b5.getAmount(), b5.getDate().getDate());
-		bDTO6 = new BookPurchaseDTO(b6.getAmount(), b6.getDate().getDate());
+		for(int i = 0; i < models.length; i++) {
+			models[i] = new BookPurchase(i + 1);
+			modelDTOs[i] = new BookPurchaseDTO(models[i].getAmount(), models[i].getDate().getDate());
+		}
 	}
 	
 	@BeforeEach
 	void setUp() {
 		mockRepository = new BookPurchaseRepositoryMock();
-		mockRepository.addDummyData(b1, b2, b3, b4, b5, b6);
+		mockRepository.addDummyData(models);
 		
 		service = new BookPurchaseService(mockRepository);
 	}
@@ -59,7 +53,7 @@ public class TestBookPurchaseService {
 	
 	@Test
 	void testGetAll_NonEmpty() {
-		assertIterableEquals(Arrays.asList(bDTO1, bDTO2, bDTO3, bDTO4, bDTO5, bDTO6), service.getAll());
+		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 		
 	@ParameterizedTest
@@ -70,11 +64,11 @@ public class TestBookPurchaseService {
 	
 	private static Stream<Arguments> provideValuesForGet() {
 		return Stream.of(
-			Arguments.of(bDTO1, 0),
-			Arguments.of(bDTO2, 1),
-			Arguments.of(bDTO3, 2),
-			Arguments.of(bDTO5, 4),
-			Arguments.of(bDTO6, 5)
+			Arguments.of(modelDTOs[0], 0),
+			Arguments.of(modelDTOs[1], 1),
+			Arguments.of(modelDTOs[3], 3),
+			Arguments.of(modelDTOs[5], 5),
+			Arguments.of(modelDTOs[6], 6)
 		);
 	}
 }

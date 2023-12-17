@@ -30,7 +30,7 @@ module BookstoreRE {
     exports bll.IServices;
     exports bll.dto;
     
-    exports test;
+//    exports test;
     exports test.unit.dal;
     exports test.unit.dal.mocks;
 }

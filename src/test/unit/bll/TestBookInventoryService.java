@@ -35,35 +35,25 @@ import test.unit.bll.mocks.BookInventoryRepositoryMock;
 public class TestBookInventoryService {
 	private BookInventoryService service;
 	private BookInventoryRepositoryMock mockRepository;
-	private static BookInventory b1, b2, b3, b4, b5, b6;
-	private static BookInventoryDTO bDTO1, bDTO2, bDTO3, bDTO4, bDTO5, bDTO6;
+	private static BookInventory[] models;
+	private static BookInventoryDTO[] modelDTOs; 
 	
 	@BeforeAll
 	static void setUpDummyData() throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
-		Book[] books = new Book[6];
+		models = new BookInventory[7];
+		modelDTOs = new BookInventoryDTO[models.length];
 		
-		for(int i = 0; i < books.length; i++)
-			books[i] = new Book(i + "11-1-11-111111-1", "foo", "foo bar", "foobar", 1);
-		
-		b1 = new BookInventory(books[0], 1, 1, 1, 1, new CustomDate());
-		b2 = new BookInventory(books[1], 1, 1, 1, 1, new CustomDate());
-		b3 = new BookInventory(books[2], 1, 1, 1, 1, new CustomDate());
-		b4 = new BookInventory(books[3], 1, 1, 1, 1, new CustomDate());
-		b5 = new BookInventory(books[4], 1, 1, 1, 1, new CustomDate());
-		b6 = new BookInventory(books[5], 1, 1, 1, 1, new CustomDate());
-		
-		bDTO1 = createEquivalentDTO(b1);
-		bDTO2 = createEquivalentDTO(b2);
-		bDTO3 = createEquivalentDTO(b3);
-		bDTO4 = createEquivalentDTO(b4);
-		bDTO5 = createEquivalentDTO(b5);
-		bDTO6 = createEquivalentDTO(b6);
+		for(int i = 0; i < models.length; i++) {
+			Book book = new Book(i + "11-1-11-111111-1", "foo", "foo bar", "foobar", 1);
+			models[i] = new BookInventory(book, 1, 1, 1, 1, new CustomDate());
+			modelDTOs[i] = createEquivalentDTO(models[i]);
+		}
 	}
 	
 	@BeforeEach
 	void setUp() {
 		mockRepository = new BookInventoryRepositoryMock();
-		mockRepository.addDummyData(b1, b2, b3, b4, b5, b6);
+		mockRepository.addDummyData(models);
 		
 		service = new BookInventoryService(mockRepository);
 	}
@@ -76,7 +66,7 @@ public class TestBookInventoryService {
 	
 	@Test
 	void testGetAll_NonEmpty() {
-		assertIterableEquals(Arrays.asList(bDTO1, bDTO2, bDTO3, bDTO4, bDTO5, bDTO6), service.getAll());
+		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 	
 	@Test
@@ -110,9 +100,9 @@ public class TestBookInventoryService {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(ints = { 0, -1})
+	@ValueSource(ints = { 0, -1 })
 	void testUpdateStock_InvalidValues_InvalidStock(int newStock) {		
-		Exception exception = assertThrows(NonPositiveInputException.class, () -> service.updateStock(bDTO1, newStock));
+		Exception exception = assertThrows(NonPositiveInputException.class, () -> service.updateStock(modelDTOs[0], newStock));
 		assertTrue(exception.getMessage().contains("Please enter a positive number for the field"));
 	}
 	
@@ -145,21 +135,21 @@ public class TestBookInventoryService {
 	
 	private static Stream<Arguments> provideValuesForUpdateStock() {
 		return Stream.of(
-			Arguments.of(bDTO1, b1),
-			Arguments.of(bDTO2, b2),
-			Arguments.of(bDTO3, b3),
-			Arguments.of(bDTO5, b5),
-			Arguments.of(bDTO6, b6)
+			Arguments.of(modelDTOs[0], models[0]),
+			Arguments.of(modelDTOs[1], models[1]),
+			Arguments.of(modelDTOs[3], models[3]),
+			Arguments.of(modelDTOs[5], models[5]),
+			Arguments.of(modelDTOs[6], models[6])
 		);
 	}
 	
 	private static Stream<Arguments> provideValuesForExistingValues() {
 		return Stream.of(
-			Arguments.of(bDTO1),
-			Arguments.of(bDTO2),
-			Arguments.of(bDTO3),
-			Arguments.of(bDTO5),
-			Arguments.of(bDTO6)
+			Arguments.of(modelDTOs[0]),
+			Arguments.of(modelDTOs[1]),
+			Arguments.of(modelDTOs[3]),
+			Arguments.of(modelDTOs[5]),
+			Arguments.of(modelDTOs[6])
 		);
 	}
 	

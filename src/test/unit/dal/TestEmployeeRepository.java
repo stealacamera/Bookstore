@@ -7,9 +7,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import dal.EmployeeRepository;
 import dal.models.Employee;
@@ -21,57 +26,11 @@ import exceptions.WrongFormatException;
 
 public class TestEmployeeRepository extends TestRepositoryBase {
 	private EmployeeRepository repository;
+	private static Employee[] employees;
 	
-	@BeforeEach
-	void setUpEach() throws IOException {
-		dataFile = new File(dataDir, Employee.class.getSimpleName());
-		dataFile.createNewFile();
-	}
-	
-	@Test
-	void testGetByUsername_NotInDatabase() {
-		repository = new EmployeeRepository(dataDirPath, dbContext);
-		assertNull(repository.getByUsername("foo"));
-	}
-	
-	@Test
-	void testGetByUsername_InDatabase() throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException, ClassNotFoundException {
-		Employee[] employees = createTempData();
-		setTempDataToFile(new ArrayList<Employee>(Arrays.asList(employees)));
-		repository = new EmployeeRepository(dataDirPath, dbContext);
-		
-		// Testing at index 0, 1, 3, 5, 6
-		for(int i = 0; i < employees.length; i++) {
-			if(i == 2 || i == 4) continue;
-			assertEquals(employees[i], repository.getByUsername(employees[i].getUsername()));
-		}
-	}
-	
-	@Test
-	void testGetById_NotInDatabase() throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {
-		Employee[] employees = createTempData();
-		setTempDataToFile(new ArrayList<>(Arrays.asList(employees)));
-		repository = new EmployeeRepository(dataDirPath, dbContext);
-		
-		assertNull(repository.getById(0));
-		assertNull(repository.getById(employees[employees.length - 1].getId() + 1));
-	}
-	
-	@Test
-	void testGetById_InDatabase() throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {
-		Employee[] employees = createTempData();
-		setTempDataToFile(new ArrayList<Employee>(Arrays.asList(employees)));
-		repository = new EmployeeRepository(dataDirPath, dbContext);
-		
-		// Testing at index 0, 1, 3, 5, 6 for id 1, 2, 4, 6, 7
-		for(int i = 0; i < employees.length; i++) {
-			if(i == 2 || i == 4) continue;
-			assertEquals(employees[i], repository.getById(employees[i].getId()));
-		}
-	}
-	
-	private Employee[] createTempData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
-		Employee[] employees = new Employee[7];
+	@BeforeAll
+	static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
+		employees = new Employee[7];
 		
 		for(int i = 0; i < employees.length; i++) {
 			User user = new User("a".repeat(i + 5), "foo bar",
@@ -81,7 +40,48 @@ public class TestEmployeeRepository extends TestRepositoryBase {
 			
 			employees[i] = new Employee(user, 1, 1);
 		}
+	}
+	
+	@BeforeEach
+	void setUpEach() throws IOException {
+		dataFile = new File(dataDir, Employee.class.getSimpleName());
+		dataFile.createNewFile();
 		
-		return employees;
+		setTempDataToFile(new ArrayList<Employee>(Arrays.asList(employees)));
+		repository = new EmployeeRepository(dataDirPath, dbContext);
+	}
+	
+	@Test
+	void testGetByUsername_NotInDatabase() {
+		repository = new EmployeeRepository(dataDirPath, dbContext);
+		assertNull(repository.getByUsername("nonExistingUsername"));
+	}
+	
+	@ParameterizedTest
+	@MethodSource("provideValuesForExistingData")
+	void testGetByUsername_InDatabase(Employee model) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException, ClassNotFoundException {
+		assertEquals(model, repository.getByUsername(model.getUsername()));
+	}
+	
+	@Test
+	void testGetById_NotInDatabase() throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {		
+		assertNull(repository.getById(0));
+		assertNull(repository.getById(employees[employees.length - 1].getId() + 1));
+	}
+	
+	@ParameterizedTest
+	@MethodSource("provideValuesForExistingData")
+	void testGetById_InDatabase(Employee model) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {
+		assertEquals(model, repository.getById(model.getId()));
+	}
+	
+	private static Stream<Arguments> provideValuesForExistingData() {		
+		return Stream.of(
+			Arguments.of(employees[0]),
+			Arguments.of(employees[1]),
+			Arguments.of(employees[3]),
+			Arguments.of(employees[5]),
+			Arguments.of(employees[6])
+		);
 	}
 }

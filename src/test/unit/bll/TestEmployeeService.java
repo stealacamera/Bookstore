@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -46,7 +47,8 @@ public class TestEmployeeService {
 		return model;
 	}
 	
-	private static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
+	@BeforeAll
+	static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
 		User[] users = new User[6];
 		
 		for(int i = 0; i < users.length; i++)
@@ -67,10 +69,8 @@ public class TestEmployeeService {
 		eDTO6 = createEquivalentDTO(e6);
 	}
 	
-	@BeforeAll
-	static void setUp() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
-		setUpDummyData();
-		
+	@BeforeEach
+	void setuUp() {
 		mockRepository = new EmployeeRepositoryMock();
 		mockRepository.addDummyData(e1, e2, e3, e4, e5, e6);
 		
@@ -145,7 +145,7 @@ public class TestEmployeeService {
 		model.setUsername(username);
 		
 		assertTrue(service.add(model));
-		assertEquals(model, service.get(indexOfInsert));
+		assertEquals(model, service.get(indexOfInsert));		
 	}
 	
 	@ParameterizedTest
@@ -167,7 +167,7 @@ public class TestEmployeeService {
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingValues")
-	void testUpdate_NonExistingUsername(EmployeeDTO model) throws ExistingObjectException, IncorrectPermissionsException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException {
+	void testUpdate_ChangeToNonExistingUsername(EmployeeDTO model) throws ExistingObjectException, IncorrectPermissionsException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException {
 		double newSalary = 25000;
 		EmployeeDTO changedModel = new EmployeeDTO(model);
 		changedModel.setSalary(newSalary);
@@ -192,6 +192,41 @@ public class TestEmployeeService {
 	@ValueSource(strings = {"foobarsample1", "1foobarsample", "12345678a", "a12345678", "foobar123sample"})
 	void testChangePassword_CorrectOldPassword_ValidValues(String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		assertTrue(service.changePassword(eDTO1, eDTO1.getPassword(), newPassword));
+	}
+	
+	@ParameterizedTest
+	@MethodSource("provideValuesForInvalidLogin")
+	void testCanLogin_InvalidValues(String username, String password) {
+		Exception exception = assertThrows(EmptyInputException.class, () -> service.canLogin(username, password));
+		assertTrue(exception.getMessage().contains("Input fields cannot be empty"));
+	}
+	
+	@Test
+	void testCanLogin_UserDoesntExist() throws EmptyInputException, WrongFormatException {
+		assertFalse(service.canLogin("nonExistingUser", "password123"));
+	}
+	
+	@ParameterizedTest
+	@MethodSource("provideValuesForExistingValues")
+	void testCanLogin_ExistingUserWrongPassword(EmployeeDTO model) throws EmptyInputException {
+		assertFalse(service.canLogin(model.getUsername(), "wrongPassword"));
+	}
+	
+	@ParameterizedTest
+	@MethodSource("provideValuesForExistingValues")
+	void testCanLogin_ExistingUserCorrectPassword(EmployeeDTO model) throws EmptyInputException {
+		assertTrue(service.canLogin(model.getUsername(), model.getPassword()));
+	}
+	
+	private static Stream<Arguments> provideValuesForInvalidLogin() {
+		return Stream.of(
+			Arguments.of(null, null),
+			Arguments.of("", null),
+			Arguments.of(" ", null),
+			Arguments.of(e1.getUsername(), null),
+			Arguments.of(e1.getUsername(), ""),
+			Arguments.of(e1.getUsername(), " ")
+		);
 	}
 	
 	private static Stream<Arguments> provideValuesForGet() {
