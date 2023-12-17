@@ -67,4 +67,17 @@ public class CustomDate implements Serializable {
 	public String toString() {
 		return date.format(dateFormat);
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof CustomDate))
+			return false;
+		
+		return ((CustomDate) o).getDate().equals(getDate());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getDate().hashCode();
+	}
 }

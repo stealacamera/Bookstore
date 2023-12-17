@@ -8,6 +8,7 @@ module BookstoreRE {
 	
 	requires junit;
 	requires org.junit.jupiter.api;
+	requires org.junit.jupiter.params;
 	
 	exports startup;
     exports utils;
@@ -30,4 +31,6 @@ module BookstoreRE {
     exports bll.dto;
     
     exports test;
+    exports test.unit.dal;
+    exports test.unit.dal.mocks;
 }

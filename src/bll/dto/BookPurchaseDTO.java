@@ -23,4 +23,18 @@ public class BookPurchaseDTO {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof BookPurchaseDTO))
+			return false;
+		
+		BookPurchaseDTO model = (BookPurchaseDTO) o;
+		return getAmount() == model.getAmount() && getDate().equals(model.getDate());
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) getAmount() + getDate().hashCode();
+	}
 }

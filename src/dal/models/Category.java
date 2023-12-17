@@ -38,4 +38,23 @@ public class Category implements Serializable {
 			
 		this.name = name;
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof Category))
+			return false;
+		
+		Category model = (Category) o;
+		return getId() == model.getId() && getName().equals(model.getName());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getId() + getName().hashCode();
+	}
 }

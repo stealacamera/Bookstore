@@ -93,5 +93,20 @@ public class UserDTO implements IReadOnlyUserDTO {
 		this.birthdate = birthdate;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof UserDTO))
+			return false;
+		
+		UserDTO model = (UserDTO) o;
+		
+		return getId() == model.getId() && getUsername().equals(model.getUsername()) &&
+				getFullName().equals(model.getFullName()) && getEmail().equals(model.getEmail()) &&
+				(getHashedPassword().equals(model.getHashedPassword()) || getPassword().equals(model.getPassword()));
+	}
 	
+	@Override
+	public int hashCode() {
+		return getId() + getEmail().hashCode() + getUsername().hashCode();
+	}
 }

@@ -102,8 +102,8 @@ public class User implements Serializable {
 	public void setPassword(String password) throws EmptyInputException, WrongFormatException {
 		if(password == null || password.isBlank())
 			throw new EmptyInputException("password");
-		else if(!password.matches("\\w+.{6,}\\w+"))
-			throw new WrongFormatException("password", "at least 8 characters (digits, lowercase letters, uppercase letters)");
+		else if(!password.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"))
+			throw new WrongFormatException("password", "at least 8 characters with at least 1 digit and 1 letter");
 
 		this.hashedPassword = Identity.hashPassword(password);
 	}
@@ -146,17 +146,19 @@ public class User implements Serializable {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof User) {
-			User temp = (User) obj;
-			return temp.getUsername().equals(username) || temp.getEmail().equals(email);
-		}
+	public boolean equals(Object o) {
+		if(!(o instanceof User))
+			return false;
 		
-		return false;
+		User model = (User) o;
+		
+		return getId() == model.getId() && getUsername().equals(model.getUsername()) &&
+				getFullName().equals(model.getFullName()) && getEmail().equals(model.getEmail()) &&
+				getHashedPassword().equals(model.getHashedPassword());
 	}
 	
 	@Override
 	public int hashCode() {
-		return email.hashCode();
+		return getEmail().hashCode() + getUsername().hashCode();
 	}
 }

@@ -21,6 +21,7 @@ import exceptions.NonPositiveInputException;
 import exceptions.WrongFormatException;
 import exceptions.WrongLengthException;
 import startup.Session;
+import utils.Utils;
 import views.CreateBillView;
 import views.IView;
 
@@ -126,9 +127,8 @@ public class BillController {
 	}
 	
 	private void createBillFile(List<Map.Entry<BookInventoryDTO, Integer>> bill, double billTotal) throws FileNotFoundException, IOException {
-		String dir = "user_data/bills";
-		Files.createDirectories(Paths.get(dir));
-		File billFile = new File(dir, (billService.count() + 1) + ".txt");
+		Files.createDirectories(Paths.get(Utils.billsDirPath));
+		File billFile = new File(Utils.billsDirPath, (billService.count() + 1) + ".txt");
 		
 		try(PrintWriter write = new PrintWriter(billFile, Charset.forName("UTF-8"))) {		
 			for(Map.Entry<BookInventoryDTO, Integer> soldBook: bill) {

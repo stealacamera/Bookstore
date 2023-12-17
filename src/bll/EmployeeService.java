@@ -27,13 +27,14 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 	
 	@Override
 	public EmployeeDTO getById(int id) {
-		Employee instance = db.getById(id);
-		return convertToDTO(instance);
+		Employee instance = db.getById(id);		
+		return instance == null ? null : convertToDTO(instance);
 	}
 	
 	@Override
 	public EmployeeDTO getByUsername(String username) {
-		return convertToDTO(db.getByUsername(username));
+		Employee model = db.getByUsername(username);
+		return model == null ? null : convertToDTO(model);
 	}
 	
 	// Adds instances with unique usernames
@@ -70,7 +71,7 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 	
 	private void add(Employee instance) throws ExistingObjectException {
 		int listIndex = Collections.binarySearch(db.getAll(), instance, Employee::compareTo);
-		
+
 		if(listIndex >= 0)
 			throw new ExistingObjectException("username");
 		
@@ -82,7 +83,7 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 		Employee model = convertToDAO(employee);
 		
 		if(model.isCorrectPassword(oldPassword)) {
-			employee.setPassword(newPassword);
+			model.setPassword(newPassword);
 			db.saveChanges();
 			return true;
 		}

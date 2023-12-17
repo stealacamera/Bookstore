@@ -10,8 +10,8 @@ import dal.models.utilities.CustomDate;
 
 public class EmployeeRepository extends Repository<Employee> implements IEmployeeRepository {
 	// Instances are saved in ascending alphabetical order of username
-	public EmployeeRepository(DbContext context) {
-		super(context.table(Employee.class));
+	public EmployeeRepository(String dataDirPath, DbContext context) {
+		super(context.table(dataDirPath, Employee.class));
 		seedData();
 	}
 

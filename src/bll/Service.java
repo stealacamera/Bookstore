@@ -33,14 +33,12 @@ public abstract class Service<DAO extends Serializable, DTO> implements IService
 
 	@Override
 	public DTO get(int index) {
-		return convertToDTO(db.get(index));
+		DAO model = db.get(index);		
+		return model == null ? null : convertToDTO(model);
 	}
 
 	@Override
-	public void remove(int index) throws IndexOutOfBoundsException {
-		if(index < 0 || index > db.count())
-			throw new IndexOutOfBoundsException();
-		
+	public void remove(int index) {
 		db.remove(index);
 		db.saveChanges();
 	}

@@ -97,4 +97,18 @@ public class BookInventory implements Serializable {
 		
 		this.stock = stock;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof BookInventory))
+			return false;
+		
+		BookInventory model = (BookInventory) o;
+		return getBook().equals(model.getBook()) && getPurchasedDate().equals(model.getPurchasedDate());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getBook().hashCode() + getPurchasedDate().hashCode();
+	}
 }

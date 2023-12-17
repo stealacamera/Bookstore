@@ -95,13 +95,20 @@ public class Employee extends User implements Serializable, Comparable<Employee>
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
+	public boolean equals(Object o) {
+		if(!(o instanceof Employee))
+			return false;
+		
+		Employee model = (Employee) o;
+		
+		return getId() == model.getId() && getAccessLvl() == model.getAccessLvl() &&
+				getPermissions().equals(model.getPermissions()) && getEmail().equals(model.getEmail()) &&
+				getHashedPassword().equals(model.getHashedPassword());
 	}
 	
 	@Override
 	public int hashCode() {
-		return getId();
+		return getId() + getAccessLvl() + getEmail().hashCode();
 	}
 	
 	@Override

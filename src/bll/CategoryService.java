@@ -21,7 +21,10 @@ public class CategoryService extends Service<Category, CategoryDTO> implements I
 
 	@Override
 	public boolean add(CategoryDTO model) throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
-		Category existingName = db.getAll().stream().filter(e -> e.getName().equals(model.getName())).findFirst().orElse(null);
+		if(model == null)
+			return false;
+		
+		Category existingName = db.getByName(model.getName());
 		
 		if(existingName != null)
 			throw new ExistingObjectException();
@@ -31,7 +34,8 @@ public class CategoryService extends Service<Category, CategoryDTO> implements I
 	
 	@Override
 	public CategoryDTO getById(int id) {
-		return convertToDTO(db.getById(id));
+		Category model = db.getById(id);
+		return model == null ? null : convertToDTO(model);
 	}
 	
 	@Override

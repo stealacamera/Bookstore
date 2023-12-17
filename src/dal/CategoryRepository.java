@@ -6,14 +6,19 @@ import dal.models.Category;
 
 public class CategoryRepository extends Repository<Category> implements ICategoryRepository {
 	
-	public CategoryRepository(DbContext context) {
-		super(context.table(Category.class));
+	public CategoryRepository(String dataDirPath, DbContext context) {
+		super(context.table(dataDirPath, Category.class));
 		seedData();
 	}
 	
 	@Override
 	public Category getById(int id) {
 		return instances.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
+	}
+	
+	@Override
+	public Category getByName(String name) {
+		return instances.stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
 	}
 	
 	private void seedData() {

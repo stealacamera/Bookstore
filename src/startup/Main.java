@@ -26,6 +26,7 @@ import dal.IRepositories.IEmployeeRepository;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import utils.Utils;
 
 public class Main extends Application {
 		
@@ -63,11 +64,11 @@ public class Main extends Application {
 		Injector.addDbContext(new DbContext());
 		
 		// Repositories
-		Injector.addDependency(IBillRepository.class, new BillRepository(Injector.getDbContext()));
-		Injector.addDependency(IBookPurchaseRepository.class, new BookPurchaseRepository(Injector.getDbContext()));
-		Injector.addDependency(IBookInventoryRepository.class, new BookInventoryRepository(Injector.getDbContext()));
-		Injector.addDependency(ICategoryRepository.class, new CategoryRepository(Injector.getDbContext()));
-		Injector.addDependency(IEmployeeRepository.class, new EmployeeRepository(Injector.getDbContext()));
+		Injector.addDependency(IBillRepository.class, new BillRepository(Utils.dataDirPath, Injector.getDbContext()));
+		Injector.addDependency(IBookPurchaseRepository.class, new BookPurchaseRepository(Utils.dataDirPath, Injector.getDbContext()));
+		Injector.addDependency(IBookInventoryRepository.class, new BookInventoryRepository(Utils.dataDirPath, Injector.getDbContext()));
+		Injector.addDependency(ICategoryRepository.class, new CategoryRepository(Utils.dataDirPath, Injector.getDbContext()));
+		Injector.addDependency(IEmployeeRepository.class, new EmployeeRepository(Utils.dataDirPath, Injector.getDbContext()));
 		
 		// Services
 		Injector.addDependency(IBillService.class, new BillService(Injector.getDependency(IBillRepository.class)));

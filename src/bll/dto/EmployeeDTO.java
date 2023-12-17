@@ -85,4 +85,21 @@ public class EmployeeDTO extends UserDTO implements IReadOnlyEmployeeDTO {
 		
 		return getUsername() + " (" + getFullName() + ") (" + role + ")";
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof EmployeeDTO))
+			return false;
+		
+		EmployeeDTO model = (EmployeeDTO) o;
+		
+		return getId() == model.getId() && getAccessLvl() == model.getAccessLvl() &&
+				getEmail().equals(model.getEmail()) &&
+				(getHashedPassword().equals(model.getHashedPassword()) || getPassword().equals(model.getPassword()));
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode() + getAccessLvl();
+	}
 }

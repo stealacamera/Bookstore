@@ -12,5 +12,5 @@ public interface IService<T> {
 	ObservableList<T> getAll();
 	T get(int index);
 	boolean add(T instance) throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException;
-	void remove(int index) throws IndexOutOfBoundsException;
+	void remove(int index);
 }

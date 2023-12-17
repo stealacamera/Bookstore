@@ -26,4 +26,14 @@ public class CategoryDTO {
 	public String toString() {
 		return getName();
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof CategoryDTO))
+			return false;
+		
+		CategoryDTO model = (CategoryDTO) o;
+		
+		return getId() == model.getId() && getName().equals(model.getName());
+	}
 }

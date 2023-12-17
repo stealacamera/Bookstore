@@ -5,8 +5,8 @@ import dal.models.BookInventory;
 
 public class BookInventoryRepository extends Repository<BookInventory> implements IBookInventoryRepository {
 	
-	public BookInventoryRepository(DbContext context) {
-		super(context.table(BookInventory.class));
+	public BookInventoryRepository(String dataDirPath, DbContext context) {
+		super(context.table(dataDirPath, BookInventory.class));
 	}
 
 	@Override
