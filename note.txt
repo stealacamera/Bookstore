@@ -1,0 +1,8 @@
+admin
+Password123
+
+manager
+Password123
+
+librarian
+Password123
