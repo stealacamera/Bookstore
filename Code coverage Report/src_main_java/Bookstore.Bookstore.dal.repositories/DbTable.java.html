@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>DbTable.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.dal.repositories</a> &gt; <span class="el_source">DbTable.java</span></div><h1>DbTable.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.dal.repositories;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+class DbTable&lt;T extends Serializable&gt; {
+	private final String FILE_NAME;
+	private File tableFile;
+	
+	DbTable(String dataDirPath, Class&lt;T&gt; model) {
+<span class="fc" id="L22">		this(dataDirPath, model.getSimpleName());</span>
+<span class="fc" id="L23">	}</span>
+	
+<span class="fc" id="L25">	DbTable(String dataDirPath, String fileName) {</span>
+		try {
+<span class="fc" id="L27">			Files.createDirectories(Paths.get(dataDirPath));</span>
+<span class="pc" id="L28">		} catch (IOException e) {</span>
+<span class="nc" id="L29">			e.printStackTrace();</span>
+		}
+		
+<span class="fc" id="L32">		FILE_NAME = fileName;</span>
+<span class="fc" id="L33">		tableFile = new File(dataDirPath, FILE_NAME);</span>
+<span class="fc" id="L34">	}</span>
+			
+	@SuppressWarnings(&quot;unchecked&quot;)
+	List&lt;T&gt; readTable() {		
+<span class="fc" id="L38">		List&lt;T&gt; data = new ArrayList&lt;T&gt;();</span>
+		
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		if(tableFile.length() != 0) {</span>
+<span class="fc" id="L41">			try(FileInputStream fileInputStr = new FileInputStream(tableFile);</span>
+<span class="fc" id="L42">				ObjectInputStream objInputStr = new ObjectInputStream(fileInputStr)	) {				</span>
+<span class="fc" id="L43">				data = (ArrayList&lt;T&gt;) (objInputStr.readObject());</span>
+<span class="fc" id="L44">				objInputStr.close();</span>
+<span class="nc" id="L45">			} catch (IOException | ClassNotFoundException e) {</span>
+<span class="nc" id="L46">				e.printStackTrace();</span>
+			}
+		}
+		
+<span class="fc" id="L50">		return data;</span>
+	}
+	
+	void saveToTable(List&lt;T&gt; data) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if(data.size() == 0) {</span>
+<span class="fc" id="L55">			try(PrintWriter writer = new PrintWriter(tableFile, Charset.forName(&quot;UTF-8&quot;))) {</span>
+<span class="fc" id="L56">				writer.print(&quot;&quot;);</span>
+<span class="nc" id="L57">			} catch (IOException e) {</span>
+				// Error won't be thrown
+<span class="nc" id="L59">				e.printStackTrace();</span>
+			}
+			
+<span class="fc" id="L62">			return;</span>
+		}
+		
+<span class="fc" id="L65">		try(FileOutputStream fileOutputStr = new FileOutputStream(tableFile);</span>
+<span class="fc" id="L66">			ObjectOutputStream objOutputStr = new ObjectOutputStream(fileOutputStr)) {</span>
+<span class="fc" id="L67">			objOutputStr.writeObject(data);</span>
+<span class="nc" id="L68">		} catch(IOException e) {</span>
+<span class="nc" id="L69">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L71">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

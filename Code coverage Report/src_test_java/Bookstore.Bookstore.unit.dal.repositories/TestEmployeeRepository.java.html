@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TestEmployeeRepository.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.unit.dal.repositories</a> &gt; <span class="el_source">TestEmployeeRepository.java</span></div><h1>TestEmployeeRepository.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.unit.dal.repositories;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import Bookstore.Bookstore.dal.models.Employee;
+import Bookstore.Bookstore.dal.models.User;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+import Bookstore.Bookstore.dal.repositories.EmployeeRepository;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+
+<span class="fc" id="L27">public class TestEmployeeRepository extends TestRepositoryBase {</span>
+	private EmployeeRepository repository;
+	private static Employee[] employees;
+	
+	@BeforeAll
+	static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
+<span class="fc" id="L33">		employees = new Employee[7];</span>
+		
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		for(int i = 0; i &lt; employees.length; i++) {</span>
+<span class="fc" id="L36">			User user = new User(&quot;a&quot;.repeat(i + 5), &quot;foo bar&quot;,</span>
+<span class="fc" id="L37">					&quot;foo@gmail.com&quot;, &quot;Password123&quot;,</span>
+<span class="fc" id="L38">					&quot;069 123 1233&quot;, new CustomDate()</span>
+					);
+			
+<span class="fc" id="L41">			employees[i] = new Employee(user, 1, 1);</span>
+		}
+<span class="fc" id="L43">	}</span>
+	
+	@BeforeEach
+	void setUpEach() throws IOException {
+<span class="fc" id="L47">		dataFile = new File(dataDir, Employee.class.getSimpleName());</span>
+<span class="fc" id="L48">		dataFile.createNewFile();</span>
+		
+<span class="fc" id="L50">		setTempDataToFile(new ArrayList&lt;Employee&gt;(Arrays.asList(employees)));</span>
+<span class="fc" id="L51">		repository = new EmployeeRepository(dataDirPath, dbContext);</span>
+<span class="fc" id="L52">	}</span>
+	
+	@Test
+	void testGetByUsername_NotInDatabase() {
+<span class="fc" id="L56">		repository = new EmployeeRepository(dataDirPath, dbContext);</span>
+<span class="fc" id="L57">		assertNull(repository.getByUsername(&quot;nonExistingUsername&quot;));</span>
+<span class="fc" id="L58">	}</span>
+	
+	@ParameterizedTest
+	@MethodSource(&quot;provideValuesForExistingData&quot;)
+	void testGetByUsername_InDatabase(Employee model) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException, ClassNotFoundException {
+<span class="fc" id="L63">		assertEquals(model, repository.getByUsername(model.getUsername()));</span>
+<span class="fc" id="L64">	}</span>
+	
+	@Test
+	void testGetById_NotInDatabase() throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {		
+<span class="fc" id="L68">		assertNull(repository.getById(0));</span>
+<span class="fc" id="L69">		assertNull(repository.getById(employees[employees.length - 1].getId() + 1));</span>
+<span class="fc" id="L70">	}</span>
+	
+	@ParameterizedTest
+	@MethodSource(&quot;provideValuesForExistingData&quot;)
+	void testGetById_InDatabase(Employee model) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {
+<span class="fc" id="L75">		assertEquals(model, repository.getById(model.getId()));</span>
+<span class="fc" id="L76">	}</span>
+	
+	private static Stream&lt;Arguments&gt; provideValuesForExistingData() {		
+<span class="fc" id="L79">		return Stream.of(</span>
+<span class="fc" id="L80">			Arguments.of(employees[0]),</span>
+<span class="fc" id="L81">			Arguments.of(employees[1]),</span>
+<span class="fc" id="L82">			Arguments.of(employees[3]),</span>
+<span class="fc" id="L83">			Arguments.of(employees[5]),</span>
+<span class="fc" id="L84">			Arguments.of(employees[6])</span>
+		);
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

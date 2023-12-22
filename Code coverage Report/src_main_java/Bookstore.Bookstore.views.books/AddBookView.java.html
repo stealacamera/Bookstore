@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>AddBookView.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.views.books</a> &gt; <span class="el_source">AddBookView.java</span></div><h1>AddBookView.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.views.books;
+
+import java.time.LocalDate;
+
+import Bookstore.Bookstore.commons.utils.Forms;
+import Bookstore.Bookstore.views.IView;
+import Bookstore.Bookstore.bll.dto.BookDTO;
+import Bookstore.Bookstore.bll.dto.BookInventoryDTO;
+import Bookstore.Bookstore.bll.dto.CategoryDTO;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+
+public class AddBookView extends IView {
+<span class="nc" id="L22">	private VBox pane = new VBox();</span>
+<span class="nc" id="L23">	private ListView&lt;CategoryDTO&gt; categoryLv = new ListView&lt;&gt;();</span>
+<span class="nc" id="L24">	private Button submitBt = new Button(&quot;Submit&quot;);</span>
+	
+<span class="nc" id="L26">	private DatePicker purchasedDateDp = new DatePicker(LocalDate.now());</span>
+<span class="nc" id="L27">	private TextField isbnTf = new TextField(), titleTf = new TextField(), authorTf = new TextField(), </span>
+<span class="nc" id="L28">			supplierTf = new TextField(), purchasedPriceTf = new TextField(), originalPriceTf = new TextField(), </span>
+<span class="nc" id="L29">			sellingPriceTf = new TextField(), stockTf = new TextField();</span>
+	
+<span class="nc" id="L31">	public AddBookView() {</span>
+<span class="nc" id="L32">		stockTf.setTextFormatter(Forms.getPositiveNumberFormatter());</span>
+<span class="nc" id="L33">		purchasedPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());</span>
+<span class="nc" id="L34">		originalPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());</span>
+<span class="nc" id="L35">		sellingPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());</span>
+		
+<span class="nc" id="L37">		createLayout();</span>
+<span class="nc" id="L38">		super.getChildren().add(pane);</span>
+<span class="nc" id="L39">	}</span>
+	
+	private void createLayout() {		
+<span class="nc" id="L42">		Control[] fields = {isbnTf, titleTf, authorTf, categoryLv, supplierTf, purchasedDateDp, purchasedPriceTf, originalPriceTf, sellingPriceTf, stockTf};</span>
+<span class="nc" id="L43">		String[] fieldLabels = {&quot;ISBN:&quot;, &quot;Title:&quot;, &quot;Author:&quot;, &quot;Category:&quot;, &quot;Supplier:&quot;, &quot;Purchased date:&quot;, &quot;Purchased price:&quot;, &quot;Original price:&quot;, &quot;Selling price:&quot;, &quot;Stock:&quot;};</span>
+		
+<span class="nc" id="L45">		categoryLv.setMaxHeight(100);</span>
+<span class="nc" id="L46">		pane = Forms.createPane(&quot;New book form&quot;, new GridPane(), fields, fieldLabels);</span>
+<span class="nc" id="L47">		pane.getChildren().add(submitBt);</span>
+<span class="nc" id="L48">	}</span>
+	
+	public BookInventoryDTO submitValues() {
+<span class="nc" id="L51">		CategoryDTO selectedCategory = categoryLv.getSelectionModel().getSelectedItem();</span>
+		
+<span class="nc" id="L53">		BookDTO instanceBase = new BookDTO(</span>
+<span class="nc" id="L54">				isbnTf.getText(), titleTf.getText(), </span>
+<span class="nc" id="L55">				authorTf.getText(), supplierTf.getText(), </span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">				selectedCategory == null ? 0 : selectedCategory.getId());</span>
+		
+<span class="nc" id="L58">		BookInventoryDTO instance = new BookInventoryDTO(</span>
+<span class="nc" id="L59">				instanceBase, Double.parseDouble(purchasedPriceTf.getText()), </span>
+<span class="nc" id="L60">				Double.parseDouble(originalPriceTf.getText()), Double.parseDouble(sellingPriceTf.getText()),</span>
+<span class="nc" id="L61">				Integer.parseInt(stockTf.getText()), purchasedDateDp.getValue());</span>
+		
+<span class="nc" id="L63">		return instance;</span>
+	}
+	
+	public void setSubmitAction(EventHandler&lt;ActionEvent&gt; action) {
+<span class="nc" id="L67">		submitBt.setOnAction(action);</span>
+<span class="nc" id="L68">	}</span>
+	
+	public void setCategoryLv(ObservableList&lt;CategoryDTO&gt; categories) {
+<span class="nc" id="L71">		categoryLv.setItems(categories);</span>
+<span class="nc" id="L72">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

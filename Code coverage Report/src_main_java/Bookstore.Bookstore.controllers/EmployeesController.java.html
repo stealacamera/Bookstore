@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>EmployeesController.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.controllers</a> &gt; <span class="el_source">EmployeesController.java</span></div><h1>EmployeesController.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.controllers;
+
+import Bookstore.Bookstore.bll.dto.EmployeeDTO;
+import Bookstore.Bookstore.bll.services.iservices.IEmployeeService;
+import Bookstore.Bookstore.views.IView;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.ExistingObjectException;
+import Bookstore.Bookstore.commons.exceptions.IncorrectPermissionsException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
+import Bookstore.Bookstore.commons.utils.Utils;
+import Bookstore.Bookstore.views.employees.ManageEmployeesView;
+import Bookstore.Bookstore.views.employees.UpsertView;
+
+public class EmployeesController {
+	private IEmployeeService employeeService;
+	
+<span class="nc" id="L19">	public EmployeesController(IEmployeeService employeeService) {</span>
+<span class="nc" id="L20">		this.employeeService = employeeService;</span>
+<span class="nc" id="L21">	}</span>
+	
+	public IView getIndexView() {
+<span class="nc" id="L24">		ManageEmployeesView view = new ManageEmployeesView(employeeService.getAll());</span>
+		
+<span class="nc" id="L26">		view.setInsertListener(e -&gt; {</span>
+<span class="nc" id="L27">			Utils.createPopupStage(&quot;Add new employee&quot;, getInsertView()).showAndWait();</span>
+<span class="nc" id="L28">			view.refreshList(employeeService.getAll());</span>
+<span class="nc" id="L29">		});</span>
+		
+<span class="nc" id="L31">		view.setModifyListener(e -&gt; {</span>
+			try {
+<span class="nc" id="L33">				EmployeeDTO model = view.getSelectedItem();</span>
+				
+<span class="nc bnc" id="L35" title="All 2 branches missed.">				if(model == null)</span>
+<span class="nc" id="L36">					throw new Exception(&quot;Please select an employee&quot;);</span>
+				
+<span class="nc" id="L38">				Utils.createPopupStage(&quot;Modify employee information&quot;, getModifyView(model)).showAndWait();</span>
+<span class="nc" id="L39">				view.refreshList(employeeService.getAll());</span>
+<span class="nc" id="L40">			} catch(Exception ex) {</span>
+<span class="nc" id="L41">				view.displayError(ex.getMessage());</span>
+			}
+<span class="nc" id="L43">		});</span>
+		
+<span class="nc" id="L45">		view.setDeleteListener(e -&gt; {</span>
+			try {
+<span class="nc" id="L47">				int index = view.getSelectedIndex();</span>
+				
+<span class="nc bnc" id="L49" title="All 2 branches missed.">				if(index == -1)</span>
+<span class="nc" id="L50">					throw new Exception(&quot;Please select an employee&quot;);</span>
+				
+<span class="nc" id="L52">				employeeService.remove(index);</span>
+<span class="nc" id="L53">				view.refreshList(employeeService.getAll());</span>
+<span class="nc" id="L54">			} catch(Exception ex) {</span>
+<span class="nc" id="L55">				view.displayError(ex.getMessage());</span>
+			} 
+<span class="nc" id="L57">		});</span>
+		
+<span class="nc" id="L59">		return view;</span>
+	}
+	
+	public IView getInsertView() {
+<span class="nc" id="L63">		UpsertView view = new UpsertView(new EmployeeDTO());</span>
+		
+<span class="nc" id="L65">		view.setSubmitAction(e -&gt; {</span>
+			try {
+<span class="nc" id="L67">				employeeService.add(view.submitValues());</span>
+<span class="nc" id="L68">				Utils.getCurrentStage(e).close();</span>
+<span class="nc" id="L69">			} catch (ExistingObjectException | EmptyInputException | NonPositiveInputException | WrongFormatException</span>
+<span class="nc" id="L70">					| WrongLengthException | IncorrectPermissionsException exc) {</span>
+<span class="nc" id="L71">				view.displayError(exc.getMessage());</span>
+			}
+<span class="nc" id="L73">		});</span>
+		
+<span class="nc" id="L75">		return view;</span>
+	}
+	
+	public IView getModifyView(EmployeeDTO employee) {
+<span class="nc" id="L79">		UpsertView view = new UpsertView(employee);</span>
+		
+<span class="nc" id="L81">		view.setSubmitAction(e -&gt; {</span>
+			try {
+<span class="nc" id="L83">				employeeService.update(employee, view.submitValues());</span>
+<span class="nc" id="L84">				Utils.getCurrentStage(e).close();</span>
+<span class="nc" id="L85">			} catch (ExistingObjectException | EmptyInputException | NonPositiveInputException</span>
+<span class="nc" id="L86">					| WrongFormatException | WrongLengthException | IncorrectPermissionsException exc) {</span>
+<span class="nc" id="L87">				view.displayError(exc.getMessage());</span>
+			}
+<span class="nc" id="L89">		});</span>
+		
+<span class="nc" id="L91">		return view;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

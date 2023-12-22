@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Book.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.dal.models</a> &gt; <span class="el_source">Book.java</span></div><h1>Book.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.dal.models;
+
+import java.io.Serializable;
+
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
+
+public class Book implements Serializable, Comparable&lt;Book&gt; {
+	private static final long serialVersionUID = -7995962663053711982L;
+	
+	private String isbn, title, author, supplier;
+	private int categoryId;
+	
+	public Book(Book model) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+<span class="fc" id="L17">		this(model.getIsbn(), model.getTitle(), model.getAuthor(), model.getSupplier(), model.getCategoryId());</span>
+<span class="fc" id="L18">	}</span>
+	
+<span class="fc" id="L20">	public Book(String isbn, String title, String author, String supplier, int categoryId) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {</span>
+<span class="fc" id="L21">		setIsbn(isbn);</span>
+<span class="fc" id="L22">		setTitle(title);</span>
+<span class="fc" id="L23">		setAuthor(author);</span>
+<span class="fc" id="L24">		setSupplier(supplier);</span>
+<span class="fc" id="L25">		setCategoryId(categoryId);</span>
+<span class="fc" id="L26">	}</span>
+	
+	public String getIsbn() {
+<span class="fc" id="L29">		return isbn;</span>
+	}
+	
+	public void setIsbn(String isbn) throws EmptyInputException, WrongFormatException {
+<span class="fc bfc" id="L33" title="All 4 branches covered.">		if(isbn == null || isbn.isBlank())</span>
+<span class="fc" id="L34">			throw new EmptyInputException(&quot;ISBN&quot;);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		else if(!isbn.matches(&quot;\\d{3}-\\d-\\d{2}-\\d{6}-\\d&quot;))</span>
+<span class="fc" id="L36">			throw new WrongFormatException(&quot;ISBN&quot;, &quot;(3 digits)-(1 digit)-(2 digits)-(6 digits)-(1 digit)&quot;);</span>
+		
+<span class="fc" id="L38">		this.isbn = isbn;</span>
+<span class="fc" id="L39">	}</span>
+	
+	public String getTitle() {
+<span class="fc" id="L42">		return title;</span>
+	}
+	
+	public void setTitle(String title) throws EmptyInputException, WrongLengthException {
+<span class="pc bpc" id="L46" title="1 of 4 branches missed.">		if(title == null || title.isBlank())</span>
+<span class="fc" id="L47">			throw new EmptyInputException(&quot;title&quot;);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		else if(title.length() &gt; 30)</span>
+<span class="fc" id="L49">			throw new WrongLengthException(&quot;title&quot;, 30);</span>
+		
+<span class="fc" id="L51">		this.title = title;</span>
+<span class="fc" id="L52">	}</span>
+	
+	public String getAuthor() {
+<span class="fc" id="L55">		return author;</span>
+	}
+	
+	public void setAuthor(String author) throws EmptyInputException, WrongLengthException, WrongFormatException {
+<span class="fc" id="L59">		int maxLength = 45;</span>
+		
+<span class="pc bpc" id="L61" title="1 of 4 branches missed.">		if(author == null || author.isBlank())</span>
+<span class="fc" id="L62">			throw new EmptyInputException(&quot;author&quot;);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		else if(author.length() &gt; maxLength)</span>
+<span class="fc" id="L64">			throw new WrongLengthException(&quot;author&quot;, maxLength);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		else if(!author.matches(&quot;[a-zA-Z]+(\\s[a-zA-Z]+)*&quot;))</span>
+<span class="fc" id="L66">			throw new WrongFormatException(&quot;author name&quot;, &quot;space-separated words, no numbers&quot;);</span>
+		
+<span class="fc" id="L68">		this.author = author;			</span>
+<span class="fc" id="L69">	}</span>
+	
+	public String getSupplier() {
+<span class="fc" id="L72">		return supplier;</span>
+	}
+	
+	public void setSupplier(String supplier) throws EmptyInputException, WrongLengthException {
+<span class="pc bpc" id="L76" title="1 of 4 branches missed.">		if(supplier == null || supplier.isBlank())</span>
+<span class="fc" id="L77">			throw new EmptyInputException(&quot;supplier&quot;);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		else if(supplier.length() &gt; 50)</span>
+<span class="fc" id="L79">			throw new WrongLengthException(&quot;supplier&quot;, 50);</span>
+		
+<span class="fc" id="L81">		this.supplier = supplier;</span>
+<span class="fc" id="L82">	}</span>
+	
+	public int getCategoryId() {
+<span class="fc" id="L85">		return categoryId;</span>
+	}
+
+	public void setCategoryId(int categoryId) throws NonPositiveInputException {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if(categoryId &lt;= 0)</span>
+<span class="fc" id="L90">			throw new NonPositiveInputException(&quot;category id&quot;);</span>
+		
+<span class="fc" id="L92">		this.categoryId = categoryId;</span>
+<span class="fc" id="L93">	}</span>
+	
+	@Override
+	public boolean equals(Object obj) {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		if(obj instanceof Book)</span>
+<span class="fc" id="L98">			return ((Book) obj).getIsbn().equals(getIsbn());</span>
+		
+<span class="fc" id="L100">		return false;</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="fc" id="L105">		return this.getIsbn().hashCode();</span>
+	}
+	
+	@Override
+	public String toString() {
+<span class="nc" id="L110">		return String.format(&quot;%s by %s (%s)&quot;, getTitle(), getAuthor(), getIsbn());</span>
+	}
+
+	@Override
+	public int compareTo(Book o) {
+<span class="nc" id="L115">		return this.getIsbn().compareTo(o.getIsbn());</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

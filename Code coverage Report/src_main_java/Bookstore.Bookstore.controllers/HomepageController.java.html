@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>HomepageController.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.controllers</a> &gt; <span class="el_source">HomepageController.java</span></div><h1>HomepageController.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.controllers;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import Bookstore.Bookstore.bll.dto.BookInventoryDTO;
+import Bookstore.Bookstore.bll.dto.EmployeeDTO;
+import Bookstore.Bookstore.bll.services.iservices.IBillService;
+import Bookstore.Bookstore.bll.services.iservices.IBookInventoryService;
+import Bookstore.Bookstore.bll.services.iservices.IBookPurchaseService;
+import Bookstore.Bookstore.bll.services.iservices.ICategoryService;
+import Bookstore.Bookstore.bll.services.iservices.IEmployeeService;
+import Bookstore.Bookstore.dal.models.utils.Role;
+import Bookstore.Bookstore.startup.Session;
+import Bookstore.Bookstore.views.IView;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.ExistingObjectException;
+import Bookstore.Bookstore.commons.exceptions.IncorrectPermissionsException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
+import Bookstore.Bookstore.commons.utils.Utils;
+import Bookstore.Bookstore.views.homepage.AddCategoryView;
+import Bookstore.Bookstore.views.homepage.ChangePasswordView;
+import Bookstore.Bookstore.views.homepage.HomepageView;
+
+public class HomepageController {
+	private IBookInventoryService bookInventoryService;
+	private ICategoryService categoryService;
+	private IBillService billService;
+	private IBookPurchaseService bookPurchaseService;
+	private IEmployeeService employeeService;
+	
+<span class="nc" id="L37">	public HomepageController(</span>
+			IBookInventoryService bookInventoryService, ICategoryService categoryService,
+			IBillService billService, IBookPurchaseService bookPurchaseService,
+			IEmployeeService employeeService) {
+<span class="nc" id="L41">		this.bookInventoryService = bookInventoryService;</span>
+<span class="nc" id="L42">		this.categoryService = categoryService;</span>
+<span class="nc" id="L43">		this.billService = billService;</span>
+<span class="nc" id="L44">		this.bookPurchaseService = bookPurchaseService;</span>
+<span class="nc" id="L45">		this.employeeService = employeeService;</span>
+<span class="nc" id="L46">	}</span>
+	
+	public IView getIndexView() {
+<span class="nc" id="L49">		HomepageView view = new HomepageView();</span>
+		
+<span class="nc" id="L51">		List&lt;String&gt; lowStockBookTitles = getLowStockBooks();</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">		if(Session.getCurrentUser().getAccessLvl() == 2 &amp;&amp; lowStockBookTitles.size() != 0)</span>
+<span class="nc" id="L53">			view.showLowStockWarning(getLowStockBooks());</span>
+		
+<span class="nc" id="L55">		view.setChangePasswordListener(e -&gt; Utils.createPopupStage(&quot;Change password&quot;, getChangePasswordView()).showAndWait());</span>
+<span class="nc" id="L56">		view.setCategoryFormListener(e -&gt; Utils.createPopupStage(&quot;Add new category&quot;, getAddCategoryView()).showAndWait());</span>
+		
+<span class="nc" id="L58">		view.createButtons(</span>
+<span class="nc" id="L59">			Session.getCurrentUser().getPermissions(),</span>
+<span class="nc" id="L60">			(permission, pane, goBackBtn) -&gt; {</span>
+<span class="nc" id="L61">				Map.Entry&lt;String, IView&gt; result = getHomeActionView(permission);</span>
+<span class="nc" id="L62">				return (e -&gt; {</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">					if(view != null) {</span>
+<span class="nc" id="L64">						Utils.getCurrentStage(e).setTitle(result.getKey());</span>
+<span class="nc" id="L65">						pane.setCenter(result.getValue());</span>
+<span class="nc" id="L66">						goBackBtn.setVisible(true);</span>
+					}
+<span class="nc" id="L68">				});			</span>
+			}
+		);
+		
+<span class="nc" id="L72">		return view;</span>
+	}
+	
+	private List&lt;String&gt; getLowStockBooks() {
+<span class="nc" id="L76">		ArrayList&lt;String&gt; bookTitles = new ArrayList&lt;&gt;();</span>
+		
+<span class="nc bnc" id="L78" title="All 2 branches missed.">		for(BookInventoryDTO book: bookInventoryService.getAll())</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">			if(book.getStock() &lt;= 5)</span>
+<span class="nc" id="L80">				bookTitles.add(book.getBook().getTitle());</span>
+		
+<span class="nc" id="L82">		return Collections.unmodifiableList(bookTitles);</span>
+	}
+	
+	private IView getChangePasswordView() {
+<span class="nc" id="L86">		ChangePasswordView view = new ChangePasswordView();</span>
+
+<span class="nc" id="L88">		view.setSubmitAction(e -&gt; {</span>
+			try {				
+<span class="nc bnc" id="L90" title="All 2 branches missed.">				if(employeeService.changePassword(new EmployeeDTO(Session.getCurrentUser()), view.getCurrentPassword(), view.getNewPassword()))</span>
+<span class="nc" id="L91">					Utils.getCurrentStage(e).close();</span>
+				else
+<span class="nc" id="L93">					view.displayError(&quot;Incorrect current password&quot;);</span>
+<span class="nc" id="L94">			} catch(EmptyInputException | NonPositiveInputException | WrongFormatException | WrongLengthException</span>
+<span class="nc" id="L95">					| IncorrectPermissionsException ex) {</span>
+<span class="nc" id="L96">				view.displayError(ex.getLocalizedMessage());</span>
+			}
+<span class="nc" id="L98">		});</span>
+		
+<span class="nc" id="L100">		return view;</span>
+	}
+	
+	private IView getAddCategoryView() {
+<span class="nc" id="L104">		AddCategoryView view = new AddCategoryView();</span>
+		
+<span class="nc" id="L106">		view.setAddAction(e -&gt; {</span>
+			try {
+<span class="nc" id="L108">				categoryService.add(view.submitForm());</span>
+<span class="nc" id="L109">				view.clearForm();</span>
+<span class="nc" id="L110">			} catch(ExistingObjectException | EmptyInputException | NonPositiveInputException | WrongFormatException | WrongLengthException</span>
+<span class="nc" id="L111">					| IncorrectPermissionsException ex) {</span>
+<span class="nc" id="L112">				view.displayError(ex.getMessage());</span>
+			}
+<span class="nc" id="L114">		});</span>
+
+<span class="nc" id="L116">		return view;</span>
+	}
+	
+	private Map.Entry&lt;String, IView&gt; getHomeActionView(Role permission) {
+<span class="nc" id="L120">		String viewTitle = null;</span>
+<span class="nc" id="L121">		IView view = null;</span>
+		
+<span class="nc bnc" id="L123" title="All 7 branches missed.">		switch(permission) {</span>
+			case CREATE_BILL:
+<span class="nc" id="L125">				view = new BillController(billService, bookInventoryService).getCreateView();</span>
+<span class="nc" id="L126">				viewTitle = &quot;Create a bill&quot;;</span>
+<span class="nc" id="L127">				break;</span>
+			case MANAGE_BOOKS:
+<span class="nc" id="L129">				view = new BookController(bookInventoryService, bookPurchaseService, categoryService).getIndexView();</span>
+<span class="nc" id="L130">				viewTitle = &quot;Manage books&quot;;</span>
+<span class="nc" id="L131">				break;</span>
+			case GET_BOOK_STATS:
+<span class="nc" id="L133">				view = new StatisticsController(billService, employeeService, bookPurchaseService).getBookExpensesView();</span>
+<span class="nc" id="L134">				viewTitle = &quot;Book cash flow&quot;;</span>
+<span class="nc" id="L135">				break;</span>
+			case GET_REVENUE_STATS:
+<span class="nc" id="L137">				view = new StatisticsController(billService, employeeService, bookPurchaseService).getCashFlowStatsView();</span>
+<span class="nc" id="L138">				viewTitle = &quot;Bookstore cash flow&quot;;</span>
+<span class="nc" id="L139">				break;</span>
+			case GET_LIBR_PERFORMANCE:
+<span class="nc" id="L141">				view = new StatisticsController(billService, employeeService, bookPurchaseService).getLibrarianPerformanceView();</span>
+<span class="nc" id="L142">				viewTitle = &quot;Librarians' performance&quot;;</span>
+<span class="nc" id="L143">				break;</span>
+			case MANAGE_EMPLOYEES:
+<span class="nc" id="L145">				view = new EmployeesController(employeeService).getIndexView();</span>
+<span class="nc" id="L146">				viewTitle = &quot;Manage employees&quot;;</span>
+<span class="nc" id="L147">				break;</span>
+			default: break;
+		}
+		
+<span class="nc" id="L151">		return new AbstractMap.SimpleEntry&lt;String, IView&gt;(viewTitle, view);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

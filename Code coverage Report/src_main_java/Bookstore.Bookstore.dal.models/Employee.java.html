@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Employee.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.dal.models</a> &gt; <span class="el_source">Employee.java</span></div><h1>Employee.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.dal.models;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.IncorrectPermissionsException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.dal.models.utils.Role;
+
+public class Employee extends User implements Serializable, Comparable&lt;Employee&gt; {
+	private static final long serialVersionUID = 7532508037401596791L;
+	
+	private double salary;
+	private int accessLvl;
+	private Map&lt;Role, Boolean&gt; permissions;
+	
+	public Employee(User base, double salary, int accessLvl) throws EmptyInputException, NonPositiveInputException, WrongFormatException {
+<span class="fc" id="L23">		super(base);</span>
+<span class="fc" id="L24">		setSalary(salary);</span>
+<span class="fc" id="L25">		setAccessLvl(accessLvl);</span>
+<span class="fc" id="L26">		setPermissions(accessLvl);</span>
+<span class="fc" id="L27">	}</span>
+	
+	public Employee(User base, double salary, int accessLvl, Map&lt;Role, Boolean&gt; permissions) throws Exception {
+<span class="nc" id="L30">		this(base, salary, accessLvl);</span>
+<span class="nc" id="L31">		setPermissions(permissions);</span>
+<span class="nc" id="L32">	}</span>
+		
+	public double getSalary() {
+<span class="fc" id="L35">		return salary;</span>
+	}
+		
+	public void setSalary(double salary) throws EmptyInputException, NonPositiveInputException {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if(salary &lt;= 0)</span>
+<span class="fc" id="L40">			throw new NonPositiveInputException(&quot;salary&quot;);</span>
+		
+<span class="fc" id="L42">		this.salary = salary;</span>
+<span class="fc" id="L43">	}</span>
+	
+	public int getAccessLvl() {
+<span class="fc" id="L46">		return accessLvl;</span>
+	}
+	
+	public void setAccessLvl(int accessLvl) throws WrongFormatException {
+<span class="fc bfc" id="L50" title="All 4 branches covered.">		if(accessLvl &lt; 1 || accessLvl &gt; 3)</span>
+<span class="fc" id="L51">			throw new WrongFormatException(&quot;access level&quot;, &quot;1 - Librarian; 2 - Manager; 3 - Admin&quot;);</span>
+		
+<span class="fc" id="L53">		this.accessLvl = accessLvl;</span>
+<span class="fc" id="L54">	}</span>
+	
+	public void setPermissions(int accessLvl) {
+		Set&lt;Role&gt; rolePermissions;
+<span class="fc" id="L58">		HashMap&lt;Role, Boolean&gt; permissionStatus = new HashMap&lt;&gt;();</span>
+		
+<span class="pc bpc" id="L60" title="1 of 3 branches missed.">		switch(accessLvl) {</span>
+<span class="nc" id="L61">			case 3: rolePermissions = Role.getAdminPermissions(); break;</span>
+<span class="fc" id="L62">			case 2: rolePermissions = Role.getManagerPermissions(); break;</span>
+<span class="fc" id="L63">			default: rolePermissions = Role.getLibrarianPermissions(); break;</span>
+		}
+		
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		for(Role permission: rolePermissions)</span>
+<span class="fc" id="L67">			permissionStatus.put(permission, true);</span>
+		
+<span class="fc" id="L69">		this.permissions = permissionStatus;</span>
+<span class="fc" id="L70">	}</span>
+	
+	public void setPermissions(Map&lt;Role, Boolean&gt; permissionStatuses) throws IncorrectPermissionsException {
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">		if(!permissions.keySet().containsAll(permissionStatuses.keySet()))</span>
+<span class="nc" id="L74">			throw new IncorrectPermissionsException(&quot;Permissions given do not match access level.&quot;);</span>
+			
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for(Map.Entry&lt;Role, Boolean&gt; permission: permissionStatuses.entrySet())</span>
+<span class="fc" id="L77">			permissions.put(permission.getKey(), permission.getValue());</span>
+<span class="fc" id="L78">	}	</span>
+	
+	public Map&lt;Role, Boolean&gt; getPermissions() {
+<span class="fc" id="L81">		return Collections.unmodifiableMap(permissions);</span>
+	}
+	
+	@Override
+	public String toString() {
+		String role;
+		
+<span class="fc bfc" id="L88" title="All 3 branches covered.">		switch(accessLvl) {</span>
+<span class="fc" id="L89">			case 1: role = &quot;Librarian&quot;; break;</span>
+<span class="fc" id="L90">			case 2: role = &quot;Manager&quot;; break;</span>
+<span class="fc" id="L91">			default: role = &quot;Administrator&quot;;</span>
+		}
+		
+<span class="fc" id="L94">		return String.format(&quot;%s (%s) [%s]&quot;, getUsername(), getFullName(), role);</span>
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+<span class="pc bpc" id="L99" title="2 of 4 branches missed.">		if(!(o instanceof User) || !(o instanceof Employee))</span>
+<span class="nc" id="L100">			return false;</span>
+		
+<span class="fc" id="L102">		Employee model = (Employee) o;</span>
+		
+<span class="pc bpc" id="L104" title="2 of 4 branches missed.">		return getId() == model.getId() &amp;&amp; getAccessLvl() == model.getAccessLvl() &amp;&amp;</span>
+<span class="pc bpc" id="L105" title="2 of 4 branches missed.">				getPermissions().equals(model.getPermissions()) &amp;&amp; getEmail().equals(model.getEmail()) &amp;&amp;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">				getHashedPassword().equals(model.getHashedPassword());</span>
+	}
+	
+	@Override
+	public int hashCode() {
+<span class="nc" id="L111">		return getId() + getAccessLvl() + getEmail().hashCode();</span>
+	}
+	
+	@Override
+	public int compareTo(Employee o) {
+<span class="fc" id="L116">		return getUsername().compareTo(o.getUsername());</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>UserTesting.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.unit.dal.models</a> &gt; <span class="el_source">UserTesting.java</span></div><h1>UserTesting.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.unit.dal.models;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.format.DateTimeParseException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import Bookstore.Bookstore.dal.models.User;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+
+<span class="fc" id="L20">class UserTesting {</span>
+	User RandUser;
+	@BeforeEach
+	void setUp() throws DateTimeParseException, WrongFormatException, EmptyInputException {
+<span class="fc" id="L24">		CustomDate a=new CustomDate(&quot;02/02/2003&quot;);</span>
+<span class="fc" id="L25">		RandUser = new User(&quot;Krisi02&quot;, &quot;Kris Gj&quot;, &quot;kgj@gmail.com&quot;, &quot;Ukraine321&quot;,&quot;069 443 3332&quot;, a);</span>
+<span class="fc" id="L26">	}</span>
+	
+	@Test
+	void UserNameEmptyAndNull() {
+<span class="pc" id="L30">		Exception ex= assertThrows(EmptyInputException.class,()-&gt;RandUser.setUsername(&quot;&quot;));</span>
+<span class="pc" id="L31">		Exception ex2= assertThrows(EmptyInputException.class,()-&gt;RandUser.setUsername(null));</span>
+<span class="fc" id="L32">		assertEquals(ex.getMessage(),ex2.getMessage());</span>
+<span class="fc" id="L33">		assertEquals(&quot;Input fields cannot be empty: Please enter a value for username&quot;,ex.getMessage());</span>
+<span class="fc" id="L34">	}</span>
+	
+	@ParameterizedTest
+	@CsvSource({
+		&quot;krse&quot;,
+		&quot;polsaewserrwwedsdeeedffdd21341234124121324124&quot;
+	})
+	void UserLengthNotValid(String user) {
+<span class="pc" id="L42">		Exception ex= assertThrows(WrongFormatException.class,()-&gt;RandUser.setUsername(user));</span>
+<span class="fc" id="L43">		assertEquals(&quot;Incorrect username format: Correct format is 5-25 characters&quot;,ex.getMessage());</span>
+<span class="fc" id="L44">	}</span>
+	@Test
+	void IsNotCorrectPassword() throws EmptyInputException {
+<span class="fc" id="L47">		assertFalse(RandUser.isCorrectPassword(&quot;ukraine321&quot;));</span>
+<span class="fc" id="L48">	}</span>
+	@Test
+	void IsCorrectPassword() throws EmptyInputException {
+<span class="fc" id="L51">		assertTrue(RandUser.isCorrectPassword(&quot;Ukraine321&quot;));</span>
+<span class="fc" id="L52">	}</span>
+	
+	@Test
+	void NameEmptyAndNull() {
+<span class="pc" id="L56">		Exception ex= assertThrows(EmptyInputException.class,()-&gt;RandUser.setFullName(&quot;&quot;));</span>
+<span class="pc" id="L57">		Exception ex2= assertThrows(EmptyInputException.class,()-&gt;RandUser.setFullName(null));</span>
+<span class="fc" id="L58">		assertEquals(ex.getMessage(),ex2.getMessage());</span>
+<span class="fc" id="L59">		assertEquals(&quot;Input fields cannot be empty: Please enter a value for name&quot;,ex.getMessage());</span>
+<span class="fc" id="L60">	}</span>
+	
+	@ParameterizedTest
+	@CsvSource({
+		&quot;Kri&quot;,
+		&quot;KristianGjinopulli12345678&quot;
+	})
+	void NameNotValid(String name) {
+<span class="pc" id="L68">		Exception ex= assertThrows(WrongFormatException.class,()-&gt;RandUser.setUsername(name));</span>
+<span class="fc" id="L69">		assertEquals(&quot;Incorrect username format: Correct format is 5-25 characters&quot;,ex.getMessage());</span>
+<span class="fc" id="L70">	}</span>
+	@Test
+	void EmailEmptyAndNull() {
+<span class="pc" id="L73">		Exception ex= assertThrows(EmptyInputException.class,()-&gt;RandUser.setEmail(&quot;&quot;));</span>
+<span class="pc" id="L74">		Exception ex2= assertThrows(EmptyInputException.class,()-&gt;RandUser.setEmail(null));</span>
+<span class="fc" id="L75">		assertEquals(ex.getMessage(),ex2.getMessage());</span>
+<span class="fc" id="L76">		assertEquals(&quot;Input fields cannot be empty: Please enter a value for email&quot;,ex.getMessage());</span>
+<span class="fc" id="L77">	}</span>
+	
+	@ParameterizedTest
+	@CsvSource({
+		&quot;k@gmail.com&quot;,
+		&quot;kgj@outlook.it&quot;,
+		&quot;kgj@gmail.alb&quot;,		
+	})
+	void EmailNotValid(String user) {
+<span class="pc" id="L86">		Exception ex= assertThrows(WrongFormatException.class,()-&gt;RandUser.setEmail(user));</span>
+<span class="fc" id="L87">		assertEquals(&quot;Incorrect email format: Correct format is (2 characters)@gmail.com&quot;,ex.getMessage());</span>
+<span class="fc" id="L88">	}</span>
+	
+	@Test
+	void EmptyHashPassword() {
+<span class="pc" id="L92">		Exception ex= assertThrows(EmptyInputException.class,()-&gt;RandUser.setHashedPassword(&quot;&quot;));</span>
+<span class="pc" id="L93">		Exception ex2= assertThrows(EmptyInputException.class,()-&gt;RandUser.setHashedPassword(null));</span>
+<span class="fc" id="L94">		assertEquals(ex.getMessage(),ex2.getMessage());</span>
+<span class="fc" id="L95">		assertEquals(&quot;Input fields cannot be empty: Please enter a value for hashed password&quot;,ex.getMessage());</span>
+<span class="fc" id="L96">	}</span>
+	@Test
+	void EmptyPassword() {
+<span class="pc" id="L99">		Exception ex= assertThrows(EmptyInputException.class,()-&gt;RandUser.setPassword(&quot;&quot;));</span>
+<span class="pc" id="L100">		Exception ex2= assertThrows(EmptyInputException.class,()-&gt;RandUser.setPassword(null));</span>
+<span class="fc" id="L101">		assertEquals(ex.getMessage(),ex2.getMessage());</span>
+<span class="fc" id="L102">		assertEquals(&quot;Input fields cannot be empty: Please enter a value for password&quot;,ex.getMessage());</span>
+<span class="fc" id="L103">	}</span>
+	@Test
+	void NonValidPasswords() {
+<span class="pc" id="L106">		Exception ex= assertThrows(WrongFormatException.class,()-&gt;RandUser.setPassword(&quot;randoms&quot;));</span>
+<span class="fc" id="L107">		assertEquals(&quot;Incorrect password format: Correct format is at least 8 characters with at least 1 digit and 1 letter&quot;,ex.getMessage());</span>
+<span class="fc" id="L108">	}</span>
+	@Test
+	void IsPhoneEmpty() {
+<span class="pc" id="L111">		Exception ex= assertThrows(EmptyInputException.class,()-&gt;RandUser.setPhoneNum(&quot;&quot;));</span>
+<span class="pc" id="L112">		Exception ex2= assertThrows(EmptyInputException.class,()-&gt;RandUser.setPhoneNum(null));</span>
+<span class="fc" id="L113">		assertEquals(ex.getMessage(),ex2.getMessage());</span>
+<span class="fc" id="L114">		assertEquals(&quot;Input fields cannot be empty: Please enter a value for phone number&quot;,ex.getMessage());</span>
+<span class="fc" id="L115">	}</span>
+	
+	@ParameterizedTest
+	@CsvSource({
+		&quot;037 445 6789&quot;,
+		&quot;064 445 6778&quot;,
+		&quot;067 5543 4443&quot;,
+		&quot;067 554 44343&quot;,
+		&quot;0674 5544 444333&quot;
+	})
+	void isPhoneValid(String Phone) {
+<span class="pc" id="L126">		Exception ex= assertThrows(WrongFormatException.class,()-&gt;RandUser.setPhoneNum(Phone));</span>
+<span class="fc" id="L127">		assertEquals(&quot;Incorrect phone number format: Correct format is 06X XXX XXXX&quot;,ex.getMessage());</span>
+		
+<span class="fc" id="L129">	}</span>
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

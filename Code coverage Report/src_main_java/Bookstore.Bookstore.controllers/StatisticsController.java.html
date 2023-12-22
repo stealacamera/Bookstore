@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>StatisticsController.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.controllers</a> &gt; <span class="el_source">StatisticsController.java</span></div><h1>StatisticsController.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.controllers;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import Bookstore.Bookstore.bll.dto.BillDTO;
+import Bookstore.Bookstore.bll.dto.BookPurchaseDTO;
+import Bookstore.Bookstore.bll.dto.EmployeeDTO;
+import Bookstore.Bookstore.bll.dto.LibrarianPerformanceDTO;
+import Bookstore.Bookstore.bll.services.iservices.IBillService;
+import Bookstore.Bookstore.bll.services.iservices.IBookPurchaseService;
+import Bookstore.Bookstore.bll.services.iservices.IEmployeeService;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+import Bookstore.Bookstore.views.IView;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.NonSequentialDatesException;
+import Bookstore.Bookstore.views.statistics.BookExpensesView;
+import Bookstore.Bookstore.views.statistics.CashFlowStatsView;
+import Bookstore.Bookstore.views.statistics.LibrarianPerformanceView;
+
+public class StatisticsController {
+	private IBillService billService;
+	private IBookPurchaseService bookPurchaseService;
+	private IEmployeeService employeeService;
+	
+<span class="nc" id="L29">	public StatisticsController(IBillService billService, IEmployeeService employeeService, IBookPurchaseService bookPurchaseService) {</span>
+<span class="nc" id="L30">		this.billService = billService;</span>
+<span class="nc" id="L31">		this.bookPurchaseService = bookPurchaseService;</span>
+<span class="nc" id="L32">		this.employeeService = employeeService;</span>
+<span class="nc" id="L33">	}</span>
+	
+	public IView getBookExpensesView() {
+<span class="nc" id="L36">		BookExpensesView view = new BookExpensesView();</span>
+		
+<span class="nc" id="L38">		view.setDailyChart(getDailySales(view.getDateValue()), getDailyPurchases(view.getDateValue()));</span>
+<span class="nc" id="L39">		view.setMonthlyChart(getMonthlySales(), getMonthlyPurchases());</span>
+<span class="nc" id="L40">		view.setTotalChart(getTotalSales(), getTotalPurchases());</span>
+		
+<span class="nc" id="L42">		view.setDateListener((observable, oldValue, newValue) -&gt; view.setDailyChart(</span>
+<span class="nc" id="L43">			getDailySales(newValue), getDailyPurchases(newValue)</span>
+<span class="nc" id="L44">		));</span>
+		
+<span class="nc" id="L46">		return view;</span>
+	}
+	
+	public IView getCashFlowStatsView() {
+<span class="nc" id="L50">		CashFlowStatsView view = new CashFlowStatsView();</span>
+		
+<span class="nc" id="L52">		view.setSubmitListener(e -&gt; {</span>
+			try {
+<span class="nc" id="L54">				LocalDate startDate = view.getStartDate(), endDate = view.getEndDate();</span>
+			
+<span class="nc bnc" id="L56" title="All 4 branches missed.">				if(startDate == null || endDate == null)</span>
+<span class="nc" id="L57">					throw new EmptyInputException(&quot;date range&quot;);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">				else if(endDate.isBefore(startDate))</span>
+<span class="nc" id="L59">					throw new NonSequentialDatesException();</span>
+				
+<span class="nc" id="L61">				double totalBookSales = getTotalBookSales(startDate, endDate), </span>
+<span class="nc" id="L62">						totalBookPurchases = getTotalBookPurchases(startDate, endDate),</span>
+<span class="nc" id="L63">						totalSalaries = getTotalSalaries();</span>
+
+<span class="nc" id="L65">				view.setData(totalBookSales, totalBookPurchases, totalSalaries);</span>
+<span class="nc" id="L66">			} catch(NonSequentialDatesException | EmptyInputException ex) {</span>
+<span class="nc" id="L67">				view.displayError(ex.getMessage());</span>
+			}
+<span class="nc" id="L69">		});</span>
+		
+<span class="nc" id="L71">		return view;</span>
+	}
+	
+	public IView getLibrarianPerformanceView() {
+<span class="nc" id="L75">		LibrarianPerformanceView view = new LibrarianPerformanceView();</span>
+		
+<span class="nc" id="L77">		view.setSubmitListener(e -&gt; {</span>
+			try {
+<span class="nc" id="L79">				view.setPerformanceList(getLibrariansPerformance(view.getStartDate(), view.getEndDate()));</span>
+<span class="nc" id="L80">			} catch(NonSequentialDatesException ex) {</span>
+<span class="nc" id="L81">				view.displayError(ex.getMessage());</span>
+			}
+<span class="nc" id="L83">		});</span>
+		
+<span class="nc" id="L85">		return view;</span>
+	}
+	
+	private List&lt;LibrarianPerformanceDTO&gt; getLibrariansPerformance(LocalDate startDate, LocalDate endDate) throws NonSequentialDatesException {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">		if(endDate.isBefore(startDate))</span>
+<span class="nc" id="L90">			throw new NonSequentialDatesException();</span>
+			
+<span class="nc" id="L92">		Map&lt;Integer, LibrarianPerformanceDTO&gt; data = new HashMap&lt;&gt;();</span>
+		
+<span class="nc bnc" id="L94" title="All 2 branches missed.">		for(BillDTO bill: billService.getAll()) {</span>
+<span class="nc" id="L95">			EmployeeDTO seller = employeeService.getById(bill.getSellerId());</span>
+			
+<span class="nc bnc" id="L97" title="All 4 branches missed.">			if(seller.getAccessLvl() != 1 || !CustomDate.isInDate(startDate, endDate, bill.getDate()))</span>
+<span class="nc" id="L98">				continue;</span>
+			
+<span class="nc" id="L100">			int key = seller.getId();</span>
+			
+<span class="nc bnc" id="L102" title="All 2 branches missed.">			if(data.containsKey(key)) {</span>
+<span class="nc" id="L103">				LibrarianPerformanceDTO librarian = data.get(key);</span>
+<span class="nc" id="L104">				librarian.addNumOfBills();</span>
+<span class="nc" id="L105">				librarian.addNumOfBooks(bill.getNumOfBooks());</span>
+<span class="nc" id="L106">				librarian.addSalesAmount(bill.getSaleAmount());</span>
+<span class="nc" id="L107">			} else</span>
+<span class="nc" id="L108">				data.put(key, new LibrarianPerformanceDTO(</span>
+<span class="nc" id="L109">						String.format(&quot;%s (%s)&quot;, seller.getFullName(), seller.getUsername()), </span>
+<span class="nc" id="L110">						bill.getNumOfBooks(), </span>
+<span class="nc" id="L111">						bill.getSaleAmount())</span>
+				);
+		}
+		
+<span class="nc" id="L115">		return new ArrayList&lt;&gt;(data.values());</span>
+	}
+	
+	private double getDailyPurchases(LocalDate date) {
+<span class="nc" id="L119">		double booksBought = 0;</span>
+		
+<span class="nc bnc" id="L121" title="All 2 branches missed.">		for(BookPurchaseDTO purchase: bookPurchaseService.getAll()) {</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">			if(purchase.getDate().equals(date))</span>
+<span class="nc" id="L123">				booksBought += purchase.getAmount();</span>
+		}
+		
+<span class="nc" id="L126">		return booksBought;</span>
+	}
+	
+	private double getDailySales(LocalDate date) {
+<span class="nc" id="L130">		double booksSold = 0;</span>
+		
+<span class="nc bnc" id="L132" title="All 2 branches missed.">		for(BillDTO bill: billService.getAll()) {</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">			if(bill.getDate().equals(date))</span>
+<span class="nc" id="L134">				booksSold += bill.getSaleAmount();</span>
+		}
+		
+<span class="nc" id="L137">		return booksSold;</span>
+	}
+	
+	private double[] getMonthlyPurchases() {
+<span class="nc" id="L141">		double[] monthlyBookPurchases = new double[12];</span>
+		
+<span class="nc bnc" id="L143" title="All 2 branches missed.">		for(BookPurchaseDTO purchase: bookPurchaseService.getAll())</span>
+<span class="nc" id="L144">			monthlyBookPurchases[purchase.getDate().getMonthValue() - 1] += purchase.getAmount();</span>
+		
+<span class="nc" id="L146">		return monthlyBookPurchases;</span>
+	}
+	
+	private double[] getMonthlySales() {
+<span class="nc" id="L150">		double[] monthlyBookSales = new double[12];</span>
+		
+<span class="nc bnc" id="L152" title="All 2 branches missed.">		for(BillDTO bill: billService.getAll())</span>
+<span class="nc" id="L153">			monthlyBookSales[bill.getDate().getMonthValue() - 1] += bill.getSaleAmount();</span>
+		
+<span class="nc" id="L155">		return monthlyBookSales;</span>
+	}
+	
+	private double getTotalPurchases() {
+<span class="nc" id="L159">		double totalBookPurchases = 0;</span>
+		
+<span class="nc bnc" id="L161" title="All 2 branches missed.">		for(double purchase: getMonthlyPurchases())</span>
+<span class="nc" id="L162">			totalBookPurchases += purchase;</span>
+		
+<span class="nc" id="L164">		return totalBookPurchases;</span>
+	}
+	
+	private double getTotalSales() {
+<span class="nc" id="L168">		return getTotalBookSales();</span>
+	}
+	
+	private double getTotalBookSales() { 
+<span class="nc" id="L172">		double total = 0;</span>
+		
+<span class="nc bnc" id="L174" title="All 2 branches missed.">		for(BillDTO bill: billService.getAll())</span>
+<span class="nc" id="L175">			total += bill.getSaleAmount();</span>
+		
+<span class="nc" id="L177">		return total;</span>
+	}
+	
+	private double getTotalBookSales(LocalDate startDate, LocalDate endDate) { 
+<span class="nc" id="L181">		double total = 0;</span>
+		
+<span class="nc bnc" id="L183" title="All 2 branches missed.">		for(BillDTO bill: billService.getAll()) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">			if(CustomDate.isInDate(startDate, endDate, bill.getDate()))</span>
+<span class="nc" id="L185">				total += bill.getSaleAmount();</span>
+		}
+		
+<span class="nc" id="L188">		return total;</span>
+	}
+	
+	private double getTotalBookPurchases(LocalDate startDate, LocalDate endDate) {
+<span class="nc" id="L192">		double total = 0;</span>
+		
+<span class="nc bnc" id="L194" title="All 2 branches missed.">		for(BookPurchaseDTO purchase: bookPurchaseService.getAll()) {</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">			if(CustomDate.isInDate(startDate, endDate, purchase.getDate()))</span>
+<span class="nc" id="L196">				total += purchase.getAmount();</span>
+		}
+		
+<span class="nc" id="L199">		return total;</span>
+	}
+	
+	private double getTotalSalaries() {
+<span class="nc" id="L203">		double salaries = 0;</span>
+		
+<span class="nc bnc" id="L205" title="All 2 branches missed.">		for(EmployeeDTO employee: employeeService.getAll())</span>
+<span class="nc" id="L206">			salaries += employee.getSalary();</span>
+		
+<span class="nc" id="L208">		return salaries;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

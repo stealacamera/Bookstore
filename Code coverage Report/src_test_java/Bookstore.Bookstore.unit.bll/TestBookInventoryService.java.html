@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TestBookInventoryService.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.unit.bll</a> &gt; <span class="el_source">TestBookInventoryService.java</span></div><h1>TestBookInventoryService.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.unit.bll;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import Bookstore.Bookstore.bll.dto.BookDTO;
+import Bookstore.Bookstore.bll.dto.BookInventoryDTO;
+import Bookstore.Bookstore.bll.services.BookInventoryService;
+import Bookstore.Bookstore.dal.models.Book;
+import Bookstore.Bookstore.dal.models.BookInventory;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.ExistingObjectException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
+import javafx.collections.FXCollections;
+import Bookstore.Bookstore.unit.bll.mocks.BookInventoryRepositoryMock;
+
+<span class="fc" id="L35">public class TestBookInventoryService {</span>
+	private BookInventoryService service;
+	private BookInventoryRepositoryMock mockRepository;
+	private static BookInventory[] models;
+	private static BookInventoryDTO[] modelDTOs; 
+	
+	@BeforeAll
+	static void setUpDummyData() throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+<span class="fc" id="L43">		models = new BookInventory[7];</span>
+<span class="fc" id="L44">		modelDTOs = new BookInventoryDTO[models.length];</span>
+		
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		for(int i = 0; i &lt; models.length; i++) {</span>
+<span class="fc" id="L47">			Book book = new Book(i + &quot;11-1-11-111111-1&quot;, &quot;foo&quot;, &quot;foo bar&quot;, &quot;foobar&quot;, 1);</span>
+<span class="fc" id="L48">			models[i] = new BookInventory(book, 1, 1, 1, 1, new CustomDate());</span>
+<span class="fc" id="L49">			modelDTOs[i] = createEquivalentDTO(models[i]);</span>
+		}
+<span class="fc" id="L51">	}</span>
+	
+	@BeforeEach
+	void setUp() {
+<span class="fc" id="L55">		mockRepository = new BookInventoryRepositoryMock();</span>
+<span class="fc" id="L56">		mockRepository.addDummyData(models);</span>
+		
+<span class="fc" id="L58">		service = new BookInventoryService(mockRepository);</span>
+<span class="fc" id="L59">	}</span>
+	
+	@Test
+	void testGetAll_Empty() {
+<span class="fc" id="L63">		service = new BookInventoryService(new BookInventoryRepositoryMock());</span>
+<span class="fc" id="L64">		assertIterableEquals(FXCollections.observableArrayList(), service.getAll());</span>
+<span class="fc" id="L65">	}</span>
+	
+	@Test
+	void testGetAll_NonEmpty() {
+<span class="fc" id="L69">		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());</span>
+<span class="fc" id="L70">	}</span>
+	
+	@Test
+	void testAdd_NullValue() throws ExistingObjectException, EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+<span class="fc" id="L74">		assertFalse(service.add(null));</span>
+<span class="fc" id="L75">	}</span>
+	
+	@ParameterizedTest
+	@MethodSource(&quot;provideValuesForInvalidValues&quot;)
+	void testAdd_InvalidValues(BookInventoryDTO model, Class&lt;Exception&gt; exceptionType, String expectedError) {
+<span class="pc" id="L80">		Exception exception = assertThrows(exceptionType, () -&gt; service.add(model));</span>
+<span class="fc" id="L81">		assertTrue(exception.getMessage().contains(expectedError));</span>
+<span class="fc" id="L82">	}</span>
+	
+	@ParameterizedTest
+	@MethodSource(&quot;provideValuesForExistingValues&quot;)
+	void testAdd_ExistingISBN(BookInventoryDTO model) {		
+<span class="pc" id="L87">		Exception exception = assertThrows(ExistingObjectException.class, () -&gt; service.add(model));</span>
+<span class="fc" id="L88">		assertTrue(exception.getMessage().contains(&quot;with these details (ISBN) already exists&quot;));</span>
+<span class="fc" id="L89">	}</span>
+	
+	@ParameterizedTest
+	@ValueSource(strings = { &quot;888-8-88-888888-8&quot;, &quot;999-9-99-999999-9&quot; })
+	void testAdd_NonExistingISBN(String isbn) throws NonPositiveInputException, EmptyInputException, WrongFormatException, WrongLengthException, ExistingObjectException {
+<span class="fc" id="L94">		BookInventory model = new BookInventory(</span>
+<span class="fc" id="L95">				new Book(isbn, &quot;foo bar&quot;, &quot;foobar&quot;, &quot;foo&quot;, 1), </span>
+<span class="fc" id="L96">				1, 1, 1, 1, new CustomDate());</span>
+		
+<span class="fc" id="L98">		assertTrue(service.add(createEquivalentDTO(model)));</span>
+<span class="fc" id="L99">		assertEquals(model, mockRepository.get(mockRepository.count() - 1));</span>
+<span class="fc" id="L100">	}</span>
+	
+	@ParameterizedTest
+	@ValueSource(ints = { 0, -1 })
+	void testUpdateStock_InvalidValues_InvalidStock(int newStock) {		
+<span class="pc" id="L105">		Exception exception = assertThrows(NonPositiveInputException.class, () -&gt; service.updateStock(modelDTOs[0], newStock));</span>
+<span class="fc" id="L106">		assertTrue(exception.getMessage().contains(&quot;Please enter a positive number for the field&quot;));</span>
+<span class="fc" id="L107">	}</span>
+	
+	@ParameterizedTest
+	@ValueSource(strings = { &quot;888-8-88-888888-8&quot;, &quot;999-9-99-999999-9&quot; })
+	void testUpdateStock_InvalidValues_NonExistingISBN(String isbn) {
+<span class="fc" id="L112">		BookInventoryDTO model = new BookInventoryDTO(</span>
+<span class="fc" id="L113">				new BookDTO(isbn, &quot;foo bar&quot;, &quot;foobar&quot;, &quot;foo&quot;, 1), </span>
+<span class="fc" id="L114">				1, 1, 1, 1, LocalDate.now());</span>
+		
+<span class="pc" id="L116">		Exception exception = assertThrows(EmptyInputException.class, () -&gt; service.updateStock(model, 1));</span>
+<span class="fc" id="L117">		assertTrue(exception.getMessage().contains(&quot;Input fields cannot be empty&quot;));</span>
+<span class="fc" id="L118">	}</span>
+	
+	@ParameterizedTest
+	@MethodSource(&quot;provideValuesForUpdateStock&quot;)
+	void testUpdateStock_ValidValues(BookInventoryDTO model, BookInventory base) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {		
+<span class="fc" id="L123">		int newStock = 12;</span>
+<span class="fc" id="L124">		service.updateStock(model, newStock);</span>
+<span class="fc" id="L125">		assertEquals(newStock, base.getStock());</span>
+<span class="fc" id="L126">	}</span>
+	
+	private static BookInventoryDTO createEquivalentDTO(BookInventory model) {
+<span class="fc" id="L129">		return new BookInventoryDTO(</span>
+<span class="fc" id="L130">				new BookDTO(model.getBook().getIsbn(), model.getBook().getTitle(), </span>
+<span class="fc" id="L131">						model.getBook().getAuthor(), model.getBook().getSupplier(), model.getBook().getCategoryId()), </span>
+<span class="fc" id="L132">				model.getPurchasedPrice(), model.getOriginalPrice(), </span>
+<span class="fc" id="L133">				model.getSellingPrice(), model.getStock(), model.getPurchasedDate().getDate());</span>
+	}
+	
+	private static Stream&lt;Arguments&gt; provideValuesForUpdateStock() {
+<span class="fc" id="L137">		return Stream.of(</span>
+<span class="fc" id="L138">			Arguments.of(modelDTOs[0], models[0]),</span>
+<span class="fc" id="L139">			Arguments.of(modelDTOs[1], models[1]),</span>
+<span class="fc" id="L140">			Arguments.of(modelDTOs[3], models[3]),</span>
+<span class="fc" id="L141">			Arguments.of(modelDTOs[5], models[5]),</span>
+<span class="fc" id="L142">			Arguments.of(modelDTOs[6], models[6])</span>
+		);
+	}
+	
+	private static Stream&lt;Arguments&gt; provideValuesForExistingValues() {
+<span class="fc" id="L147">		return Stream.of(</span>
+<span class="fc" id="L148">			Arguments.of(modelDTOs[0]),</span>
+<span class="fc" id="L149">			Arguments.of(modelDTOs[1]),</span>
+<span class="fc" id="L150">			Arguments.of(modelDTOs[3]),</span>
+<span class="fc" id="L151">			Arguments.of(modelDTOs[5]),</span>
+<span class="fc" id="L152">			Arguments.of(modelDTOs[6])</span>
+		);
+	}
+	
+	private static Stream&lt;Arguments&gt; provideValuesForInvalidValues() {
+<span class="fc" id="L157">		return Stream.of(</span>
+<span class="fc" id="L158">			Arguments.of(new BookInventoryDTO(new BookDTO(null, null, null, null, 0), 0, 0, 0, 0, null), EmptyInputException.class, &quot;Input fields cannot be empty&quot;),</span>
+<span class="fc" id="L159">			Arguments.of(new BookInventoryDTO(new BookDTO(&quot;1&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;, 0), 0, 0, 0, 0, LocalDate.now()), WrongFormatException.class, &quot;Correct format is&quot;)</span>
+		);
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>

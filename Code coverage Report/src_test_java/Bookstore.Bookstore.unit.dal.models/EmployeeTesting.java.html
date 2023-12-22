@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeTesting.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (22 Dec 2023 23:00:35)</a> &gt; <a href="../../index.html" class="el_group">Bookstore</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.unit.dal.models</a> &gt; <span class="el_source">EmployeeTesting.java</span></div><h1>EmployeeTesting.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.unit.dal.models;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.format.DateTimeParseException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import Bookstore.Bookstore.dal.models.Employee;
+import Bookstore.Bookstore.dal.models.User;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+
+<span class="fc" id="L20">class EmployeeTesting {</span>
+	User BaseDummy;
+	Employee EDummy;
+	@BeforeEach
+	void startup() throws DateTimeParseException, WrongFormatException, EmptyInputException, NonPositiveInputException{
+<span class="fc" id="L25">		CustomDate a=new CustomDate(&quot;02/02/2003&quot;);</span>
+<span class="fc" id="L26">		BaseDummy= new User(&quot;Krisi02&quot;, &quot;Kris Gj&quot;, &quot;kgj@gmail.com&quot;, &quot;Ukraine321&quot;,&quot;069 443 3332&quot;, a);</span>
+<span class="fc" id="L27">		EDummy = new Employee(BaseDummy,2,2);</span>
+<span class="fc" id="L28">	}</span>
+
+	@Test
+	void TestNegativeSalary() {
+<span class="pc" id="L32">		Exception ex = assertThrows(NonPositiveInputException.class,()-&gt;EDummy.setSalary(-3));</span>
+<span class="fc" id="L33">		assertEquals(&quot;Incorrect salary: Please enter a positive number for the field&quot;, ex.getMessage());</span>
+<span class="fc" id="L34">	}</span>
+	
+	@ParameterizedTest
+	@CsvSource({
+		&quot;0&quot;,
+		&quot;4&quot;
+	})
+	void TestNonValidRole(int val) {
+<span class="pc" id="L42">		Exception ex = assertThrows(WrongFormatException.class,()-&gt;EDummy.setAccessLvl(val));</span>
+<span class="fc" id="L43">		assertEquals(&quot;Incorrect access level format: Correct format is 1 - Librarian; 2 - Manager; 3 - Admin&quot;, ex.getMessage());</span>
+<span class="fc" id="L44">	}</span>
+	
+	@ParameterizedTest
+	@CsvSource({
+		&quot;1&quot;,
+		&quot;2&quot;,
+		&quot;3&quot;
+	})
+	void TestIfToStringWorksCorrectlyForEachRole(int value) throws WrongFormatException {
+<span class="fc" id="L53">		EDummy.setAccessLvl(value);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if(value==1)</span>
+<span class="fc" id="L55">		    assertEquals(&quot;Krisi02 (Kris Gj) [Librarian]&quot;,EDummy.toString());</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		else if(value==2)</span>
+<span class="fc" id="L57">		    assertEquals(&quot;Krisi02 (Kris Gj) [Manager]&quot;,EDummy.toString());</span>
+		else
+<span class="fc" id="L59">		    assertEquals(&quot;Krisi02 (Kris Gj) [Administrator]&quot;,EDummy.toString());</span>
+		
+<span class="fc" id="L61">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>java (22 Dec 2023 23:00:35)</div></body></html>
