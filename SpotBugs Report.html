@@ -1,0 +1,653 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta charset="UTF-8"/>
+      <title>SpotBugs Report</title>
+      <style type="text/css">
+		.tablerow0 {
+			background: #EEEEEE;
+		}
+
+		.tablerow1 {
+			background: white;
+		}
+
+		.detailrow0 {
+			background: #EEEEEE;
+		}
+
+		.detailrow1 {
+			background: white;
+		}
+
+		.tableheader {
+			background: #b9b9fe;
+			font-size: larger;
+		}
+
+		.tablerow0:hover, .tablerow1:hover {
+			background: #aaffaa;
+		}
+
+		.priority-1 {
+				color: red;
+				font-weight: bold;
+		}
+		.priority-2 {
+				color: orange;
+				font-weight: bold;
+		}
+		.priority-3 {
+				color: green;
+				font-weight: bold;
+		}
+		.priority-4 {
+				color: blue;
+				font-weight: bold;
+		}
+		</style>
+      <script type="text/javascript">
+			function toggleRow(elid) {
+				if (document.getElementById) {
+					element = document.getElementById(elid);
+					if (element) {
+						if (element.style.display == 'none') {
+							element.style.display = 'block';
+							//window.status = 'Toggle on!';
+						} else {
+							element.style.display = 'none';
+							//window.status = 'Toggle off!';
+						}
+					}
+				}
+			}
+		</script>
+   </head>
+   <body>
+      <h1>
+         <a href="https://spotbugs.github.io/">SpotBugs</a> Report</h1>
+      <h2>Project Information</h2>
+      <p>Project: 
+		</p>
+      <p>SpotBugs version: 4.7.3</p>
+      <p>Code analyzed:</p>
+      <ul>
+         <li>C:\Users\User\eclipse-workspace\Bookstore\target\classes</li>
+      </ul>
+      <p>
+         <br/>
+         <br/>
+      </p>
+      <h2>Metrics</h2>
+      <p>0 lines of code analyzed,
+	in 0 classes, 
+	in 7 packages.</p>
+      <table width="500" cellpadding="5" cellspacing="2">
+         <tr class="tableheader">
+            <th align="left">Metric</th>
+            <th align="right">Total</th>
+            <th align="right">Density*</th>
+         </tr>
+         <tr class="tablerow0">
+            <td>High Priority Warnings</td>
+            <td align="right">4</td>
+            <td align="right">0.00</td>
+         </tr>
+         <tr class="tablerow1">
+            <td>Medium Priority Warnings</td>
+            <td align="right">7</td>
+            <td align="right">0.00</td>
+         </tr>
+         <tr class="tablerow1">
+            <td>Low Priority Warnings</td>
+            <td align="right">9</td>
+            <td align="right">0.00</td>
+         </tr>
+         <tr class="$totalClass">
+            <td>
+               <b>Total Warnings</b>
+            </td>
+            <td align="right">
+               <b>20</b>
+            </td>
+            <td align="right">
+               <b>0.00</b>
+            </td>
+         </tr>
+      </table>
+      <p>
+         <i>(* Defects per Thousand lines of non-commenting source statements)</i>
+      </p>
+      <p>
+         <br/>
+         <br/>
+      </p>
+      <h2>Contents</h2>
+      <ul>
+         <li>
+            <a href="#Warnings_BAD_PRACTICE">Bad practice Warnings</a>
+         </li>
+         <li>
+            <a href="#Warnings_CORRECTNESS">Correctness Warnings</a>
+         </li>
+         <li>
+            <a href="#Warnings_I18N">Internationalization Warnings</a>
+         </li>
+         <li>
+            <a href="#Warnings_MALICIOUS_CODE">Malicious code vulnerability Warnings</a>
+         </li>
+         <li>
+            <a href="#Warnings_PERFORMANCE">Performance Warnings</a>
+         </li>
+         <li>
+            <a href="#Warnings_STYLE">Dodgy code Warnings</a>
+         </li>
+         <li>
+            <a href="#Details">Details</a>
+         </li>
+      </ul>
+      <h1>Summary</h1>
+      <table width="500" cellpadding="5" cellspacing="2">
+         <tr class="tableheader">
+            <th align="left">Warning Type</th>
+            <th align="right">Number</th>
+         </tr>
+         <tr class="tablerow0">
+            <td>
+               <a href="#Warnings_BAD_PRACTICE">Bad practice Warnings</a>
+            </td>
+            <td align="right">5</td>
+         </tr>
+         <tr class="tablerow1">
+            <td>
+               <a href="#Warnings_CORRECTNESS">Correctness Warnings</a>
+            </td>
+            <td align="right">2</td>
+         </tr>
+         <tr class="tablerow0">
+            <td>
+               <a href="#Warnings_I18N">Internationalization Warnings</a>
+            </td>
+            <td align="right">1</td>
+         </tr>
+         <tr class="tablerow1">
+            <td>
+               <a href="#Warnings_MALICIOUS_CODE">Malicious code vulnerability Warnings</a>
+            </td>
+            <td align="right">3</td>
+         </tr>
+         <tr class="tablerow0">
+            <td>
+               <a href="#Warnings_PERFORMANCE">Performance Warnings</a>
+            </td>
+            <td align="right">6</td>
+         </tr>
+         <tr class="tablerow1">
+            <td>
+               <a href="#Warnings_STYLE">Dodgy code Warnings</a>
+            </td>
+            <td align="right">3</td>
+         </tr>
+         <tr class="tablerow0">
+            <td>
+               <b>Total</b>
+            </td>
+            <td align="right">
+               <b>20</b>
+            </td>
+         </tr>
+      </table>
+      <h1>Warnings</h1>
+      <p>Click on a warning row to see full context information.</p>
+      <h2>
+         <a name="Warnings_BAD_PRACTICE">Bad practice Warnings</a>
+      </h2>
+      <table class="warningtable" width="100%" cellspacing="0">
+         <tr class="tableheader">
+            <th align="left">Code</th>
+            <th align="left">Warning</th>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e4');">
+            <td>
+               <span class="priority-1">HE</span>
+            </td>
+            <td>Bookstore.Bookstore.bll.dto.CategoryDTO defines equals and uses Object.hashCode()</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e4" style="display: none;">
+                  <a href="#HE_EQUALS_USE_HASHCODE">Bug type HE_EQUALS_USE_HASHCODE (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.bll.dto.CategoryDTO<br/>In method Bookstore.Bookstore.bll.dto.CategoryDTO.equals(Object)<br/>At CategoryDTO.java:[lines 32-37]</p>
+            </td>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e49');">
+            <td>
+               <span class="priority-1">HE</span>
+            </td>
+            <td>Bookstore.Bookstore.dal.models.Employee defines equals() but not hashCode()</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e49" style="display: none;">
+                  <a href="#HE_EQUALS_NO_HASHCODE">Bug type HE_EQUALS_NO_HASHCODE (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.dal.models.Employee<br/>In method Bookstore.Bookstore.dal.models.Employee.equals(Object)<br/>At Employee.java:[lines 98-107]</p>
+            </td>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e50');">
+            <td>
+               <span class="priority-1">HE</span>
+            </td>
+            <td>Bookstore.Bookstore.dal.models.User defines equals but not hashCode()</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e50" style="display: none;">
+                  <a href="#HE_EQUALS_NO_HASHCODE">Bug type HE_EQUALS_NO_HASHCODE (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.dal.models.User<br/>In method Bookstore.Bookstore.dal.models.User.equals(Object)<br/>At User.java:[lines 152-160]</p>
+            </td>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e273');">
+            <td>
+               <span class="priority-3">OS</span>
+            </td>
+            <td>readTable() may fail to close stream on exception</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e273" style="display: none;">
+                  <a href="#OS_OPEN_STREAM_EXCEPTION_PATH">Bug type OS_OPEN_STREAM_EXCEPTION_PATH (click for details)</a>
+                  <br/>In class repositories.DbTable<br/>In method repositories.DbTable.readTable()<br/>Need to close java.io.InputStream <br/>At DbTable.java:[line 37]</p>
+            </td>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e289');">
+            <td>
+               <span class="priority-3">OS</span>
+            </td>
+            <td>saveToTable(List) may fail to close stream on exception</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e289" style="display: none;">
+                  <a href="#OS_OPEN_STREAM_EXCEPTION_PATH">Bug type OS_OPEN_STREAM_EXCEPTION_PATH (click for details)</a>
+                  <br/>In class repositories.DbTable<br/>In method repositories.DbTable.saveToTable(List)<br/>Need to close java.io.OutputStream <br/>At DbTable.java:[line 53]</p>
+            </td>
+         </tr>
+      </table>
+      <h2>
+         <a name="Warnings_CORRECTNESS">Correctness Warnings</a>
+      </h2>
+      <table class="warningtable" width="100%" cellspacing="0">
+         <tr class="tableheader">
+            <th align="left">Code</th>
+            <th align="left">Warning</th>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e16');">
+            <td>
+               <span class="priority-2">Eq</span>
+            </td>
+            <td>Bookstore.Bookstore.bll.dto.EmployeeDTO overrides equals in UserDTO and may not be symmetric</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e16" style="display: none;">
+                  <a href="#EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC">Bug type EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.bll.dto.EmployeeDTO<br/>In method Bookstore.Bookstore.bll.dto.EmployeeDTO.equals(Object)<br/>Overrides Bookstore.Bookstore.bll.dto.UserDTO.equals(Object)<br/>At EmployeeDTO.java:[lines 91-96]</p>
+            </td>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e71');">
+            <td>
+               <span class="priority-2">Eq</span>
+            </td>
+            <td>Bookstore.Bookstore.dal.models.Employee overrides equals in User and may not be symmetric</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e71" style="display: none;">
+                  <a href="#EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC">Bug type EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.dal.models.Employee<br/>In method Bookstore.Bookstore.dal.models.Employee.equals(Object)<br/>Overrides Bookstore.Bookstore.dal.models.User.equals(Object)<br/>At Employee.java:[lines 99-104]</p>
+            </td>
+         </tr>
+      </table>
+      <h2>
+         <a name="Warnings_I18N">Internationalization Warnings</a>
+      </h2>
+      <table class="warningtable" width="100%" cellspacing="0">
+         <tr class="tableheader">
+            <th align="left">Code</th>
+            <th align="left">Warning</th>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e113');">
+            <td>
+               <span class="priority-1">Dm</span>
+            </td>
+            <td>Found reliance on default encoding in Bookstore.Bookstore.dal.repositories.DbTable.saveToTable(List): new java.io.PrintWriter(File)</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e113" style="display: none;">
+                  <a href="#DM_DEFAULT_ENCODING">Bug type DM_DEFAULT_ENCODING (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.dal.repositories.DbTable<br/>In method Bookstore.Bookstore.dal.repositories.DbTable.saveToTable(List)<br/>Called method new java.io.PrintWriter(File)<br/>At DbTable.java:[line 55]</p>
+            </td>
+         </tr>
+      </table>
+      <h2>
+         <a name="Warnings_MALICIOUS_CODE">Malicious code vulnerability Warnings</a>
+      </h2>
+      <table class="warningtable" width="100%" cellspacing="0">
+         <tr class="tableheader">
+            <th align="left">Code</th>
+            <th align="left">Warning</th>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e55');">
+            <td>
+               <span class="priority-2">EI</span>
+            </td>
+            <td>Bookstore.Bookstore.dal.models.BookInventory.getBook() may expose internal representation by returning BookInventory.book</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e55" style="display: none;">
+                  <a href="#EI_EXPOSE_REP">Bug type EI_EXPOSE_REP (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.dal.models.BookInventory<br/>In method Bookstore.Bookstore.dal.models.BookInventory.getBook()<br/>Field Bookstore.Bookstore.dal.models.BookInventory.book<br/>At BookInventory.java:[line 29]</p>
+            </td>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e17');">
+            <td>
+               <span class="priority-2">EI2</span>
+            </td>
+            <td>new Bookstore.Bookstore.bll.services.Service(IRepository) may expose internal representation by storing an externally mutable object into Service.db</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e17" style="display: none;">
+                  <a href="#EI_EXPOSE_REP2">Bug type EI_EXPOSE_REP2 (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.bll.services.Service<br/>In method new Bookstore.Bookstore.bll.services.Service(IRepository)<br/>Field Bookstore.Bookstore.bll.services.Service.db<br/>Local variable named db<br/>At Service.java:[line 21]</p>
+            </td>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e86');">
+            <td>
+               <span class="priority-2">MS</span>
+            </td>
+            <td>Public static Bookstore.Bookstore.startup.Session.getCurrentUser() may expose internal representation by returning Session.currentUser</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e86" style="display: none;">
+                  <a href="#MS_EXPOSE_REP">Bug type MS_EXPOSE_REP (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.startup.Session<br/>In method Bookstore.Bookstore.startup.Session.getCurrentUser()<br/>Field Bookstore.Bookstore.startup.Session.currentUser<br/>At Session.java:[line 14]</p>
+            </td>
+         </tr>
+      </table>
+      <h2>
+         <a name="Warnings_PERFORMANCE">Performance Warnings</a>
+      </h2>
+      <table class="warningtable" width="100%" cellspacing="0">
+         <tr class="tableheader">
+            <th align="left">Code</th>
+            <th align="left">Warning</th>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e102');">
+            <td>
+               <span class="priority-3">SIC</span>
+            </td>
+            <td>The class Bookstore.Bookstore.views.CreateBillView$1 could be refactored into a named _static_ inner class</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e102" style="display: none;">
+                  <a href="#SIC_INNER_SHOULD_BE_STATIC_ANON">Bug type SIC_INNER_SHOULD_BE_STATIC_ANON (click for details)</a>
+                  <br/>Anonymous class Bookstore.Bookstore.views.CreateBillView$1<br/>In class Bookstore.Bookstore.views.CreateBillView<br/>In method Bookstore.Bookstore.views.CreateBillView.setbillTv()<br/>At CreateBillView.java:[line 114]</p>
+            </td>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e118');">
+            <td>
+               <span class="priority-3">SIC</span>
+            </td>
+            <td>The class Bookstore.Bookstore.views.CreateBillView$2 could be refactored into a named _static_ inner class</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e118" style="display: none;">
+                  <a href="#SIC_INNER_SHOULD_BE_STATIC_ANON">Bug type SIC_INNER_SHOULD_BE_STATIC_ANON (click for details)</a>
+                  <br/>Anonymous class Bookstore.Bookstore.views.CreateBillView$2<br/>In class Bookstore.Bookstore.views.CreateBillView<br/>In method Bookstore.Bookstore.views.CreateBillView.setbillTv()<br/>At CreateBillView.java:[line 121]</p>
+            </td>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e134');">
+            <td>
+               <span class="priority-3">SIC</span>
+            </td>
+            <td>The class Bookstore.Bookstore.views.CreateBillView$3 could be refactored into a named _static_ inner class</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e134" style="display: none;">
+                  <a href="#SIC_INNER_SHOULD_BE_STATIC_ANON">Bug type SIC_INNER_SHOULD_BE_STATIC_ANON (click for details)</a>
+                  <br/>Anonymous class Bookstore.Bookstore.views.CreateBillView$3<br/>In class Bookstore.Bookstore.views.CreateBillView<br/>In method Bookstore.Bookstore.views.CreateBillView.setbillTv()<br/>At CreateBillView.java:[line 128]</p>
+            </td>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e150');">
+            <td>
+               <span class="priority-3">SIC</span>
+            </td>
+            <td>The class Bookstore.Bookstore.views.employees.ManageEmployeesView$1 could be refactored into a named _static_ inner class</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e150" style="display: none;">
+                  <a href="#SIC_INNER_SHOULD_BE_STATIC_ANON">Bug type SIC_INNER_SHOULD_BE_STATIC_ANON (click for details)</a>
+                  <br/>Anonymous class Bookstore.Bookstore.views.employees.ManageEmployeesView$1<br/>In class Bookstore.Bookstore.views.employees.ManageEmployeesView<br/>In method Bookstore.Bookstore.views.employees.ManageEmployeesView.setList(ObservableList)<br/>At ManageEmployeesView.java:[line 79]</p>
+            </td>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e167');">
+            <td>
+               <span class="priority-3">SIC</span>
+            </td>
+            <td>The class Bookstore.Bookstore.views.statistics.LibrarianPerformanceView$1 could be refactored into a named _static_ inner class</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e167" style="display: none;">
+                  <a href="#SIC_INNER_SHOULD_BE_STATIC_ANON">Bug type SIC_INNER_SHOULD_BE_STATIC_ANON (click for details)</a>
+                  <br/>Anonymous class Bookstore.Bookstore.views.statistics.LibrarianPerformanceView$1<br/>In class Bookstore.Bookstore.views.statistics.LibrarianPerformanceView<br/>In method Bookstore.Bookstore.views.statistics.LibrarianPerformanceView.lambda$0(TableColumn)<br/>At LibrarianPerformanceView.java:[line 54]</p>
+            </td>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e31');">
+            <td>
+               <span class="priority-3">UrF</span>
+            </td>
+            <td>Unread field: Bookstore.Bookstore.bll.services.BookPurchaseService.db</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e31" style="display: none;">
+                  <a href="#URF_UNREAD_FIELD">Bug type URF_UNREAD_FIELD (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.bll.services.BookPurchaseService<br/>Field Bookstore.Bookstore.bll.services.BookPurchaseService.db<br/>At BookPurchaseService.java:[line 17]</p>
+            </td>
+         </tr>
+      </table>
+      <h2>
+         <a name="Warnings_STYLE">Dodgy code Warnings</a>
+      </h2>
+      <table class="warningtable" width="100%" cellspacing="0">
+         <tr class="tableheader">
+            <th align="left">Code</th>
+            <th align="left">Warning</th>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e35');">
+            <td>
+               <span class="priority-3">BC</span>
+            </td>
+            <td>Unchecked/unconfirmed cast from javafx.stage.Window to javafx.stage.Stage of return value in Bookstore.Bookstore.commons.utils.Utils.getCurrentStage(ActionEvent)</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e35" style="display: none;">
+                  <a href="#BC_UNCONFIRMED_CAST_OF_RETURN_VALUE">Bug type BC_UNCONFIRMED_CAST_OF_RETURN_VALUE (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.commons.utils.Utils<br/>In method Bookstore.Bookstore.commons.utils.Utils.getCurrentStage(ActionEvent)<br/>Actual type javafx.stage.Window<br/>Expected javafx.stage.Stage<br/>At Utils.java:[line 17]</p>
+            </td>
+         </tr>
+         <tr class="tablerow0" onclick="toggleRow('d2e379');">
+            <td>
+               <span class="priority-2">ST</span>
+            </td>
+            <td>Write to static field Bookstore.Bookstore.dal.models.Category.idOrder from instance method Bookstore.Bookstore.dal.models.Category()</td>
+         </tr>
+         <tr class="detailrow0">
+            <td/>
+            <td>
+               <p id="d2e379" style="display: none;">
+                  <a href="#ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD">Bug type ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.dal.models.Category<br/>In method Bookstore.Bookstore.dal.models.Category()<br/>Field Bookstore.Bookstore.dal.models.Category.idOrder<br/>At Category.java:[line 21]</p>
+            </td>
+         </tr>
+         <tr class="tablerow1" onclick="toggleRow('d2e380');">
+            <td>
+               <span class="priority-2">ST</span>
+            </td>
+            <td>Write to static field Bookstore.Bookstore.dal.models.User.idOrder from instance method Bookstore.Bookstore.dal.models.User()</td>
+         </tr>
+         <tr class="detailrow1">
+            <td/>
+            <td>
+               <p id="d2e380" style="display: none;">
+                  <a href="#ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD">Bug type ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD (click for details)</a>
+                  <br/>In class Bookstore.Bookstore.dal.models.User<br/>In method Bookstore.Bookstore.dal.models.User()<br/>Field Bookstore.Bookstore.dal.models.User.idOrder<br/>At User.java:[line 21]</p>
+            </td>
+         </tr>
+      </table>
+      <h1>
+         <a name="Details">Details</a>
+      </h1>
+      <h2>
+         <a name="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE">BC_UNCONFIRMED_CAST_OF_RETURN_VALUE: Unchecked/unconfirmed cast of return value from method</a>
+      </h2>
+
+<p>
+This code performs an unchecked cast of the return value of a method.
+The code might be calling the method in such a way that the cast is guaranteed to be
+safe, but SpotBugs is unable to verify that the cast is safe.  Check that your program logic ensures that this
+cast will not fail.
+</p>
+
+      <h2>
+         <a name="DM_DEFAULT_ENCODING">DM_DEFAULT_ENCODING: Reliance on default encoding</a>
+      </h2>
+
+<p> Found a call to a method which will perform a byte to String (or String to byte) conversion,
+and will assume that the default platform encoding is suitable. This will cause the application
+behavior to vary between platforms. Use an alternative API and specify a charset name or Charset
+object explicitly.</p>
+
+    <h2>
+         <a name="EI_EXPOSE_REP">EI_EXPOSE_REP: May expose internal representation by returning reference to mutable object</a>
+      </h2>
+
+  <p> Returning a reference to a mutable object value stored in one of the object's fields
+  exposes the internal representation of the object.&nbsp;
+   If instances
+   are accessed by untrusted code, and unchecked changes to
+   the mutable object would compromise security or other
+   important properties, you will need to do something different.
+  Returning a new copy of the object is better approach in many situations.</p>
+
+    <h2>
+         <a name="EI_EXPOSE_REP2">EI_EXPOSE_REP2: May expose internal representation by incorporating reference to mutable object</a>
+      </h2>
+
+  <p> This code stores a reference to an externally mutable object into the
+  internal representation of the object.&nbsp;
+   If instances
+   are accessed by untrusted code, and unchecked changes to
+   the mutable object would compromise security or other
+   important properties, you will need to do something different.
+  Storing a copy of the object is better approach in many situations.</p>
+
+    <h2>
+         <a name="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC">EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC: equals method overrides equals in superclass and may not be symmetric</a>
+      </h2>
+
+  <p> This class defines an equals method that overrides an equals method in a superclass. Both equals methods
+use <code>instanceof</code> in the determination of whether two objects are equal. This is fraught with peril,
+since it is important that the equals method is symmetrical (in other words, <code>a.equals(b) == b.equals(a)</code>).
+If B is a subtype of A, and A's equals method checks that the argument is an instanceof A, and B's equals method
+checks that the argument is an instanceof B, it is quite likely that the equivalence relation defined by these
+methods is not symmetric.
+</p>
+
+<h2>
+   <a name="HE_EQUALS_USE_HASHCODE">HE_EQUALS_USE_HASHCODE: Class defines equals() and uses Object.hashCode()</a>
+</h2>
+
+<p> This class overrides <code>equals(Object)</code>, but does not
+override <code>hashCode()</code>, and inherits the implementation of
+<code>hashCode()</code> from <code>java.lang.Object</code> (which returns
+the identity hash code, an arbitrary value assigned to the object
+by the VM).&nbsp; Therefore, the class is very likely to violate the
+invariant that equal objects must have equal hashcodes.</p>
+
+<h2>
+   <a name="HE_EQUALS_NO_HASHCODE">HE_EQUALS_NO_HASHCODE: Class defines equals() but not hashCode()</a>
+</h2>
+
+<p>This class overrides equals(Object), but does not override hashCode(). 
+   Therefore, the class may violate the invariant that equal objects must have equal hashcodes.</p>
+
+    <h2>
+         <a name="MS_EXPOSE_REP">MS_EXPOSE_REP: Public static method may expose internal representation by returning array</a>
+      </h2>
+
+  <p> A public static method returns a reference to
+   an array that is part of the static state of the class.
+   Any code that calls this method can freely modify
+   the underlying array.
+   One fix is to return a copy of the array.</p>
+
+    <h2>
+         <a name="SIC_INNER_SHOULD_BE_STATIC_ANON">SIC_INNER_SHOULD_BE_STATIC_ANON: Could be refactored into a named static inner class</a>
+      </h2>
+
+  <p> This class is an inner class, but does not use its embedded reference
+  to the object which created it.&nbsp; This reference makes the instances
+  of the class larger, and may keep the reference to the creator object
+  alive longer than necessary.&nbsp; If possible, the class should be
+  made into a <em>static</em> inner class. Since anonymous inner
+classes cannot be marked as static, doing this will require refactoring
+the inner class so that it is a named inner class.</p>
+
+<h2>
+   <a name="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD">ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD: Write to static field from instance method</a>
+</h2>
+
+<p> This instance method writes to a static field. This is tricky to get
+correct if multiple instances are being manipulated,
+and generally bad practice.
+</p>
+
+    <h2>
+         <a name="URF_UNREAD_FIELD">URF_UNREAD_FIELD: Unread field</a>
+      </h2>
+
+  <p> This field is never read.&nbsp; Consider removing it from the class.</p>
+
+    </body>
+</html>
