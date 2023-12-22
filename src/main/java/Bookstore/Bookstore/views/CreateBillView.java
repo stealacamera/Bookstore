@@ -111,26 +111,9 @@ public class CreateBillView extends IView {
 		TableColumn<Map.Entry<BookInventoryDTO, Integer>, String> tcIsbn = new TableColumn<>("ISBN");
 		TableColumn<Map.Entry<BookInventoryDTO, Integer>, String> tcTitle = new TableColumn<>("Title");
 
-		tcIsbn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>,String>, ObservableValue<String>>() {
-			@Override
-			public ObservableValue<String> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, String> book) {
-				return new SimpleStringProperty(book.getValue().getKey().getBook().getIsbn());
-			}
-		});
-		
-		tcTitle.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>,String>, ObservableValue<String>>() {
-			@Override
-			public ObservableValue<String> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, String> book) {
-				return new SimpleStringProperty(book.getValue().getKey().getBook().getTitle());
-			}
-		});
-		
-		tcQuantity.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>,Integer>, ObservableValue<Integer>>() {
-			@Override
-			public ObservableValue<Integer> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, Integer> value) {
-				return new SimpleIntegerProperty(value.getValue().getValue()).asObject();
-				}
-			});
+		tcIsbn.setCellValueFactory(new BookISBNTableColumnCellFactory());		
+		tcTitle.setCellValueFactory(new BookTitleTableColumnCellFactory());
+		tcQuantity.setCellValueFactory(new BookQuantityTableColumnCellFactory());
 		
 		tcQuantity.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 		
@@ -156,5 +139,26 @@ public class CreateBillView extends IView {
 		pane.setPadding(new Insets(20));
 		pane.setSpacing(10);
 		pane.getChildren().addAll(bookListPane, billPane);
+	}
+	
+	private static class BookISBNTableColumnCellFactory implements Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>,String>, ObservableValue<String>> {
+		@Override
+		public ObservableValue<String> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, String> book) {
+			return new SimpleStringProperty(book.getValue().getKey().getBook().getIsbn());
+		}
+	}
+	
+	private static class BookTitleTableColumnCellFactory implements Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>, String>, ObservableValue<String>> {
+		@Override
+		public ObservableValue<String> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, String> book) {
+			return new SimpleStringProperty(book.getValue().getKey().getBook().getTitle());
+		}
+	}
+	
+	private static class BookQuantityTableColumnCellFactory implements Callback<TableColumn.CellDataFeatures<Entry<BookInventoryDTO,Integer>,Integer>, ObservableValue<Integer>> {
+		@Override
+		public ObservableValue<Integer> call(CellDataFeatures<Entry<BookInventoryDTO, Integer>, Integer> value) {
+			return new SimpleIntegerProperty(value.getValue().getValue()).asObject();
+		}
 	}
 }

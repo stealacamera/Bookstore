@@ -36,4 +36,9 @@ public class CategoryDTO {
 		
 		return getId() == model.getId() && getName().equals(model.getName());
 	}
+	
+	@Override
+	public int hashCode() {
+		return getId() + getName().hashCode();
+	}
 }

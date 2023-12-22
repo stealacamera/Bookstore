@@ -34,6 +34,7 @@ class BookTesting {
 		"123-4-54-564234-56",
 		"-----------",
 	})
+	@Test
 	void BookTestingInvalidISDM(String ISDM) {
 		Exception exc = assertThrows(WrongFormatException.class,()->BookDummy.setIsbn(ISDM));
 		assertEquals("Incorrect ISBN format: Correct format is (3 digits)-(1 digit)-(2 digits)-(6 digits)-(1 digit)",exc.getMessage());

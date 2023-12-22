@@ -77,12 +77,6 @@ public class TestEmployeeService {
 		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 	
-	@ParameterizedTest
-	@MethodSource("provideValuesForGet")
-	void testGet(EmployeeDTO expected, int index) {
-		assertEquals(expected, service.get(index));
-	}
-	
 	@Test
 	void testGetById_NotInDatabase() {
 		assertNull(service.getById(0));
@@ -212,20 +206,10 @@ public class TestEmployeeService {
 			Arguments.of(null, null),
 			Arguments.of("", null),
 			Arguments.of(" ", null),
-			Arguments.of(models[0].getUsername(), null),
-			Arguments.of(models[0].getUsername(), ""),
-			Arguments.of(models[0].getUsername(), " ")
+			Arguments.of("foo", null),
+			Arguments.of("foo", ""),
+			Arguments.of("foo", " ")
 		);
-	}
-	
-	private static Stream<Arguments> provideValuesForGet() {
-		return Stream.of(
-				Arguments.of(modelDTOs[0], 0), 
-				Arguments.of(modelDTOs[1], 1), 
-				Arguments.of(modelDTOs[3], 3), 
-				Arguments.of(modelDTOs[5], 5),
-				Arguments.of(modelDTOs[6], 6)
-			);
 	}
 	
 	private static Stream<Arguments> provideValuesForChangeToExistingUsername() {

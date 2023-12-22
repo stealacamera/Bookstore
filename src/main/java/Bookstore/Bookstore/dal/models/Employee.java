@@ -96,7 +96,7 @@ public class Employee extends User implements Serializable, Comparable<Employee>
 	
 	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof Employee))
+		if(!(o instanceof User) || !(o instanceof Employee))
 			return false;
 		
 		Employee model = (Employee) o;

@@ -1,7 +1,7 @@
 package Bookstore.Bookstore.views.employees;
 
-import Bookstore.Bookstore.views.IView;
 import Bookstore.Bookstore.bll.dto.EmployeeDTO;
+import Bookstore.Bookstore.views.IView;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,7 +12,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.util.Callback;
 
 public class ManageEmployeesView extends IView {
 	private VBox pane = new VBox();
@@ -76,28 +75,25 @@ public class ManageEmployeesView extends IView {
 		employeesLv.setItems(employees);
 		employeesLv.setFocusTraversable(false);
 		
-		employeesLv.setCellFactory(new Callback<ListView<EmployeeDTO>, ListCell<EmployeeDTO>>() {
-			@Override
-			public ListCell<EmployeeDTO> call(ListView<EmployeeDTO> arg0) {
-				return new ListCell<EmployeeDTO>() {
-					@Override
-					protected void updateItem(EmployeeDTO employee, boolean empty) {
-						super.updateItem(employee, empty);
-						
-						if(empty || employee == null) {
-							setText(null);
-							setGraphic(null);
-						} else {
-							if(employee.getAccessLvl() == 3) {
-								setDisable(true);
-								setTextFill(Color.GRAY);
-							}
-							
-							setText(employee.toString());
-						}
-					}
-				};
+		employeesLv.setCellFactory(cell -> new EmployeesListViewCell());
+	}
+	
+	private static class EmployeesListViewCell extends ListCell<EmployeeDTO> {
+		@Override
+		protected void updateItem(EmployeeDTO employee, boolean empty) {
+			super.updateItem(employee, empty);
+			
+			if(empty || employee == null) {
+				setText(null);
+				setGraphic(null);
+			} else {
+				if(employee.getAccessLvl() == 3) {
+					setDisable(true);
+					setTextFill(Color.GRAY);
+				}
+				
+				setText(employee.toString());
 			}
-		});
+		}
 	}
 }

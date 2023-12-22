@@ -3,8 +3,8 @@ package Bookstore.Bookstore.views.statistics;
 import java.time.LocalDate;
 import java.util.List;
 
-import Bookstore.Bookstore.views.IView;
 import Bookstore.Bookstore.bll.dto.LibrarianPerformanceDTO;
+import Bookstore.Bookstore.views.IView;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -51,18 +51,7 @@ public class LibrarianPerformanceView extends IView {
 		tcBooks.setCellValueFactory(new PropertyValueFactory<LibrarianPerformanceDTO, Integer>("numOfBooks"));
 		
 		tcSalesAmount.setCellValueFactory(new PropertyValueFactory<LibrarianPerformanceDTO, Double>("salesAmount"));
-		tcSalesAmount.setCellFactory(cell -> new TableCell<LibrarianPerformanceDTO, Double>() {
-			@Override
-			protected void updateItem(Double sales, boolean empty) {
-				super.updateItem(sales, empty);
-				
-				if(empty || sales == null) {
-					setText(null);
-					setGraphic(null);
-				} else
-					setText(String.format("%.3f", sales));
-			}
-		});
+		tcSalesAmount.setCellFactory(cell -> new SalesAmountTableCellFactory());
 		
 		performanceDataTv.getColumns().add(tcEmployee);
 		performanceDataTv.getColumns().add(tcBills);
@@ -93,5 +82,18 @@ public class LibrarianPerformanceView extends IView {
 		pane.setSpacing(20);
 		
 		pane.getChildren().addAll(fieldsPane, performanceDataTv);
+	}
+	
+	private static class SalesAmountTableCellFactory extends TableCell<LibrarianPerformanceDTO, Double> {
+		@Override
+		protected void updateItem(Double sales, boolean empty) {
+			super.updateItem(sales, empty);
+			
+			if(empty || sales == null) {
+				setText(null);
+				setGraphic(null);
+			} else
+				setText(String.format("%.3f", sales));
+		}
 	}
 }

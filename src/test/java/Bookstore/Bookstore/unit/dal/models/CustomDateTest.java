@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -31,12 +32,14 @@ class CustomDateTest {
 		assertEquals("Incorrect date format: Correct format is DD/MM/YYYY (eg.: 21/03/1998)",exc.getMessage());
 	}
 	
+	@Test
 	void SetNullDate(){
 		LocalDate a = null;
 		Exception exc = assertThrows(EmptyInputException.class,()->dummyDate.setDate(a));
 		assertEquals("Input fields cannot be empty: Please enter a value for date",exc.getMessage());
 	}
 	
+	@Test
 	void TestEndDateIsBeforeAfterDate() {
 		LocalDate a = LocalDate.now();
 		LocalDate b = LocalDate.of(1999, 02, 04);
@@ -44,6 +47,7 @@ class CustomDateTest {
 		assertFalse(CustomDate.isInDate(a, b, c));
 	}
 	
+	@Test
 	void TestSearchDateIsBeforeAfterDate() {
 		LocalDate a = LocalDate.now();
 		LocalDate b = LocalDate.of(2024, 02, 04);
@@ -51,6 +55,7 @@ class CustomDateTest {
 		assertFalse(CustomDate.isInDate(a, b, c));
 	}
 	
+	@Test
 	void TestSearchDateIsAfterEndDate() {
 		LocalDate a = LocalDate.now();
 		LocalDate b = LocalDate.of(2024, 02, 04);
@@ -58,6 +63,7 @@ class CustomDateTest {
 		assertFalse(CustomDate.isInDate(a, b, c));
 	}
 	
+	@Test
 	void TestIsInDateWorksCorrectly() {
 		LocalDate a = LocalDate.now();
 		LocalDate b = LocalDate.of(2024, 02, 04);

@@ -26,7 +26,14 @@ public class BookInventory implements Serializable {
 	}
 	
 	public Book getBook() {
-		return book;
+		try {
+			return new Book(book);
+		} catch (EmptyInputException | WrongFormatException | WrongLengthException | NonPositiveInputException e) {
+			// Known that this error will not happen
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 	public void setBook(Book book) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {

@@ -88,6 +88,9 @@ public class EmployeeDTO extends UserDTO implements IReadOnlyEmployeeDTO {
 	
 	@Override
 	public boolean equals(Object o) {
+		if(!(o instanceof UserDTO))
+			return false;
+		
 		if(!(o instanceof EmployeeDTO))
 			return false;
 		
