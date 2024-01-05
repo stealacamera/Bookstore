@@ -96,6 +96,9 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 		if(username == null || username.isBlank())
 			throw new EmptyInputException("username");
 		
+		if(password == null || password.isBlank())
+			throw new EmptyInputException("password");
+		
 		Employee instance = db.getByUsername(username);
 		return instance == null ? false : instance.isCorrectPassword(password);
 	}

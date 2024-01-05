@@ -25,6 +25,7 @@ public class TestRepository extends TestRepositoryBase {
 	
 	@Test
 	void testGetAll_WithNoElements() throws ClassNotFoundException, IOException {
+				
 		repository = new RepositoryStub(dbContext, dataDirPath);
 		assertIterableEquals(repository.getAll(), getDataFromFile());
 	}
