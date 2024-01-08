@@ -23,7 +23,6 @@ public class UserDTO implements IReadOnlyUserDTO {
 		this(username, fullName, email, phoneNum, birthdate);
 		setId(0);
 		setPassword(password);
-		
 	}
 	
 	public UserDTO(int id, String username, String fullName, String email, String hashedPassword, String phoneNum, LocalDate birthdate) {
@@ -32,8 +31,13 @@ public class UserDTO implements IReadOnlyUserDTO {
 		setHashedPassword(hashedPassword);
 	}
 	
-	public UserDTO(UserDTO model) {
-		this(model.getId(), model.getUsername(), model.getFullName(), model.getEmail(), model.getHashedPassword(), model.getPhoneNum(), model.getBirthdate());
+	public UserDTO(UserDTO model) {		
+		this(model.getUsername(), model.getFullName(), model.getEmail(), model.getPassword(), model.getPhoneNum(), model.getBirthdate());
+		
+		if(model.getId() != 0) {
+			setId(model.getId());
+			setHashedPassword(model.getHashedPassword());
+		}			
 	}
 	
 	public int getId() {
@@ -100,9 +104,13 @@ public class UserDTO implements IReadOnlyUserDTO {
 		
 		UserDTO model = (UserDTO) o;
 		
+		boolean isPasswordEquals = getId() == 0 ? 
+				getPassword().equals(model.getPassword()) : 
+				getHashedPassword().equals(model.getHashedPassword());
+		
 		return getId() == model.getId() && getUsername().equals(model.getUsername()) &&
-				getFullName().equals(model.getFullName()) && getEmail().equals(model.getEmail()) &&
-				(getHashedPassword().equals(model.getHashedPassword()) || getPassword().equals(model.getPassword()));
+			   getFullName().equals(model.getFullName()) && getEmail().equals(model.getEmail()) && 
+			   getPhoneNum().equals(model.getPhoneNum()) && isPasswordEquals;
 	}
 	
 	@Override

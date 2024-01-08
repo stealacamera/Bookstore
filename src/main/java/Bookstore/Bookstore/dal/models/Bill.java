@@ -14,6 +14,13 @@ public class Bill implements Serializable {
 	private int sellerId;
 	private CustomDate date;
 	
+	public Bill(int sellerId, double saleAmount, int numOfBooks, CustomDate date) throws NonPositiveInputException, EmptyInputException {
+		setSellerId(sellerId);
+		setSaleAmount(saleAmount); 
+		setNumOfBooks(numOfBooks);
+		setDate(date);
+	}
+	
 	public Bill(int sellerId, double saleAmount, int numOfBooks) throws NonPositiveInputException {
 		setSellerId(sellerId);
 		setSaleAmount(saleAmount); 
@@ -62,6 +69,10 @@ public class Bill implements Serializable {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public void setDate(CustomDate date) throws EmptyInputException {
+		this.date = new CustomDate(date.getDate());
 	}
 	
 	@Override

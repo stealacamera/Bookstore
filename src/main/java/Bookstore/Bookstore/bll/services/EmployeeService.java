@@ -117,7 +117,7 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 	@Override
 	protected Employee convertToDAO(EmployeeDTO model) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		User instanceUser;
-		
+
 		if(model.getId() == 0) {
 			instanceUser = new User(
 				model.getUsername(), model.getFullName(), 

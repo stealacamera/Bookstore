@@ -31,7 +31,24 @@ public class BookExpensesView extends IView {
 	private DatePicker dateDp = new DatePicker(LocalDate.now());
 	private RadioButton dailyBox = new RadioButton("Daily"), monthlyBox = new RadioButton("Monthly"), totalBox = new RadioButton("Total");
 	
-	public BookExpensesView() {		
+	public BookExpensesView() {
+		createLayout();
+		
+		dateDp.setId("date-picker");
+		dailyBox.setId("daily-toggle");
+		monthlyBox.setId("monthly-toggle");
+		totalBox.setId("total-toggle");
+		
+		dailyChart.setId("daily-chart");
+		totalChart.setId("total-chart");
+
+		super.getChildren().add(pane);
+	}
+	
+	public LocalDate getDateValue() { return dateDp.getValue(); }
+	public void setDateListener(ChangeListener<LocalDate> action) { dateDp.valueProperty().addListener(action); }
+	
+	private void createLayout() {
 		ToggleGroup radios = new ToggleGroup();
 		dailyBox.setToggleGroup(radios);
 		monthlyBox.setToggleGroup(radios);
@@ -41,14 +58,6 @@ public class BookExpensesView extends IView {
 		monthlyBox.setOnAction(e -> pane.setCenter(monthlyChart));
 		totalBox.setOnAction(e -> pane.setCenter(totalChart));
 		
-		createLayout();
-		super.getChildren().add(pane);
-	}
-	
-	public LocalDate getDateValue() { return dateDp.getValue(); }
-	public void setDateListener(ChangeListener<LocalDate> action) { dateDp.valueProperty().addListener(action); }
-	
-	private void createLayout() {
 		HBox dailyOptionPane = new HBox(dailyBox, dateDp);
 		VBox optionsPane = new VBox(dailyOptionPane, monthlyBox, totalBox);
 		
@@ -88,6 +97,7 @@ public class BookExpensesView extends IView {
 		}
 		
 		monthlyChart = new BarChart<String, Number>(xAxis, yAxis);
+		monthlyChart.setId("monthly-chart");
 		monthlyChart.setTitle("Monthly cash flow");
 		
 		monthlyChart.getData().add(salesSeries);

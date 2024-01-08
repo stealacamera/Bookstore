@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -36,6 +37,11 @@ public class HomepageView extends IView {
 	private MenuItem changePasswordMi = new MenuItem("Change password"), addCategoryMi = new MenuItem("Add new category");
 	
 	public HomepageView() {
+		buttonsPane.setId("user-actions");
+		menuBar.setId("options-menu");
+		addCategoryMi.setId("category-menu");
+		setId("homepage-view");
+		
 		setMenuBar();
 		createLayout();
 		
@@ -51,6 +57,9 @@ public class HomepageView extends IView {
 		
 		stockWarning.setContentText(message.toString());
 		stockWarning.showAndWait();
+		
+		stockWarning.getButtonTypes().clear();
+		stockWarning.getButtonTypes().add(ButtonType.OK);
 	}
 	
 	public void addActionBt(Button actionBtn) {

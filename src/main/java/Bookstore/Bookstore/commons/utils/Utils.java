@@ -8,9 +8,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class Utils {
-	private static final String userDataDirPath = "user_data";
-	public static final String dataDirPath = userDataDirPath + "/data";
-	public static final String billsDirPath = userDataDirPath + "/bills";
+	public static final String userDataDirPath = "user_data", 
+			testingUserDataDirPath = "temp_" + userDataDirPath,
+			dataDirPath = userDataDirPath + "/data",
+			billsDirPath = userDataDirPath + "/bills";
 	
 	public static Stage getCurrentStage(ActionEvent event) {
 		Node node = (Node) event.getSource();

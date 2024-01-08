@@ -44,4 +44,13 @@ public enum Role implements Serializable {
 		
 		return adminPermissions;
 	}
+	
+	public static Role fromString(String permission) {
+		for(Role role: Role.values()) {
+			if(role.text.equals(permission))
+				return role;
+		}
+		
+		return null;
+	}
 }

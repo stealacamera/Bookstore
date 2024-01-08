@@ -22,6 +22,7 @@ import Bookstore.Bookstore.commons.exceptions.IncorrectPermissionsException;
 import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
 import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
 import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
+import Bookstore.Bookstore.commons.utils.Utils;
 import Bookstore.Bookstore.dal.models.Employee;
 import Bookstore.Bookstore.dal.models.User;
 import Bookstore.Bookstore.dal.models.utils.CustomDate;
@@ -35,7 +36,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class TestEmployeeServiceNeighborhood {
-	private static String tempDataDirPath = "temp_user_data/data";
+	private static String tempDataDirPath = Utils.testingUserDataDirPath;
 	private IEmployeeRepository repository = new EmployeeRepository(tempDataDirPath, new DbContext());
 	private IEmployeeService service = new EmployeeService(repository);
 	

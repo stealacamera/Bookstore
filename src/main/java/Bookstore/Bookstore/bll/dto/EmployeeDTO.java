@@ -88,17 +88,14 @@ public class EmployeeDTO extends UserDTO implements IReadOnlyEmployeeDTO {
 	
 	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof UserDTO))
-			return false;
-		
-		if(!(o instanceof EmployeeDTO))
+		if(!(o instanceof UserDTO) || !(o instanceof EmployeeDTO))
 			return false;
 		
 		EmployeeDTO model = (EmployeeDTO) o;
 		
-		return getId() == model.getId() && getAccessLvl() == model.getAccessLvl() &&
-				getEmail().equals(model.getEmail()) &&
-				(getHashedPassword().equals(model.getHashedPassword()) || getPassword().equals(model.getPassword()));
+		return super.equals(model) && 
+			getAccessLvl() == model.getAccessLvl() && 
+			getSalary() == model.getSalary();
 	}
 	
 	@Override

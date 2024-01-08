@@ -20,6 +20,11 @@ public class LoginView extends IView {
 	private Button loginBt = new Button("Log in");
 	
 	public LoginView() {
+		usernameTf.setId("username");
+		passwordTf.setId("password");
+		loginBt.setId("loginBtn");
+		setId("login-view");
+		
 		createLayout();
 		super.getChildren().add(pane);
 	}

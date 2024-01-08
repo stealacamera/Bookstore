@@ -29,16 +29,28 @@ public class AddBookView extends IView {
 			sellingPriceTf = new TextField(), stockTf = new TextField();
 	
 	public AddBookView() {
-		stockTf.setTextFormatter(Forms.getPositiveNumberFormatter());
-		purchasedPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
-		originalPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
-		sellingPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
+		submitBt.setId("submit-btn");
+		purchasedDateDp.setId("purchased-date");
+		isbnTf.setId("isbn");
+		titleTf.setId("title");
+		authorTf.setId("author");
+		supplierTf.setId("supplier");
+		purchasedPriceTf.setId("purchased-price");
+		originalPriceTf.setId("original-price");
+		sellingPriceTf.setId("selling-price");
+		stockTf.setId("stock");
+		categoryLv.setId("category-list");
 		
 		createLayout();
 		super.getChildren().add(pane);
 	}
 	
-	private void createLayout() {		
+	private void createLayout() {
+		stockTf.setTextFormatter(Forms.getPositiveNumberFormatter());
+		purchasedPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
+		originalPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
+		sellingPriceTf.setTextFormatter(Forms.getDecimalNumberFormatter());
+		
 		Control[] fields = {isbnTf, titleTf, authorTf, categoryLv, supplierTf, purchasedDateDp, purchasedPriceTf, originalPriceTf, sellingPriceTf, stockTf};
 		String[] fieldLabels = {"ISBN:", "Title:", "Author:", "Category:", "Supplier:", "Purchased date:", "Purchased price:", "Original price:", "Selling price:", "Stock:"};
 		

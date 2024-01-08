@@ -38,13 +38,6 @@ public class BookController {
 					throw new EmptyInputException("stock");
 				
 				updateStock(e.getRowValue(), e.getNewValue());
-				
-				int oldStockNr = e.getOldValue().intValue(), newStockNr = e.getNewValue().intValue();
-				
-				if(newStockNr > oldStockNr) {
-					double purchasePrice = e.getRowValue().getPurchasedPrice() * (newStockNr - oldStockNr);
-					bookPurchaseService.add(new BookPurchaseDTO(purchasePrice, LocalDate.now()));
-				}
 			} catch(NonPositiveInputException | ExistingObjectException | EmptyInputException | WrongFormatException | WrongLengthException | IncorrectPermissionsException ex) {
 				e.getTableView().getColumns().get(2).setVisible(false);
 				e.getTableView().getColumns().get(2).setVisible(true);
@@ -86,11 +79,13 @@ public class BookController {
 		return view;
 	}
 	
-	private void updateStock(BookInventoryDTO book, int stock) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException, ExistingObjectException, IncorrectPermissionsException {
-		bookService.updateStock(book, stock);
+	private void updateStock(BookInventoryDTO book, int stock) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException, ExistingObjectException, IncorrectPermissionsException {		
+		if(stock > book.getStock()) {
+			BookPurchaseDTO purchase = new BookPurchaseDTO(book.getPurchasedPrice() * (stock - book.getStock()), LocalDate.now());
+			bookPurchaseService.add(purchase);
+		}
 		
-		BookPurchaseDTO purchase = new BookPurchaseDTO(book.getSellingPrice() * stock, LocalDate.now());
-		bookPurchaseService.add(purchase);
+		bookService.updateStock(book, stock);
 	}
 	
 	private void delete(int index) throws Exception {

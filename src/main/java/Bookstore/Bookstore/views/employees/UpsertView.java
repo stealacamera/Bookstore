@@ -55,14 +55,14 @@ public class UpsertView extends IView {
 		setId("upsert_employee_view");
 		
 		birthdateDp.setId("birthdate");
-		submitBtn.setId("submit_btn");
+		submitBtn.setId("submit-btn");
 		usernameTf.setId("username");
-		fullNameTf.setId("full_name");
+		fullNameTf.setId("full-name");
 		emailTf.setId("email");
-		phoneNumTf.setId("phone_nr");
+		phoneNumTf.setId("phone-nr");
 		salaryTf.setId("salary");
 		passwordTf.setId("password");
-		accessLvlMenu.setId("access_lvl");
+		accessLvlMenu.setId("access-lvl");
 	}
 	
 	private void createLayout(boolean toInsert) {
@@ -120,7 +120,7 @@ public class UpsertView extends IView {
 		model.setBirthdate(birthdateDp.getValue());		
 		model.setPhoneNum(phoneNumTf.getText());
 		model.setSalary(salaryTf.getText().isBlank() ? 0 : Double.parseDouble(salaryTf.getText()));
-				
+		
 		if(model.getId() == 0) {
 			model.setPassword(passwordTf.getText());
 			model.setAccessLvl(accessLvlMenu.getSelectionModel().getSelectedItem());
@@ -160,6 +160,7 @@ public class UpsertView extends IView {
 		for(Map.Entry<Role, Boolean> permission: userPermissions.entrySet()) {
 			CheckBox box = new CheckBox(permission.getKey().toString());
 			box.setSelected(permission.getValue());
+			box.setId(permission.getKey().name());
 			
 			permissionBoxes.getChildren().add(box);
 		}

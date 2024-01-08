@@ -8,11 +8,15 @@ public class BillDTO {
 	private int sellerId;
 	private LocalDate date;
 	
-	public BillDTO(int sellerId, double saleAmount, int numOfBooks) {
+	public BillDTO(int sellerId, double saleAmount, int numOfBooks, LocalDate date) {
 		setSellerId(sellerId);
 		setSaleAmount(saleAmount);
 		setNumOfBooks(numOfBooks);
-		date = LocalDate.now();
+		setDate(date);
+	}
+	
+	public BillDTO(int sellerId, double saleAmount, int numOfBooks) {
+		this(sellerId, saleAmount, numOfBooks, LocalDate.now());
 	}
 
 	public double getSaleAmount() {

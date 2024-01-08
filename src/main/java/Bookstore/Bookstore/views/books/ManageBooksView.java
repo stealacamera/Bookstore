@@ -27,6 +27,9 @@ public class ManageBooksView extends IView {
 	private TableColumn<BookInventoryDTO, Integer> tcStock = new TableColumn<>("Stock");
 	
 	public ManageBooksView(ObservableList<BookInventoryDTO> books) {
+		booksTv.setId("books-list");
+		deleteBt.setId("delete-btn");
+		
 		setTvBooks(books);
 		createLayout();
 		super.getChildren().add(pane);

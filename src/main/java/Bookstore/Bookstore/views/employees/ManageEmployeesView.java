@@ -20,9 +20,11 @@ public class ManageEmployeesView extends IView {
 	private ListView<EmployeeDTO> employeesLv = new ListView<>();
 	
 	public ManageEmployeesView(ObservableList<EmployeeDTO> employees) {
-		addBt.setId("create_btn");
-		employeesLv.setId("employees_list");
-		setId("manage_employees_view");
+		addBt.setId("add-btn");
+		modifyBt.setId("modify-btn");
+		deleteBt.setId("delete-btn");
+		employeesLv.setId("employees-list");
+		setId("manage-employees-view");
 		
 		setList(employees);
 		createLayout();

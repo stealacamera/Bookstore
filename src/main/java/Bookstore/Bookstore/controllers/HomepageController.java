@@ -26,6 +26,7 @@ import Bookstore.Bookstore.commons.utils.Utils;
 import Bookstore.Bookstore.views.homepage.AddCategoryView;
 import Bookstore.Bookstore.views.homepage.ChangePasswordView;
 import Bookstore.Bookstore.views.homepage.HomepageView;
+import javafx.application.Platform;
 
 public class HomepageController {
 	private IBookInventoryService bookInventoryService;
@@ -48,17 +49,16 @@ public class HomepageController {
 	public IView getIndexView() {
 		HomepageView view = new HomepageView();
 		
-		List<String> lowStockBookTitles = getLowStockBooks();
-		if(Session.getCurrentUser().getAccessLvl() == 2 && lowStockBookTitles.size() != 0)
-			view.showLowStockWarning(getLowStockBooks());
-		
 		view.setChangePasswordListener(e -> Utils.createPopupStage("Change password", getChangePasswordView()).showAndWait());
-		view.setCategoryFormListener(e -> Utils.createPopupStage("Add new category", getAddCategoryView()).showAndWait());
+		
+		if(Session.getCurrentUser().getAccessLvl() != 1)
+			view.setCategoryFormListener(e -> Utils.createPopupStage("Add new category", getAddCategoryView()).showAndWait());
 		
 		view.createButtons(
 			Session.getCurrentUser().getPermissions(),
 			(permission, pane, goBackBtn) -> {
 				Map.Entry<String, IView> result = getHomeActionView(permission);
+				
 				return (e -> {
 					if(view != null) {
 						Utils.getCurrentStage(e).setTitle(result.getKey());
@@ -68,6 +68,10 @@ public class HomepageController {
 				});			
 			}
 		);
+		
+		List<String> lowStockBookTitles = getLowStockBooks();
+		if(Session.getCurrentUser().getAccessLvl() == 2 && lowStockBookTitles.size() != 0)
+			Platform.runLater(() -> view.showLowStockWarning(lowStockBookTitles));
 		
 		return view;
 	}
@@ -100,7 +104,7 @@ public class HomepageController {
 		return view;
 	}
 	
-	private IView getAddCategoryView() {
+	public IView getAddCategoryView() {
 		AddCategoryView view = new AddCategoryView();
 		
 		view.setAddAction(e -> {
@@ -120,7 +124,7 @@ public class HomepageController {
 		String viewTitle = null;
 		IView view = null;
 		
-		switch(permission) {
+		switch(permission ) {
 			case CREATE_BILL:
 				view = new BillController(billService, bookInventoryService).getCreateView();
 				viewTitle = "Create a bill";

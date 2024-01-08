@@ -15,10 +15,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 
+import Bookstore.Bookstore.commons.utils.Utils;
 import Bookstore.Bookstore.dal.repositories.DbContext;
 
 class TestRepositoryBase {
-	protected static String dataDirPath = "temp_user_data/data";
+	protected static String dataDirPath = Utils.testingUserDataDirPath;
 	@TempDir
 	protected static File dataDir, dataFile;
 	protected static DbContext dbContext;

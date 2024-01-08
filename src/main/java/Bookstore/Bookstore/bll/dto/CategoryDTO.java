@@ -4,6 +4,10 @@ public class CategoryDTO {
 	private int id;
 	private String name;
 	
+	public CategoryDTO(String name) {
+		this(0, name);
+	}
+	
 	public CategoryDTO(int id, String name) {
 		setId(id);
 		setName(name);

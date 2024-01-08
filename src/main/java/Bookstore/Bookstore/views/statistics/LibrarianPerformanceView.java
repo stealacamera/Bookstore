@@ -32,6 +32,14 @@ public class LibrarianPerformanceView extends IView {
 	private TableColumn<LibrarianPerformanceDTO, Double> tcSalesAmount = new TableColumn<>("Sales amount");
 	
 	public LibrarianPerformanceView() {
+		startDateDp.setId("start-date");
+		endDateDp.setId("end-date");
+		submitBt.setId("submit-btn");
+		
+		performanceDataTv.setId("performance-table");
+		
+		setId("libr-performance-view");
+		
 		createLayout();
 		super.getChildren().add(pane);
 	}

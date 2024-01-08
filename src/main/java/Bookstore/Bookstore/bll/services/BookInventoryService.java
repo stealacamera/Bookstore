@@ -31,6 +31,15 @@ public class BookInventoryService extends Service<BookInventory, BookInventoryDT
 		this.db = db;
 	}
 	
+	@Override
+	public BookInventoryDTO getByISBN(String isbn) throws EmptyInputException {
+		if(isbn == null || isbn.isBlank())
+			throw new EmptyInputException("ISBN");
+		
+		BookInventory book = db.getByISBN(isbn);
+		return book == null ? null : convertToDTO(book);
+	}
+	
 	// Adds only books with unique ISBNs
 	// Objects are added alphabetically by title
 	@Override

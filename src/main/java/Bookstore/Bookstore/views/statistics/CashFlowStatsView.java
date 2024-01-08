@@ -30,6 +30,10 @@ public class CashFlowStatsView extends IView {
 	private XYChart.Series<String, Number> incomeSeries = new XYChart.Series<>(), costsSeries = new XYChart.Series<>();
 	
 	public CashFlowStatsView() {
+		startDateDp.setId("start-date");
+		endDateDp.setId("end-date");
+		submitBt.setId("submit-btn");
+		
 		createLayout();
 		super.getChildren().add(pane);
 	}
@@ -43,6 +47,7 @@ public class CashFlowStatsView extends IView {
 		costsSeries.setName("Costs");
 		
 		cashFlowChart = new BarChart<>(xAxis, yAxis);
+		cashFlowChart.setId("cashflow-chart");
 		cashFlowChart.setTitle("Cash flow");
 		cashFlowChart.setAnimated(false);
 				

@@ -17,6 +17,9 @@ public class AddCategoryView extends IView {
 	private Button addBt = new Button("Add");
 	
 	public AddCategoryView() {
+		categoryTf.setId("category-name");
+		addBt.setId("submit-btn");
+		
 		createLayout();
 		super.getChildren().add(pane);
 	}
