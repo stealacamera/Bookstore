@@ -128,7 +128,7 @@ public class BillController {
 	
 	private void createBillFile(List<Map.Entry<BookInventoryDTO, Integer>> bill, double billTotal) throws FileNotFoundException, IOException {
 		Files.createDirectories(Paths.get(Utils.billsDirPath));
-		File billFile = new File(Utils.billsDirPath, (billService.count() + 1) + ".txt");
+		File billFile = new File(Utils.billsDirPath, (billService.count()) + ".txt");
 		
 		try(PrintWriter write = new PrintWriter(billFile, Charset.forName("UTF-8"))) {		
 			for(Map.Entry<BookInventoryDTO, Integer> soldBook: bill) {

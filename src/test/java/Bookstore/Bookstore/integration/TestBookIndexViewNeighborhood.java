@@ -14,13 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.testfx.api.FxAssert;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import org.testfx.matcher.control.LabeledMatchers;
-import org.testfx.util.WaitForAsyncUtils;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.bll.dto.BookDTO;
 import Bookstore.Bookstore.bll.dto.BookInventoryDTO;
 import Bookstore.Bookstore.bll.dto.BookPurchaseDTO;
@@ -88,7 +86,7 @@ public class TestBookIndexViewNeighborhood extends TestNeighborHoodBase {
 	
 	@Test
 	void testIndexList(FxRobot robot) {
-		assertEquals(bookService.getAll().size(), robot.lookup("#books-list").queryTableView().getItems().size());
+		assertEquals(bookService.count(), robot.lookup("#books-list").queryTableView().getItems().size());
 	}
 	
 	@ParameterizedTest
@@ -104,7 +102,7 @@ public class TestBookIndexViewNeighborhood extends TestNeighborHoodBase {
 			double purchasePrice = book.getPurchasedPrice() * (newStock - oldStock);
 			purchases.add(new BookPurchaseDTO(purchasePrice, LocalDate.now()));
 			
-			assertEquals(purchases.size(), bookPurchaseService.getAll().size());
+			assertEquals(purchases.size(), bookPurchaseService.count());
 			assertEquals(purchasePrice, bookPurchaseService.get(purchases.size() - 1).getAmount());
 		}
 	}
@@ -115,8 +113,7 @@ public class TestBookIndexViewNeighborhood extends TestNeighborHoodBase {
 		robot.doubleClickOn(robot.lookup(".table-cell").nth(2).queryAs(TableCell.class))
 			 .eraseText(5).write(newStock).press(KeyCode.ENTER);
 		
-		WaitForAsyncUtils.waitForFxEvents();	
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText(errorMessage));
+		TestingUtils.testErrorMessage(robot, errorMessage);
 		
 		assertEquals(book.getStock(), bookService.getByISBN(book.getBook().getIsbn()).getStock());
 	}
@@ -125,10 +122,9 @@ public class TestBookIndexViewNeighborhood extends TestNeighborHoodBase {
 	void testDeleteBook_EntityNotSelected(FxRobot robot) {
 		robot.clickOn("#delete-btn");
 		
-		WaitForAsyncUtils.waitForFxEvents();	
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText("Please select an item"));
+		TestingUtils.testErrorMessage(robot, "Please select an item");
 		
-		assertEquals(books.size(), bookService.getAll().size());
+		assertEquals(books.size(), bookService.count());
 	}
 	
 	@Test
@@ -139,7 +135,7 @@ public class TestBookIndexViewNeighborhood extends TestNeighborHoodBase {
 		String isbnRemoved = books.get(0).getBook().getIsbn();
 		books.remove(0);
 		
-		assertEquals(books.size(), bookService.getAll().size());
+		assertEquals(books.size(), bookService.count());
 		assertNull(bookService.getByISBN(isbnRemoved));
 	}
 	

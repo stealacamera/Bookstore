@@ -12,13 +12,12 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.api.FxAssert;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import org.testfx.matcher.control.LabeledMatchers;
 import org.testfx.util.WaitForAsyncUtils;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.bll.dto.BillDTO;
 import Bookstore.Bookstore.bll.dto.EmployeeDTO;
 import Bookstore.Bookstore.bll.dto.LibrarianPerformanceDTO;
@@ -65,14 +64,14 @@ public class TestLibrarianPerformanceViewNeighborhood extends TestNeighborHoodBa
 				EmployeeDTO librarian = new EmployeeDTO(user, 200, 1);
 				employeeService.add(librarian);			
 				
-				BillDTO bill1 = new BillDTO(i + 1, 100, 2), bill2 = new BillDTO(i + 1, 50, 1);				
+				int sellerId = employeeService.getByUsername(librarian.getUsername()).getId();
+				BillDTO bill1 = new BillDTO(sellerId, 100, 2), bill2 = new BillDTO(sellerId, 50, 1);				
 				billService.add(bill1);
 				billService.add(bill2);
 				
 				librarianBills.put(
 					String.format("%s (%s)", librarian.getFullName(), librarian.getUsername()), 
-					new SimpleEntry<Integer, Double>(2, bill1.getSaleAmount() + bill2.getSaleAmount()
-					)
+					new SimpleEntry<Integer, Double>(2, bill1.getSaleAmount() + bill2.getSaleAmount())
 				);
 			}
 			
@@ -104,8 +103,7 @@ public class TestLibrarianPerformanceViewNeighborhood extends TestNeighborHoodBa
 		robot.clickOn("#submit-btn");
 		
 		// Check for error pop-up
-		WaitForAsyncUtils.waitForFxEvents();		
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText("Starting date should follow ending date"));
+		TestingUtils.testErrorMessage(robot, "Starting date should follow ending date");
 	}
 	
 	@Test

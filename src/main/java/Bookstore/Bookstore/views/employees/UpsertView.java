@@ -21,7 +21,7 @@ import javafx.scene.layout.VBox;
 import Bookstore.Bookstore.dal.models.utils.Role;
 
 public class UpsertView extends IView {
-	private int modelId;
+	private int modelId, modelAccessLvl;
 	private VBox pane = new VBox();
 	
 	private DatePicker birthdateDp = new DatePicker();
@@ -37,7 +37,9 @@ public class UpsertView extends IView {
 	private FlowPane permissionBoxes;
 	
 	public UpsertView(EmployeeDTO model) {
-		modelId = model.getId();
+		this.modelId = model.getId();
+		this.modelAccessLvl = model.getAccessLvl();
+		
 		createLayout(modelId == 0);
 		
 		if(modelId != 0)
@@ -120,11 +122,12 @@ public class UpsertView extends IView {
 		model.setBirthdate(birthdateDp.getValue());		
 		model.setPhoneNum(phoneNumTf.getText());
 		model.setSalary(salaryTf.getText().isBlank() ? 0 : Double.parseDouble(salaryTf.getText()));
-		
+
 		if(model.getId() == 0) {
 			model.setPassword(passwordTf.getText());
 			model.setAccessLvl(accessLvlMenu.getSelectionModel().getSelectedItem());
 		} else {
+			model.setAccessLvl(modelAccessLvl);
 			model.setHashedPassword(passwordTf.getText());
 			model.setPermissionStatuses(getPermissions());
 		}		

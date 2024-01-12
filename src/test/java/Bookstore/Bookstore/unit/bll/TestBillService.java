@@ -55,7 +55,7 @@ public class TestBillService {
 	@Test
 	void testGetAll_Empty() {
 		service = new BillService(new BillRepositoryMock());
-		assertEquals(0, service.getAll().size());
+		assertEquals(0, service.count());
 	}
 	
 	@Test

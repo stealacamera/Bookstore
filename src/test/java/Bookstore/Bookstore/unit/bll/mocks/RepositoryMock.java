@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 public abstract class RepositoryMock<T extends Serializable> implements IRepository<T> {
 	protected List<T> dummyData = new ArrayList<>();
 	
+	@SuppressWarnings("unchecked")
 	public void addDummyData(T... models) {
 		for(T model: models)		
 			dummyData.add(model);

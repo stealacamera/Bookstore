@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import Bookstore.Bookstore.commons.utils.Utils;
 
-class UtilsTesting {
+class TestUtils {
 
 	@ParameterizedTest
 	@CsvSource({

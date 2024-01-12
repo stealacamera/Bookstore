@@ -96,7 +96,7 @@ public class TestEmployeeServiceNeighborhood {
 	@Then("the new employee is not saved")
 	public void the_new_employee_is_not_saved() {
 		repository.saveChanges();
-	    assertEquals(data.size() + 3, repository.getAll().size());
+	    assertEquals(data.size() + 3, repository.count());
 	}
 
 	@Then("the new employee should be saved")

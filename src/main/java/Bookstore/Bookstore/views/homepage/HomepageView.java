@@ -121,6 +121,7 @@ public class HomepageView extends IView {
 			if(permission.getValue())
 				actionBtn.setOnAction(getBtnListener.apply(permission.getKey(), pane, backBt));
 			
+			actionBtn.setId(permission.getKey().name());
 			actionBtn.setDisable(!permission.getValue());
 			actionBtn.setPrefSize(150, 150);
 			actionBtn.setFont(Font.font(15));

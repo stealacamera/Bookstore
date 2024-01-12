@@ -53,27 +53,44 @@ public class Main extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) {
-		//Set up login page
-		LoginController loginCtrl = new LoginController(Injector.getDependency(IEmployeeService.class));
+		setUpApplication(
+			primaryStage, 
+			Injector.getDependency(IBookInventoryService.class), 
+			Injector.getDependency(ICategoryService.class),
+			Injector.getDependency(IBillService.class),
+			Injector.getDependency(IBookPurchaseService.class),
+			Injector.getDependency(IEmployeeService.class)
+		);
+	}
+	
+	public static void setUpApplication(Stage stage,
+			IBookInventoryService bookService, 
+			ICategoryService categoryService, 
+			IBillService billService,
+			IBookPurchaseService bookPurchaseService,
+			IEmployeeService employeeService) 
+	{
+		LoginController loginCtrl = new LoginController(employeeService);
 		
 		Stage loginStage = new Stage();
 		loginStage.setTitle("Log in"); 
 		loginStage.setScene(new Scene(loginCtrl.getIndexView()));
-		loginStage.showAndWait();
 		
-		if(Session.getCurrentUser() == null)
-			return;
+		loginStage.setOnHidden(e -> {
+			if(Session.getCurrentUser() == null)
+				return;
+			
+			HomepageController homepageCtrl = new HomepageController(
+				bookService, categoryService, billService, 
+				bookPurchaseService, employeeService
+			);
+					
+			stage.setTitle("Homepage");
+			stage.setScene(new Scene(homepageCtrl.getIndexView()));
+			stage.show();
+		});
 		
-		HomepageController homepageCtrl = new HomepageController(
-				Injector.getDependency(IBookInventoryService.class),
-				Injector.getDependency(ICategoryService.class),
-				Injector.getDependency(IBillService.class),
-				Injector.getDependency(IBookPurchaseService.class),
-				Injector.getDependency(IEmployeeService.class));
-				
-		primaryStage.setTitle("Homepage");
-		primaryStage.setScene(new Scene(homepageCtrl.getIndexView()));
-		primaryStage.show();
+		loginStage.show();
 	}
 	
 	public static void registerDependencies() {
@@ -95,7 +112,7 @@ public class Main extends Application {
 	}
 	
 	public static void seedData(IEmployeeService employeeService, ICategoryService categoryService) {		
-		if(employeeService.getAll().size() == 0) {
+		if(employeeService.count() == 0) {
 			UserDTO librarian, manager, admin;
 			
 			try {
@@ -111,7 +128,7 @@ public class Main extends Application {
 			}
 		}
 		
-		if(categoryService.getAll().size() == 0) {
+		if(categoryService.count() == 0) {
 			try {
 				categoryService.add(new CategoryDTO("Drama"));
 				categoryService.add(new CategoryDTO("Comedy"));

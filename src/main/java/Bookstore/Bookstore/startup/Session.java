@@ -13,4 +13,8 @@ public class Session {
 	public static IReadOnlyEmployeeDTO getCurrentUser() {
 		return currentUser;
 	}
+	
+	public static void clear() {
+		currentUser = null;
+	}
 }

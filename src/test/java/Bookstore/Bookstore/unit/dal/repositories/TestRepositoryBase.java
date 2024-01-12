@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.commons.utils.Utils;
 import Bookstore.Bookstore.dal.repositories.DbContext;
 
@@ -33,15 +34,13 @@ class TestRepositoryBase {
 	}
 	
 	@AfterEach
-	public void tearDown() {
+	public void deleteData() {
 		dataFile.delete();
 	}
 	
 	@AfterAll
-	public static void delete() {
-		File parentDir = dataDir.getParentFile();
-		dataDir.delete();
-		parentDir.delete();
+	public static void tearDown() {
+		TestingUtils.deleteTestDatabase(dataDir);
 	}
 	
 	protected static <T extends Serializable> void setTempDataToFile(List<T> data) throws IOException {

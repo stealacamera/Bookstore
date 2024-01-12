@@ -3,6 +3,7 @@ package Bookstore.Bookstore.views.statistics;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
 import Bookstore.Bookstore.views.IView;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -17,6 +18,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -38,15 +41,19 @@ public class BookExpensesView extends IView {
 		dailyBox.setId("daily-toggle");
 		monthlyBox.setId("monthly-toggle");
 		totalBox.setId("total-toggle");
-		
-		dailyChart.setId("daily-chart");
-		totalChart.setId("total-chart");
 
 		super.getChildren().add(pane);
 	}
 	
 	public LocalDate getDateValue() { return dateDp.getValue(); }
-	public void setDateListener(ChangeListener<LocalDate> action) { dateDp.valueProperty().addListener(action); }
+	
+	public void setDateListener(ChangeListener<LocalDate> action) { 
+		dateDp.valueProperty().addListener(action); 
+		dateDp.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+			if(e.getCode() == KeyCode.ENTER)
+				dateDp.setValue(LocalDate.parse(dateDp.getEditor().getText(), CustomDate.dateFormat));
+		});
+	}
 	
 	private void createLayout() {
 		ToggleGroup radios = new ToggleGroup();
@@ -78,6 +85,7 @@ public class BookExpensesView extends IView {
 		
 		dailyChart.setData(data);
 		dailyChart.setTitle("Daily cash flow");
+		dailyChart.setId("daily-chart");
 	}
 	
 	public void setMonthlyChart(double[] sales, double[] purchases) {
@@ -110,6 +118,7 @@ public class BookExpensesView extends IView {
 				new PieChart.Data("Book stock purchases", purchases));
 		
 		totalChart = new PieChart(data);
+		totalChart.setId("total-chart");
 		totalChart.setTitle("Total cash flow");
 	}
 }

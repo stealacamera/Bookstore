@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxAssert;
@@ -64,6 +65,23 @@ public class TestEmployeeInsertViewNeighborhood extends TestNeighborHoodBase {
 	}
 	
 	@Test
+	@Order(1)
+	void testAddEmployee_ValidValues(FxRobot robot) {
+		submitForm(
+			robot, employee.getUsername(), employee.getFullName(), 
+			employee.getEmail(), CustomDate.format(employee.getBirthdate()), employee.getPhoneNum(),
+			employee.getSalary(), employee.getPassword(), employee.getAccessLvl()
+		);
+		
+		employee.setId(1);
+		employee.setHashedPassword(Identity.hashPassword(employee.getPassword()));
+		
+		assertEquals(1, employeeService.count());
+		assertEquals(employee, employeeService.get(0));
+	}
+	
+	@Test
+	@Order(2)
 	void testAddEmployee_InvalidValues(FxRobot robot) {
 		submitForm(
 			robot, employee.getUsername(), employee.getFullName(), 
@@ -77,21 +95,6 @@ public class TestEmployeeInsertViewNeighborhood extends TestNeighborHoodBase {
 			LabeledMatchers.hasText("Incorrect phone number format: Correct format is 06X XXX XXXX")
 		);
 		
-		assertEquals(0, employeeService.getAll().size());
-	}
-	
-	@Test
-	void testAddEmployee_ValidValues(FxRobot robot) {
-		submitForm(
-			robot, employee.getUsername(), employee.getFullName(), 
-			employee.getEmail(), CustomDate.format(employee.getBirthdate()), employee.getPhoneNum(),
-			employee.getSalary(), employee.getPassword(), employee.getAccessLvl()
-		);
-		
-		employee.setId(2);
-		employee.setHashedPassword(Identity.hashPassword(employee.getPassword()));
-		
-		assertEquals(1, employeeService.getAll().size());
-		assertEquals(employee, employeeService.get(0));
+		assertEquals(1, employeeService.count());
 	}
 }

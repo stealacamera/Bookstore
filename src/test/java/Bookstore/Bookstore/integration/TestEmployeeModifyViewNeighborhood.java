@@ -1,5 +1,6 @@
 package Bookstore.Bookstore.integration;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
@@ -7,17 +8,16 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.testfx.api.FxAssert;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import org.testfx.matcher.control.LabeledMatchers;
-import org.testfx.util.WaitForAsyncUtils;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.bll.dto.EmployeeDTO;
 import Bookstore.Bookstore.bll.dto.UserDTO;
 import Bookstore.Bookstore.bll.services.EmployeeService;
@@ -27,6 +27,7 @@ import Bookstore.Bookstore.controllers.EmployeesController;
 import Bookstore.Bookstore.dal.repositories.DbContext;
 import Bookstore.Bookstore.dal.repositories.EmployeeRepository;
 import javafx.scene.Scene;
+import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
 
 @ExtendWith(ApplicationExtension.class)
@@ -55,8 +56,21 @@ public class TestEmployeeModifyViewNeighborhood extends TestNeighborHoodBase {
 	
 	@Start
 	private void start(Stage stage) {				
-		stage.setScene(new Scene(controller.getModifyView(employee)));
+		stage.setScene(new Scene(controller.getModifyView(employeeService.get(0))));
 		stage.show();
+	}
+	
+	@Test
+	void testFormIsFilledCorrectly() {		
+		assertAll(
+			"Form values",
+			() -> assertEquals(robot.lookup("#birthdate").queryAs(DatePicker.class).getValue(), employee.getBirthdate()),
+			() -> assertEquals(robot.lookup("#username").queryTextInputControl().getText(), employee.getUsername()),
+			() -> assertEquals(robot.lookup("#full-name").queryTextInputControl().getText(), employee.getFullName()),
+			() -> assertEquals(robot.lookup("#email").queryTextInputControl().getText(), employee.getEmail()),
+			() -> assertEquals(robot.lookup("#phone-nr").queryTextInputControl().getText(), employee.getPhoneNum()),
+			() -> assertEquals(Double.valueOf(robot.lookup("#salary").queryTextInputControl().getText()), employee.getSalary())
+		);
 	}
 	
 	@ParameterizedTest
@@ -67,9 +81,8 @@ public class TestEmployeeModifyViewNeighborhood extends TestNeighborHoodBase {
 		robot.clickOn("#submit-btn");
 				
 		// Check for error pop-up
-		WaitForAsyncUtils.waitForFxEvents();	
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText(errorMessage));
-	
+		TestingUtils.testErrorMessage(robot, errorMessage);
+		
 		// Check database entity hasn't changed
 		assertEquals(employee, employeeService.get(0));
 	}
@@ -95,10 +108,12 @@ public class TestEmployeeModifyViewNeighborhood extends TestNeighborHoodBase {
 	}
 	
 	private static Stream<Arguments> provideValidValues() {
+		String newUsername = "newUsername", newEmail = "newEmail@gmail.com", newPhoneNr = "068 789 7890";
+		
 		return Stream.of(
-			Arguments.of("#username", employee.getUsername().length(), "newUsername", (Consumer<EmployeeDTO>) employee -> employee.setUsername("newUsername")),
-			Arguments.of("#email", employee.getEmail().length(), "newEmail@gmail.com", (Consumer<EmployeeDTO>) employee -> employee.setEmail("newEmail@gmail.com")),
-			Arguments.of("#phone-nr", employee.getPhoneNum().length(), "068 789 7890", (Consumer<EmployeeDTO>) employee -> employee.setPhoneNum("068 789 7890"))
+			Arguments.of("#username", employee.getUsername().length(), newUsername, (Consumer<EmployeeDTO>) employee -> employee.setUsername(newUsername)),
+			Arguments.of("#email", employee.getEmail().length(), newEmail, (Consumer<EmployeeDTO>) employee -> employee.setEmail(newEmail)),
+			Arguments.of("#phone-nr", employee.getPhoneNum().length(), newPhoneNr, (Consumer<EmployeeDTO>) employee -> employee.setPhoneNum(newPhoneNr))
 		);
 	}
 }

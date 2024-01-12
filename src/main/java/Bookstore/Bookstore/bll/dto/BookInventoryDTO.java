@@ -59,7 +59,9 @@ public class BookInventoryDTO {
 		if(!(o instanceof BookInventoryDTO))
 			return false;
 		
-		return this.getBook().getIsbn().equals(((BookInventoryDTO) o).getBook().getIsbn());
+		BookInventoryDTO model = (BookInventoryDTO) o;
+		
+		return getBook().equals(model.getBook()) && getStock() == model.getStock();
 	}
 	
 	@Override

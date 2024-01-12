@@ -7,13 +7,11 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.api.FxAssert;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import org.testfx.matcher.control.LabeledMatchers;
-import org.testfx.util.WaitForAsyncUtils;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.bll.dto.BillDTO;
 import Bookstore.Bookstore.bll.dto.BookPurchaseDTO;
 import Bookstore.Bookstore.bll.dto.EmployeeDTO;
@@ -109,10 +107,10 @@ public class TestCashFlowStatsViewNeighborhood extends TestNeighborHoodBase {
 		robot.clickOn("#end-date").eraseText(endDate.length()).write(endDate);
 		robot.clickOn("#submit-btn");
 		
-		WaitForAsyncUtils.waitForFxEvents();	
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText("Starting date should follow ending date"));
+		TestingUtils.testErrorMessage(robot, "Starting date should follow ending date");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	void testCashFlowStatistics_ValidValues(FxRobot robot) {
 		String date = TestCashFlowStatsViewNeighborhood.date.format(CustomDate.dateFormat);

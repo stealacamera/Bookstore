@@ -66,7 +66,7 @@ public class LibrarianPerformanceView extends IView {
 		performanceDataTv.getColumns().add(tcBooks);
 		performanceDataTv.getColumns().add(tcSalesAmount);
 		
-		performanceDataTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		performanceDataTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 		performanceDataTv.setPrefWidth(500);
 	}
 	

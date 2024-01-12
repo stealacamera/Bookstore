@@ -44,7 +44,7 @@ public class TestBookInventoryService {
 		modelDTOs = new BookInventoryDTO[models.length];
 		
 		for(int i = 0; i < models.length; i++) {
-			Book book = new Book(i + "11-1-11-111111-1", "foo", "foo bar", "foobar", 1);
+			Book book = new Book("111-1-11-111111-" + i, "foo", "foo bar", "foobar", 1);
 			models[i] = new BookInventory(book, 1, 1, 1, 1, new CustomDate());
 			modelDTOs[i] = createEquivalentDTO(models[i]);
 		}

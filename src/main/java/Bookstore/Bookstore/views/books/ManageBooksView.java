@@ -27,6 +27,7 @@ public class ManageBooksView extends IView {
 	private TableColumn<BookInventoryDTO, Integer> tcStock = new TableColumn<>("Stock");
 	
 	public ManageBooksView(ObservableList<BookInventoryDTO> books) {
+		addBt.setId("add-btn");
 		booksTv.setId("books-list");
 		deleteBt.setId("delete-btn");
 		
@@ -68,7 +69,7 @@ public class ManageBooksView extends IView {
 		booksTv.getColumns().add(isbnTc);
 		booksTv.getColumns().add(titleTc);
 		booksTv.getColumns().add(tcStock);
-		booksTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		booksTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 		
 		booksTv.setPrefWidth(350);
 		booksTv.setEditable(true);

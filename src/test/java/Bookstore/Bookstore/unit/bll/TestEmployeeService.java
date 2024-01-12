@@ -59,7 +59,7 @@ public class TestEmployeeService {
 	}
 	
 	@BeforeEach
-	void setuUp() {
+	void setUp() {
 		mockRepository = new EmployeeRepositoryMock();
 		mockRepository.addDummyData(models);
 		
@@ -69,7 +69,7 @@ public class TestEmployeeService {
 	@Test
 	void testGetAll_Empty() {
 		service = new EmployeeService(new EmployeeRepositoryMock());
-		assertEquals(0, service.getAll().size());
+		assertEquals(0, service.count());
 	}
 	
 	@Test

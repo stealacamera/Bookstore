@@ -9,13 +9,12 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.api.FxAssert;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import org.testfx.matcher.control.LabeledMatchers;
 import org.testfx.util.WaitForAsyncUtils;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.bll.dto.EmployeeDTO;
 import Bookstore.Bookstore.bll.dto.UserDTO;
 import Bookstore.Bookstore.bll.services.EmployeeService;
@@ -78,8 +77,7 @@ public class TestEmployeeIndexViewNeighborhood extends TestNeighborHoodBase {
 	void testModifyEmployeeFormFill_EntityNotClicked(FxRobot robot) {
 		robot.clickOn("#modify-btn");
 		
-		WaitForAsyncUtils.waitForFxEvents();
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText("Please select an employee"));
+		TestingUtils.testErrorMessage(robot, "Please select an employee");
 	}
 	
 	@Test
@@ -108,12 +106,11 @@ public class TestEmployeeIndexViewNeighborhood extends TestNeighborHoodBase {
 	void testDeleteEmployee_EntityNotClicked(FxRobot robot) {
 		robot.clickOn("#delete-btn");
 		
-		WaitForAsyncUtils.waitForFxEvents();
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText("Please select an employee"));
+		TestingUtils.testErrorMessage(robot, "Please select an employee");
 
 		ListView<EmployeeDTO> employeeList = robot.lookup("#employees-list").queryListView();
 		assertEquals(1, employeeList.getItems().size());
-		assertEquals(employeeService.getAll().size(), employeeList.getItems().size());
+		assertEquals(employeeService.count(), employeeList.getItems().size());
 	}
 	
 	@Test
@@ -123,6 +120,6 @@ public class TestEmployeeIndexViewNeighborhood extends TestNeighborHoodBase {
 		
 		ListView<EmployeeDTO> employeeList = robot.lookup("#employees-list").queryListView();
 		assertEquals(1, employeeList.getItems().size());
-		assertEquals(employeeService.getAll().size(), employeeList.getItems().size());
+		assertEquals(employeeService.count(), employeeList.getItems().size());
 	}
 }

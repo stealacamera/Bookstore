@@ -20,7 +20,12 @@ public abstract class Service<DAO extends Serializable, DTO> implements IService
 	public Service(IRepository<DAO> db) {
 		this.db = db;
 	}
-		
+	
+	@Override
+	public int count() {
+		return db.count();
+	}
+	
 	@Override
 	public ObservableList<DTO> getAll() {
 		ObservableList<DTO> list = FXCollections.observableArrayList();

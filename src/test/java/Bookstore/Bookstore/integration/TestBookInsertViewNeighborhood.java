@@ -88,10 +88,10 @@ public class TestBookInsertViewNeighborhood extends TestNeighborHoodBase {
 			book.getBook().getCategoryId(), book.getBook().getSupplier(), book.getPurchasedPrice(),
 			book.getOriginalPrice(), book.getSellingPrice(), book.getStock());
 		
-		assertEquals(1, bookService.getAll().size());
+		assertEquals(1, bookService.count());
 		assertEquals(book, bookService.get(0));
 		
-		assertEquals(1, bookPurchaseService.getAll().size());
+		assertEquals(1, bookPurchaseService.count());
 		assertEquals(book.getSellingPrice() * book.getStock(), bookPurchaseService.get(0).getAmount());
 	}
 	

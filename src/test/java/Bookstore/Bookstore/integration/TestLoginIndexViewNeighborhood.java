@@ -11,13 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.testfx.api.FxAssert;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import org.testfx.matcher.control.LabeledMatchers;
-import org.testfx.util.WaitForAsyncUtils;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.bll.dto.EmployeeDTO;
 import Bookstore.Bookstore.bll.dto.UserDTO;
 import Bookstore.Bookstore.bll.services.EmployeeService;
@@ -74,8 +72,7 @@ public class TestLoginIndexViewNeighborhood extends TestNeighborHoodBase {
 		fillForm(username, password);
 		
 		// Check for error pop-up
-		WaitForAsyncUtils.waitForFxEvents();		
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText(errorMessage));
+		TestingUtils.testErrorMessage(robot, errorMessage);
 	}
 	
 	@Test
@@ -85,8 +82,7 @@ public class TestLoginIndexViewNeighborhood extends TestNeighborHoodBase {
 		fillForm("fake user", "fakepassword");
 		
 		// Check for error pop-up
-		WaitForAsyncUtils.waitForFxEvents();		
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText(errorMessage));
+		TestingUtils.testErrorMessage(robot, errorMessage);
 	}
 	
 	@Test

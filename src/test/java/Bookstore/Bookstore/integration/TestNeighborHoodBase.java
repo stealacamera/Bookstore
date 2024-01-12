@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.commons.utils.Utils;
 
 public abstract class TestNeighborHoodBase {
@@ -19,9 +20,6 @@ public abstract class TestNeighborHoodBase {
 	
 	@AfterAll
 	protected static void tearDown() {
-		for(File data: tempDataDir.listFiles())
-			data.delete();
-		
-		tempDataDir.delete();
+		TestingUtils.deleteTestDatabase(tempDataDir);
 	}
 }

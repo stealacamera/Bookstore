@@ -27,6 +27,8 @@ import Bookstore.Bookstore.views.homepage.AddCategoryView;
 import Bookstore.Bookstore.views.homepage.ChangePasswordView;
 import Bookstore.Bookstore.views.homepage.HomepageView;
 import javafx.application.Platform;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class HomepageController {
 	private IBookInventoryService bookInventoryService;
@@ -64,8 +66,10 @@ public class HomepageController {
 						Utils.getCurrentStage(e).setTitle(result.getKey());
 						pane.setCenter(result.getValue());
 						goBackBtn.setVisible(true);
+						
+						Stage.getWindows().stream().filter(Window::isShowing).findFirst().orElse(null).sizeToScene();
 					}
-				});			
+				});
 			}
 		);
 		

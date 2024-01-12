@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import Bookstore.Bookstore.commons.utils.Forms;
 import Bookstore.Bookstore.bll.dto.BookInventoryDTO;
+import Bookstore.Bookstore.commons.utils.Forms;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -38,7 +38,13 @@ public class CreateBillView extends IView {
 	TableColumn<Map.Entry<BookInventoryDTO, Integer>, Integer> tcQuantity = new TableColumn<>("Quantity");
 	
 	public CreateBillView(ObservableList<BookInventoryDTO> books) {
-		quantityTf.setTextFormatter(Forms.getPositiveNumberFormatter());
+		addBt.setId("add-btn");
+		removeBt.setId("remove-btn");
+		submitBt.setId("submit-btn");
+		quantityTf.setId("quantity");
+		
+		booksTv.setId("books-list");
+		billTv.setId("bills-list");
 		
 		setbooksTv(books);
 		setbillTv();
@@ -102,7 +108,7 @@ public class CreateBillView extends IView {
 		booksTv.getColumns().add(tcTitle);
 		booksTv.getColumns().add(tcStock);
 		
-		booksTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		booksTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 		booksTv.setPrefSize(350, 500);
 		booksTv.setItems(books);
 	}
@@ -122,7 +128,7 @@ public class CreateBillView extends IView {
 		billTv.getColumns().add(tcQuantity);
 		
 		billTv.setEditable(true);
-		billTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		billTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 		billTv.setPrefSize(350, 500);
 	}
 	
@@ -130,6 +136,7 @@ public class CreateBillView extends IView {
 		HBox quantityPane = new HBox(quantityTf, addBt), billButtonsPane = new HBox(removeBt, submitBt);
 		VBox bookListPane = new VBox(booksTv, quantityPane), billPane = new VBox(billTv, billButtonsPane);
 		
+		quantityTf.setTextFormatter(Forms.getPositiveNumberFormatter());
 		quantityPane.setSpacing(5);
 		billButtonsPane.setSpacing(10);
 		bookListPane.setSpacing(20);

@@ -6,13 +6,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.api.FxAssert;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import org.testfx.matcher.control.LabeledMatchers;
-import org.testfx.util.WaitForAsyncUtils;
 
+import Bookstore.Bookstore.TestingUtils;
 import Bookstore.Bookstore.bll.services.CategoryService;
 import Bookstore.Bookstore.bll.services.iservices.ICategoryService;
 import Bookstore.Bookstore.commons.utils.Utils;
@@ -44,10 +42,8 @@ public class TestCategoryInsertViewNeighborhood extends TestNeighborHoodBase {
 	void testInsert_InvalidValues(FxRobot robot) {
 		robot.clickOn("#submit-btn");
 		
-		WaitForAsyncUtils.waitForFxEvents();	
-		FxAssert.verifyThat("#alert_error_message", LabeledMatchers.hasText("Input fields cannot be empty: Please enter a value for name"));
-		
-		assertEquals(0, categoryService.getAll().size());
+		TestingUtils.testErrorMessage(robot, "Input fields cannot be empty: Please enter a value for name");
+		assertEquals(0, categoryService.count());
 	}
 	
 	@Order(2)
@@ -57,7 +53,7 @@ public class TestCategoryInsertViewNeighborhood extends TestNeighborHoodBase {
 		robot.clickOn("#category-name").write(name);
 		robot.clickOn("#submit-btn");
 		
-		assertEquals(1, categoryService.getAll().size());
+		assertEquals(1, categoryService.count());
 		assertEquals(name, categoryService.get(0).getName());
 	}
 }
