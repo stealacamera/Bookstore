@@ -139,13 +139,13 @@ public class TestAdminThreads extends TestThreadBase {
 		robot.clickOn("#" + Role.MANAGE_EMPLOYEES.name());
 		
 		ListCell<EmployeeDTO> cellToDelete = getEmployeeListCell();
-		EmployeeDTO employeeToDelete = cellToDelete.getItem();
+		int deletedEmployeeId = cellToDelete.getItem().getId();
 		
 		robot.clickOn(cellToDelete);
 		robot.clickOn("#delete-btn");
 		
 		// Post-conditions
-		assertNull(employeeService.getById(employeeToDelete.getId()));
+		assertNull(employeeService.getById(deletedEmployeeId));
 	}
 	
 	@Test

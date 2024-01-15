@@ -37,11 +37,11 @@ public abstract class TestThreadBase {
 	static void setUp() {
 		DbContext dbContext = new DbContext();
 
-		bookInventoryService = new BookInventoryService(new BookInventoryRepository(Utils.testingUserDataDirPath, dbContext));
-		categoryService = new CategoryService(new CategoryRepository(Utils.testingUserDataDirPath, dbContext));
-		billService = new BillService(new BillRepository(Utils.testingUserDataDirPath, dbContext));
-		bookPurchaseService = new BookPurchaseService(new BookPurchaseRepository(Utils.testingUserDataDirPath, dbContext));
-		employeeService = new EmployeeService(new EmployeeRepository(Utils.testingUserDataDirPath, dbContext));
+		bookInventoryService = new BookInventoryService(new BookInventoryRepository(Utils.testDataDirPath, dbContext));
+		categoryService = new CategoryService(new CategoryRepository(Utils.testDataDirPath, dbContext));
+		billService = new BillService(new BillRepository(Utils.testDataDirPath, dbContext));
+		bookPurchaseService = new BookPurchaseService(new BookPurchaseRepository(Utils.testDataDirPath, dbContext));
+		employeeService = new EmployeeService(new EmployeeRepository(Utils.testDataDirPath, dbContext));
 	}
 	
 	@AfterAll

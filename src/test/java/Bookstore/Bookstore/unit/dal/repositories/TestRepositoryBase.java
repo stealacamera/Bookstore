@@ -20,7 +20,7 @@ import Bookstore.Bookstore.commons.utils.Utils;
 import Bookstore.Bookstore.dal.repositories.DbContext;
 
 class TestRepositoryBase {
-	protected static String dataDirPath = Utils.testingUserDataDirPath;
+	protected static String dataDirPath = Utils.testDataDirPath;
 	@TempDir
 	protected static File dataDir, dataFile;
 	protected static DbContext dbContext;

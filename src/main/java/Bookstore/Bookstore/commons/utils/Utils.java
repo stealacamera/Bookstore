@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 public class Utils {
 	public static final String userDataDirPath = "user_data", 
-			testingUserDataDirPath = "temp_" + userDataDirPath,
+			testDataDirPath = "temp_" + userDataDirPath,
 			dataDirPath = userDataDirPath + "/data",
 			billsDirPath = userDataDirPath + "/bills";
 	

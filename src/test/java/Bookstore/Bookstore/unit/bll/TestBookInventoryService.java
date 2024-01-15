@@ -21,16 +21,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 import Bookstore.Bookstore.bll.dto.BookDTO;
 import Bookstore.Bookstore.bll.dto.BookInventoryDTO;
 import Bookstore.Bookstore.bll.services.BookInventoryService;
-import Bookstore.Bookstore.dal.models.Book;
-import Bookstore.Bookstore.dal.models.BookInventory;
-import Bookstore.Bookstore.dal.models.utils.CustomDate;
 import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
 import Bookstore.Bookstore.commons.exceptions.ExistingObjectException;
 import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
 import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
-import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
-import javafx.collections.FXCollections;
+import Bookstore.Bookstore.dal.models.Book;
+import Bookstore.Bookstore.dal.models.BookInventory;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
 import Bookstore.Bookstore.unit.bll.mocks.BookInventoryRepositoryMock;
+import javafx.collections.FXCollections;
 
 public class TestBookInventoryService {
 	private BookInventoryService service;
@@ -39,13 +38,13 @@ public class TestBookInventoryService {
 	private static BookInventoryDTO[] modelDTOs; 
 	
 	@BeforeAll
-	static void setUpDummyData() throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+	static void setUpDummyData() throws Exception {
 		models = new BookInventory[7];
 		modelDTOs = new BookInventoryDTO[models.length];
 		
 		for(int i = 0; i < models.length; i++) {
 			Book book = new Book("111-1-11-111111-" + i, "foo", "foo bar", "foobar", 1);
-			models[i] = new BookInventory(book, 1, 1, 1, 1, new CustomDate());
+			models[i] = new BookInventory(book, 1 + i, 1, 1, 1 + i, new CustomDate());
 			modelDTOs[i] = createEquivalentDTO(models[i]);
 		}
 	}
@@ -70,7 +69,7 @@ public class TestBookInventoryService {
 	}
 	
 	@Test
-	void testAdd_NullValue() throws ExistingObjectException, EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+	void testAdd_NullValue() throws Exception {
 		assertFalse(service.add(null));
 	}
 	
@@ -90,7 +89,7 @@ public class TestBookInventoryService {
 	
 	@ParameterizedTest
 	@ValueSource(strings = { "888-8-88-888888-8", "999-9-99-999999-9" })
-	void testAdd_NonExistingISBN(String isbn) throws NonPositiveInputException, EmptyInputException, WrongFormatException, WrongLengthException, ExistingObjectException {
+	void testAdd_NonExistingISBN(String isbn) throws Exception {
 		BookInventory model = new BookInventory(
 				new Book(isbn, "foo bar", "foobar", "foo", 1), 
 				1, 1, 1, 1, new CustomDate());
@@ -119,9 +118,11 @@ public class TestBookInventoryService {
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForUpdateStock")
-	void testUpdateStock_ValidValues(BookInventoryDTO model, BookInventory base) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {		
+	void testUpdateStock_ValidValues(BookInventoryDTO model, BookInventory base) throws Exception {		
 		int newStock = 12;
 		service.updateStock(model, newStock);
+		
+		model.setStock(newStock);
 		assertEquals(newStock, base.getStock());
 	}
 	

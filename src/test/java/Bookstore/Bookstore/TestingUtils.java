@@ -17,11 +17,16 @@ public class TestingUtils {
 	}
 	
 	public static void deleteTestDatabase(File testDataDir) {
-		File tempDataDir = testDataDir != null ? testDataDir : new File(Utils.testingUserDataDirPath);
+		if(testDataDir == null)
+			testDataDir = new File(Utils.testDataDirPath);
 		
-		for(File data: tempDataDir.listFiles())
-			data.delete();
+		File[] dataFiles = testDataDir.listFiles();
 		
-		tempDataDir.delete();
+		if(dataFiles != null && dataFiles.length != 0) {
+			for(File data: dataFiles)
+				data.delete();
+		}
+		
+		testDataDir.delete();
 	}
 }

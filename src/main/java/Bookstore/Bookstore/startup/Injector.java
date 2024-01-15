@@ -21,8 +21,8 @@ public class Injector {
 		dependencySolver.put(dependency, solution);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T getDependency(Class<?> dependency) {
 		return (T) dependencySolver.get(dependency);
 	}
-	
 }

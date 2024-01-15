@@ -49,4 +49,18 @@ public class BookPurchase implements Serializable {
 		
 		this.date = new CustomDate(date.getDate());
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof BookPurchase))
+			return false;
+		
+		BookPurchase model = (BookPurchase) o;
+		return getAmount() == model.getAmount() && getDate().equals(model.getDate());
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("Amount: %.3f, Date: %s", getAmount(), getDate());
+	}
 }

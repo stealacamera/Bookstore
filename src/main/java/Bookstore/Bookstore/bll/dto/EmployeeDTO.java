@@ -83,7 +83,7 @@ public class EmployeeDTO extends UserDTO implements IReadOnlyEmployeeDTO {
 			default: role = "Administrator";
 		}
 		
-		return getUsername() + " (" + getFullName() + ") (" + role + ")";
+		return String.format("%s (%s) (%s)", getUsername(), getFullName(), role);
 	}
 	
 	@Override

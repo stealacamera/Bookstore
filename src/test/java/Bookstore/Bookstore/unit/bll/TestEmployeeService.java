@@ -175,6 +175,9 @@ public class TestEmployeeService {
 	@ValueSource(strings = {"foobarsample1", "1foobarsample", "12345678a", "a12345678", "foobar123sample"})
 	void testChangePassword_CorrectOldPassword_ValidValues(String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		assertTrue(service.changePassword(modelDTOs[0], modelDTOs[0].getPassword(), newPassword));
+		
+		modelDTOs[0].setPassword(newPassword);
+		modelDTOs[0].setHashedPassword(mockRepository.getById(modelDTOs[0].getId()).getHashedPassword());
 	}
 	
 	@ParameterizedTest

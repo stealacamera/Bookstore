@@ -80,7 +80,10 @@ public class EmployeeService extends Service<Employee, EmployeeDTO> implements I
 	
 	@Override
 	public boolean changePassword(EmployeeDTO employee, String oldPassword, String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
-		Employee model = convertToDAO(employee);
+		Employee model = db.getById(employee.getId());
+		
+		if(model == null)
+			throw new EmptyInputException("User does not exist");
 		
 		if(model.isCorrectPassword(oldPassword)) {
 			model.setPassword(newPassword);

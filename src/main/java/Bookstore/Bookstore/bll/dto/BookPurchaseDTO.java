@@ -37,4 +37,9 @@ public class BookPurchaseDTO {
 	public int hashCode() {
 		return (int) getAmount() + getDate().hashCode();
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Amount: %.3f, Date: %s", getAmount(), getDate());
+	}
 }

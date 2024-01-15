@@ -61,11 +61,17 @@ public class BookInventoryDTO {
 		
 		BookInventoryDTO model = (BookInventoryDTO) o;
 		
-		return getBook().equals(model.getBook()) && getStock() == model.getStock();
+		return getBook().equals(model.getBook()) && getStock() == model.getStock() && getPurchasedDate().equals(model.getPurchasedDate());
 	}
 	
 	@Override
 	public int hashCode() {
 		return getBook().hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s\nPurchased at: %s, Stock: %d\nPurchased price: %.3f, Original price: %.3f, Selling price: %.3f", 
+			   book.toString(), getPurchasedDate(), getStock(), getPurchasedPrice(), getOriginalPrice(), getSellingPrice());
 	}
 }

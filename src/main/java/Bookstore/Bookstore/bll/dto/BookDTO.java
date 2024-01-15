@@ -52,11 +52,19 @@ public class BookDTO {
 		if(!(o instanceof BookDTO))
 			return false;
 		
-		return this.getIsbn().equals(((BookDTO) o).getIsbn());
+		BookDTO model = (BookDTO) o;
+		
+		return this.getIsbn().equals(model.getIsbn()) && getTitle().equals(model.getTitle()) &&
+			getAuthor().equals(model.getAuthor()) && getSupplier().equals(model.getSupplier());
 	}
 	
 	@Override
 	public int hashCode() {
 		return getTitle().hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("(%s) \"%s\" by %s", getIsbn(), getTitle(), getAuthor());
 	}
 }
