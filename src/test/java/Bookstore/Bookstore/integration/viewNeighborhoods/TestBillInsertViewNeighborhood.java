@@ -108,6 +108,17 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 		assertEquals(0, robot.lookup("#bills-list").queryTableView().getItems().size());
 	}
 	
+	@Test
+	void testAddBookToBill_InvalidValues_ExistingBillItem() {
+		for(int i = 0; i < 2; i++) {
+			robot.clickOn(robot.lookup("#books-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));
+			robot.clickOn("#quantity").eraseText(2).write("1");
+			robot.clickOn("#add-btn");
+		}
+		
+		TestingUtils.testErrorMessage(robot, "Element with these details (book entity) already exists.");
+	}
+	
 	@ParameterizedTest
 	@MethodSource("provideBookQuantityInvalidValues")
 	void testAddBookToBill_InvalidValues(String quantity, String errorMessage) {
@@ -146,6 +157,24 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 			 .eraseText(1).write(newQuantity).press(KeyCode.ENTER);
 		
 		TestingUtils.testErrorMessage(robot, errorMessage);
+	}
+	
+	@Test
+	void testRemoveBillItem_InvalidValues() {
+		robot.clickOn("#remove-btn");
+		TestingUtils.testErrorMessage(robot, "Please select an item in the bill");
+	}
+	
+	@Test
+	void testRemoveBillItem_ValidValues() {
+		robot.clickOn(robot.lookup("#books-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));
+		robot.clickOn("#quantity").eraseText(2).write("1");
+		robot.clickOn("#add-btn");
+		
+		robot.clickOn(robot.lookup("#bills-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));
+		robot.clickOn("#remove-btn");
+		
+		assertEquals(0, robot.lookup("#bills-list").queryTableView().getItems().size());
 	}
 	
 	@Test

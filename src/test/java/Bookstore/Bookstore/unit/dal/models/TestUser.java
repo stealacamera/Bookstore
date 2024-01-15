@@ -1,21 +1,27 @@
 package Bookstore.Bookstore.unit.dal.models;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.format.DateTimeParseException;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import Bookstore.Bookstore.dal.models.User;
-import Bookstore.Bookstore.dal.models.utils.CustomDate;
 import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
 import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.dal.models.User;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
 
 class TestUser {
 	User RandUser;
@@ -50,21 +56,18 @@ class TestUser {
 	void IsCorrectPassword() throws EmptyInputException {
 		assertTrue(RandUser.isCorrectPassword("Ukraine321"));
 	}
-	
-	@Test
-	void NameEmptyAndNull() {
-		Exception ex= assertThrows(EmptyInputException.class,()->RandUser.setFullName(""));
-		Exception ex2= assertThrows(EmptyInputException.class,()->RandUser.setFullName(null));
-		assertEquals(ex.getMessage(),ex2.getMessage());
-		assertEquals("Input fields cannot be empty: Please enter a value for name",ex.getMessage());
+	@ParameterizedTest
+	@MethodSource("provideFullNameInvalidValues")
+	void testSetFullName_InvalidValues(String fullName, Class<Exception> errorType, String errorMessage) {
+		Exception ex = assertThrows(errorType, ()->RandUser.setFullName(fullName));
+		assertTrue(ex.getMessage().contains(errorMessage));
 	}
-	
 	@ParameterizedTest
 	@CsvSource({
 		"Kri",
 		"KristianGjinopulli12345678"
 	})
-	void NameNotValid(String name) {
+	void UsernameNotValid(String name) {
 		Exception ex= assertThrows(WrongFormatException.class,()->RandUser.setUsername(name));
 		assertEquals("Incorrect username format: Correct format is 5-25 characters",ex.getMessage());
 	}
@@ -128,5 +131,45 @@ class TestUser {
 		
 	}
 	
-
+	@Test
+	void testEquals_Unequal() throws Exception {
+		User user = new User(
+			"different_user", "different name", "diffuser@gmail.com", 
+			"password132", "068 123 1324", new CustomDate()
+		);
+		
+		assertAll(
+			() -> assertFalse(RandUser.equals(new CustomDate())),
+			() -> assertFalse(RandUser.equals(user))
+		);
+	}
+	
+	@Test
+	void testEquals() throws Exception {
+		assertTrue(RandUser.equals(new User(RandUser)));
+	}
+	
+	@ParameterizedTest
+	@NullSource
+	@ValueSource(strings = {""})
+	void testSetBirthdate_InvalidValues(String birthdateString) {
+		Exception error = assertThrows(EmptyInputException.class, () -> RandUser.setBirthdate(birthdateString));
+		assertTrue(error.getMessage().contains("Input fields cannot be empty: Please enter a value for birthdate"));
+	}
+	
+	@Test
+	void testSetBirthdate_ValidValues() throws Exception {
+		String birthdateString = "12/10/1998";
+		
+		RandUser.setBirthdate(birthdateString);
+		assertEquals(new CustomDate(birthdateString), RandUser.getBirthdate());
+	}
+	
+	private static Stream<Arguments> provideFullNameInvalidValues() {
+		return Stream.of(
+			Arguments.of(null, EmptyInputException.class, "Input fields cannot be empty: Please enter a value for name"),
+			Arguments.of("", EmptyInputException.class, "Input fields cannot be empty: Please enter a value for name"),
+			Arguments.of("sample_name", WrongFormatException.class, "Incorrect full name format: Correct format is (first name) (last name)")
+		);
+	}
 }

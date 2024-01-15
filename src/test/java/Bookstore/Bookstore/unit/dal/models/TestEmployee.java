@@ -1,5 +1,8 @@
 package Bookstore.Bookstore.unit.dal.models;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -18,18 +21,18 @@ import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
 import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
 
 class TestEmployee {
-	User BaseDummy;
-	Employee EDummy;
+	User baseDummy;
+	Employee eDummy;
 	@BeforeEach
 	void startup() throws DateTimeParseException, WrongFormatException, EmptyInputException, NonPositiveInputException{
 		CustomDate a=new CustomDate("02/02/2003");
-		BaseDummy= new User("Krisi02", "Kris Gj", "kgj@gmail.com", "Ukraine321","069 443 3332", a);
-		EDummy = new Employee(BaseDummy,2,2);
+		baseDummy= new User("Krisi02", "Kris Gj", "kgj@gmail.com", "Ukraine321","069 443 3332", a);
+		eDummy = new Employee(baseDummy,2,2);
 	}
 
 	@Test
 	void TestNegativeSalary() {
-		Exception ex = assertThrows(NonPositiveInputException.class,()->EDummy.setSalary(-3));
+		Exception ex = assertThrows(NonPositiveInputException.class,()->eDummy.setSalary(-3));
 		assertEquals("Incorrect salary: Please enter a positive number for the field", ex.getMessage());
 	}
 	
@@ -39,7 +42,7 @@ class TestEmployee {
 		"4"
 	})
 	void TestNonValidRole(int val) {
-		Exception ex = assertThrows(WrongFormatException.class,()->EDummy.setAccessLvl(val));
+		Exception ex = assertThrows(WrongFormatException.class,()->eDummy.setAccessLvl(val));
 		assertEquals("Incorrect access level format: Correct format is 1 - Librarian; 2 - Manager; 3 - Admin", ex.getMessage());
 	}
 	
@@ -50,14 +53,33 @@ class TestEmployee {
 		"3"
 	})
 	void TestIfToStringWorksCorrectlyForEachRole(int value) throws WrongFormatException {
-		EDummy.setAccessLvl(value);
+		eDummy.setAccessLvl(value);
 		if(value==1)
-		    assertEquals("Krisi02 (Kris Gj) [Librarian]",EDummy.toString());
+		    assertEquals("Krisi02 (Kris Gj) [Librarian]",eDummy.toString());
 		else if(value==2)
-		    assertEquals("Krisi02 (Kris Gj) [Manager]",EDummy.toString());
+		    assertEquals("Krisi02 (Kris Gj) [Manager]",eDummy.toString());
 		else
-		    assertEquals("Krisi02 (Kris Gj) [Administrator]",EDummy.toString());
+		    assertEquals("Krisi02 (Kris Gj) [Administrator]",eDummy.toString());
 		
 	}
 
+	@Test
+	void testEquals_Unequals() throws Exception {
+		Employee employee = new Employee(
+			new User(
+				"diff_user", "diff user", "user@gmail.com", 
+				"password123", "069 987 9876", new CustomDate()), 
+			34.1, 1
+		);
+		
+		assertAll(
+			() -> assertFalse(eDummy.equals(new CustomDate())),
+			() -> assertFalse(eDummy.equals(employee))
+		);
+	}
+	
+	@Test
+	void testEquals() throws Exception {
+		assertTrue(eDummy.equals(new Employee(baseDummy, eDummy.getSalary(), eDummy.getAccessLvl())));
+	}
 }
