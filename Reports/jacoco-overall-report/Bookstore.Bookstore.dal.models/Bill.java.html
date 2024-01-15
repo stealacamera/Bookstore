@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bill.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.dal.models</a> &gt; <span class="el_source">Bill.java</span></div><h1>Bill.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.dal.models;
+
+import java.io.Serializable;
+
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+
+public class Bill implements Serializable {
+	private static final long serialVersionUID = 3285272564248001502L;
+	
+	private double saleAmount;
+	private int numOfBooks;
+	private int sellerId;
+	private CustomDate date;
+	
+<span class="fc" id="L17">	public Bill(int sellerId, double saleAmount, int numOfBooks, CustomDate date) throws NonPositiveInputException, EmptyInputException {</span>
+<span class="fc" id="L18">		setSellerId(sellerId);</span>
+<span class="fc" id="L19">		setSaleAmount(saleAmount); </span>
+<span class="fc" id="L20">		setNumOfBooks(numOfBooks);</span>
+<span class="fc" id="L21">		setDate(date);</span>
+<span class="fc" id="L22">	}</span>
+	
+<span class="fc" id="L24">	public Bill(int sellerId, double saleAmount, int numOfBooks) throws NonPositiveInputException {</span>
+<span class="fc" id="L25">		setSellerId(sellerId);</span>
+<span class="fc" id="L26">		setSaleAmount(saleAmount); </span>
+<span class="fc" id="L27">		setNumOfBooks(numOfBooks);</span>
+<span class="fc" id="L28">		this.date = new CustomDate();</span>
+<span class="fc" id="L29">	}</span>
+
+	public double getSaleAmount() {
+<span class="fc" id="L32">		return saleAmount;</span>
+	}
+
+	public void setSaleAmount(double saleAmount) throws NonPositiveInputException {
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		if(saleAmount &lt;= 0)</span>
+<span class="fc" id="L37">			throw new NonPositiveInputException(&quot;sale amount&quot;);</span>
+		
+<span class="fc" id="L39">		this.saleAmount = saleAmount;</span>
+<span class="fc" id="L40">	}</span>
+
+	public int getNumOfBooks() {
+<span class="fc" id="L43">		return numOfBooks;</span>
+	}
+
+	public void setNumOfBooks(int numOfBooks) throws NonPositiveInputException {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if(numOfBooks &lt;= 0)</span>
+<span class="fc" id="L48">			throw new NonPositiveInputException(&quot;nr. of books&quot;);</span>
+		
+<span class="fc" id="L50">		this.numOfBooks = numOfBooks;</span>
+<span class="fc" id="L51">	}</span>
+
+	public int getSellerId() {
+<span class="fc" id="L54">		return sellerId;</span>
+	}
+
+	public void setSellerId(int sellerId) throws NonPositiveInputException {
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if(sellerId &lt;= 0)</span>
+<span class="fc" id="L59">			throw new NonPositiveInputException(&quot;seller id&quot;);</span>
+		
+<span class="fc" id="L61">		this.sellerId = sellerId;</span>
+<span class="fc" id="L62">	}</span>
+
+	public CustomDate getDate() {
+		try {
+<span class="fc" id="L66">			return new CustomDate(date.getDate());</span>
+<span class="nc" id="L67">		} catch (EmptyInputException e) {</span>
+			// Error won't be thrown since date is always instantiated
+<span class="nc" id="L69">			e.printStackTrace();</span>
+<span class="nc" id="L70">			return null;</span>
+		}
+	}
+	
+	public void setDate(CustomDate date) throws EmptyInputException {
+<span class="fc" id="L75">		this.date = new CustomDate(date.getDate());</span>
+<span class="fc" id="L76">	}</span>
+	
+	@Override
+	public boolean equals(Object o) {
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		if(!(o instanceof Bill))</span>
+<span class="nc" id="L81">			return false;</span>
+		
+<span class="fc" id="L83">		Bill model = (Bill) o;</span>
+		
+<span class="fc bfc" id="L85" title="All 4 branches covered.">		return getSellerId() == model.getSellerId() &amp;&amp; getSaleAmount() == model.getSaleAmount() &amp;&amp;</span>
+<span class="pc bpc" id="L86" title="2 of 4 branches missed.">				getNumOfBooks() == model.getNumOfBooks() &amp;&amp; getDate().equals(model.getDate());</span>
+	}
+	
+	@Override
+	public int hashCode() {
+<span class="nc" id="L91">		return getSellerId() + (int) getSaleAmount() + getDate().getDate().hashCode();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

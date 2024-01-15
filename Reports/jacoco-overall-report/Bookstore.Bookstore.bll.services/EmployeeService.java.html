@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.bll.services</a> &gt; <span class="el_source">EmployeeService.java</span></div><h1>EmployeeService.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.bll.services;
+
+import java.util.Collections;
+
+import Bookstore.Bookstore.dal.models.Employee;
+import Bookstore.Bookstore.dal.models.User;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+import Bookstore.Bookstore.dal.repositories.irepositories.IEmployeeRepository;
+import Bookstore.Bookstore.bll.dto.EmployeeDTO;
+import Bookstore.Bookstore.bll.dto.UserDTO;
+import Bookstore.Bookstore.bll.services.iservices.IEmployeeService;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.ExistingObjectException;
+import Bookstore.Bookstore.commons.exceptions.IncorrectPermissionsException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
+import Bookstore.Bookstore.commons.utils.Utils;
+
+public class EmployeeService extends Service&lt;Employee, EmployeeDTO&gt; implements IEmployeeService {
+	private final IEmployeeRepository db;
+	
+	public EmployeeService(IEmployeeRepository db) {
+<span class="fc" id="L24">		super(db);</span>
+<span class="fc" id="L25">		this.db = db;</span>
+<span class="fc" id="L26">	}</span>
+	
+	@Override
+	public EmployeeDTO getById(int id) {
+<span class="fc" id="L30">		Employee instance = db.getById(id);		</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		return instance == null ? null : convertToDTO(instance);</span>
+	}
+	
+	@Override
+	public EmployeeDTO getByUsername(String username) {
+<span class="fc" id="L36">		Employee model = db.getByUsername(username);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		return model == null ? null : convertToDTO(model);</span>
+	}
+	
+	// Adds instances with unique usernames
+	// Objects are ordered alphabetically by username
+	@Override
+	public boolean add(EmployeeDTO instance) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, ExistingObjectException, IncorrectPermissionsException {
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		if(instance == null)</span>
+<span class="fc" id="L45">			return false;</span>
+		
+<span class="fc" id="L47">		add(convertToDAO(instance));</span>
+<span class="fc" id="L48">		db.saveChanges();</span>
+<span class="fc" id="L49">		return true;</span>
+	}
+	
+	@Override
+	public void update(EmployeeDTO oldModel, EmployeeDTO newModel) throws ExistingObjectException, IncorrectPermissionsException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException {
+<span class="fc" id="L54">		Employee newInstance = convertToDAO(newModel), oldInstance = convertToDAO(oldModel);</span>
+		
+		// Reposition instance in list (db) if the username has changed
+		// otherwise, replace
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		boolean toReposition = !oldInstance.getUsername().equals(newInstance.getUsername());</span>
+<span class="fc" id="L59">		int listIndex = Collections.binarySearch(db.getAll(), oldInstance, Employee::compareTo);</span>
+<span class="fc" id="L60">		listIndex = Utils.getOrderedListIndex(listIndex);</span>
+		
+<span class="fc" id="L62">		db.remove(listIndex);</span>
+		
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if(toReposition)</span>
+<span class="fc" id="L65">			add(newInstance);</span>
+		else
+<span class="fc" id="L67">			db.add(listIndex, newInstance);</span>
+		
+<span class="fc" id="L69">		db.saveChanges();</span>
+<span class="fc" id="L70">	}</span>
+	
+	private void add(Employee instance) throws ExistingObjectException {
+<span class="fc" id="L73">		int listIndex = Collections.binarySearch(db.getAll(), instance, Employee::compareTo);</span>
+
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		if(listIndex &gt;= 0)</span>
+<span class="fc" id="L76">			throw new ExistingObjectException(&quot;username&quot;);</span>
+		
+<span class="fc" id="L78">		db.add(Utils.getOrderedListIndex(listIndex), instance);</span>
+<span class="fc" id="L79">	}</span>
+	
+	@Override
+	public boolean changePassword(EmployeeDTO employee, String oldPassword, String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+<span class="fc" id="L83">		Employee model = db.getById(employee.getId());</span>
+		
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">		if(model == null)</span>
+<span class="nc" id="L86">			throw new EmptyInputException(&quot;User does not exist&quot;);</span>
+		
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if(model.isCorrectPassword(oldPassword)) {</span>
+<span class="fc" id="L89">			model.setPassword(newPassword);</span>
+<span class="fc" id="L90">			db.saveChanges();</span>
+<span class="fc" id="L91">			return true;</span>
+		}
+		
+<span class="fc" id="L94">		return false;</span>
+	}
+	
+	@Override
+	public boolean canLogin(String username, String password) throws EmptyInputException {
+<span class="fc bfc" id="L99" title="All 4 branches covered.">		if(username == null || username.isBlank())</span>
+<span class="fc" id="L100">			throw new EmptyInputException(&quot;username&quot;);</span>
+		
+<span class="fc bfc" id="L102" title="All 4 branches covered.">		if(password == null || password.isBlank())</span>
+<span class="fc" id="L103">			throw new EmptyInputException(&quot;password&quot;);</span>
+		
+<span class="fc" id="L105">		Employee instance = db.getByUsername(username);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		return instance == null ? false : instance.isCorrectPassword(password);</span>
+	}
+	
+	@Override
+	protected EmployeeDTO convertToDTO(Employee model) {
+<span class="fc" id="L111">		UserDTO instanceUser = new UserDTO(model.getId(),</span>
+<span class="fc" id="L112">				model.getUsername(), model.getFullName(), </span>
+<span class="fc" id="L113">				model.getEmail(), model.getHashedPassword(),</span>
+<span class="fc" id="L114">				model.getPhoneNum(), model.getBirthdate().getDate());</span>
+		
+<span class="fc" id="L116">		EmployeeDTO instance = new EmployeeDTO(instanceUser, model.getSalary(), model.getAccessLvl(), model.getPermissions());</span>
+<span class="fc" id="L117">		return instance;</span>
+	}
+
+	@Override
+	protected Employee convertToDAO(EmployeeDTO model) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+		User instanceUser;
+
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		if(model.getId() == 0) {</span>
+<span class="fc" id="L125">			instanceUser = new User(</span>
+<span class="fc" id="L126">				model.getUsername(), model.getFullName(), </span>
+<span class="fc" id="L127">				model.getEmail(), model.getPassword(), </span>
+<span class="fc" id="L128">				model.getPhoneNum(), new CustomDate(model.getBirthdate()));</span>
+		} else
+<span class="fc" id="L130">			instanceUser = new User(model.getId(),</span>
+<span class="fc" id="L131">					model.getUsername(), model.getFullName(), </span>
+<span class="fc" id="L132">					model.getEmail(), model.getHashedPassword(), </span>
+<span class="fc" id="L133">					model.getPhoneNum(), new CustomDate(model.getBirthdate()));</span>
+		
+<span class="fc" id="L135">		Employee instance = new Employee(instanceUser, model.getSalary(), model.getAccessLvl());</span>
+		
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if(model.getId() != 0)</span>
+<span class="fc" id="L138">			instance.setPermissions(model.getPermissions());</span>
+
+<span class="fc" id="L140">		return instance;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

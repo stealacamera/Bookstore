@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.bll.dto</a> &gt; <span class="el_source">EmployeeDTO.java</span></div><h1>EmployeeDTO.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.bll.dto;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import Bookstore.Bookstore.dal.models.utils.Role;
+
+public class EmployeeDTO extends UserDTO implements IReadOnlyEmployeeDTO {
+	private Map&lt;Role, Boolean&gt; permissions;
+	private double salary;
+	private int accessLvl;
+	
+	public EmployeeDTO() {
+<span class="fc" id="L15">		super();</span>
+<span class="fc" id="L16">	}</span>
+	
+	public EmployeeDTO(IReadOnlyEmployeeDTO model) {
+<span class="fc" id="L19">		super(new UserDTO(</span>
+<span class="fc" id="L20">				model.getId(), model.getUsername(), </span>
+<span class="fc" id="L21">				model.getFullName(), model.getEmail(), </span>
+<span class="fc" id="L22">				model.getHashedPassword(), model.getPhoneNum(), model.getBirthdate()));</span>
+		
+<span class="fc" id="L24">		setSalary(model.getSalary());</span>
+<span class="fc" id="L25">		setAccessLvl(model.getAccessLvl());</span>
+<span class="fc" id="L26">		setPermissions(model.getPermissions());</span>
+<span class="fc" id="L27">	}</span>
+	
+	public EmployeeDTO(UserDTO base, double salary, int accessLvl) {
+<span class="fc" id="L30">		super(base);</span>
+<span class="fc" id="L31">		setSalary(salary);</span>
+<span class="fc" id="L32">		setAccessLvl(accessLvl);</span>
+<span class="fc" id="L33">	}</span>
+	
+	public EmployeeDTO(UserDTO base, double salary, int accessLvl, Map&lt;Role, Boolean&gt; permissions) {
+<span class="fc" id="L36">		this(base, salary, accessLvl);</span>
+<span class="fc" id="L37">		setPermissions(permissions);</span>
+<span class="fc" id="L38">	}</span>
+	
+	public EmployeeDTO(UserDTO base, double salary, int accessLvl, boolean[] permissionStatuses) {
+<span class="nc" id="L41">		this(base, salary, accessLvl);</span>
+<span class="nc" id="L42">		setPermissionStatuses(permissionStatuses);</span>
+<span class="nc" id="L43">	}</span>
+	@Override
+	public double getSalary() {
+<span class="fc" id="L46">		return salary;</span>
+	}
+	public void setSalary(double salary) {
+<span class="fc" id="L49">		this.salary = salary;</span>
+<span class="fc" id="L50">	}</span>
+	@Override
+	public int getAccessLvl() {
+<span class="fc" id="L53">		return accessLvl;</span>
+	}
+	public void setAccessLvl(int accessLvl) {
+<span class="fc" id="L56">		this.accessLvl = accessLvl;</span>
+<span class="fc" id="L57">	}</span>
+	@Override
+	public Map&lt;Role, Boolean&gt; getPermissions() {
+<span class="fc" id="L60">		return new HashMap&lt;&gt;(permissions);</span>
+	}
+	public void setPermissions(Map&lt;Role, Boolean&gt; permissions) {
+<span class="fc" id="L63">		this.permissions = new HashMap&lt;&gt;(permissions);</span>
+<span class="fc" id="L64">	}</span>
+	public void setPermissionStatuses(boolean[] permissionStatuses) {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		Set&lt;Role&gt; roles = getAccessLvl() == 1 ? Role.getLibrarianPermissions() : Role.getManagerPermissions();</span>
+<span class="fc" id="L67">		Map&lt;Role, Boolean&gt; permissions = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L68">		int i = 0;</span>
+		
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		for(Role role: roles)</span>
+<span class="fc" id="L71">			permissions.put(role, permissionStatuses[i++]);</span>
+		
+<span class="fc" id="L73">		this.permissions = permissions;</span>
+<span class="fc" id="L74">	}</span>
+	
+	@Override
+	public String toString() {
+		String role;
+		
+<span class="fc bfc" id="L80" title="All 3 branches covered.">		switch(accessLvl) {</span>
+<span class="fc" id="L81">			case 1: role = &quot;Librarian&quot;; break;</span>
+<span class="fc" id="L82">			case 2: role = &quot;Manager&quot;; break;</span>
+<span class="fc" id="L83">			default: role = &quot;Administrator&quot;;</span>
+		}
+		
+<span class="fc" id="L86">		return String.format(&quot;%s (%s) (%s)&quot;, getUsername(), getFullName(), role);</span>
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+<span class="pc bpc" id="L91" title="1 of 4 branches missed.">		if(!(o instanceof UserDTO) || !(o instanceof EmployeeDTO))</span>
+<span class="fc" id="L92">			return false;</span>
+		
+<span class="fc" id="L94">		EmployeeDTO model = (EmployeeDTO) o;</span>
+		
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		return super.equals(model) &amp;&amp; </span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">			getAccessLvl() == model.getAccessLvl() &amp;&amp; </span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			getSalary() == model.getSalary();</span>
+	}
+	
+	@Override
+	public int hashCode() {
+<span class="nc" id="L103">		return super.hashCode() + getAccessLvl();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

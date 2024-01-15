@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreateBillView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.views</a> &gt; <span class="el_source">CreateBillView.java</span></div><h1>CreateBillView.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.views;
+
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import Bookstore.Bookstore.bll.dto.BookInventoryDTO;
+import Bookstore.Bookstore.commons.utils.Forms;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.util.Callback;
+import javafx.util.converter.IntegerStringConverter;
+
+public class CreateBillView extends IView {
+<span class="fc" id="L32">	private HBox pane = new HBox();</span>
+<span class="fc" id="L33">	private TextField quantityTf = new TextField();</span>
+<span class="fc" id="L34">	private Button addBt = new Button(&quot;Add book&quot;), removeBt = new Button(&quot;Remove&quot;), submitBt = new Button(&quot;Submit&quot;);</span>
+	
+<span class="fc" id="L36">	private TableView&lt;BookInventoryDTO&gt; booksTv = new TableView&lt;&gt;();</span>
+<span class="fc" id="L37">	private TableView&lt;Map.Entry&lt;BookInventoryDTO, Integer&gt;&gt; billTv = new TableView&lt;&gt;();</span>
+<span class="fc" id="L38">	TableColumn&lt;Map.Entry&lt;BookInventoryDTO, Integer&gt;, Integer&gt; tcQuantity = new TableColumn&lt;&gt;(&quot;Quantity&quot;);</span>
+	
+<span class="fc" id="L40">	public CreateBillView(ObservableList&lt;BookInventoryDTO&gt; books) {</span>
+<span class="fc" id="L41">		addBt.setId(&quot;add-btn&quot;);</span>
+<span class="fc" id="L42">		removeBt.setId(&quot;remove-btn&quot;);</span>
+<span class="fc" id="L43">		submitBt.setId(&quot;submit-btn&quot;);</span>
+<span class="fc" id="L44">		quantityTf.setId(&quot;quantity&quot;);</span>
+		
+<span class="fc" id="L46">		booksTv.setId(&quot;books-list&quot;);</span>
+<span class="fc" id="L47">		billTv.setId(&quot;bills-list&quot;);</span>
+		
+<span class="fc" id="L49">		setbooksTv(books);</span>
+<span class="fc" id="L50">		setbillTv();</span>
+<span class="fc" id="L51">		createLayout();</span>
+		
+<span class="fc" id="L53">		super.getChildren().add(pane);</span>
+<span class="fc" id="L54">	}</span>
+	
+<span class="fc" id="L56">	public void setInsertListener(EventHandler&lt;ActionEvent&gt; action) { addBt.setOnAction(action); }</span>
+<span class="fc" id="L57">	public void setSubmitBillListener(EventHandler&lt;ActionEvent&gt; action) { submitBt.setOnAction(action); }</span>
+<span class="fc" id="L58">	public void setDeleteListener(EventHandler&lt;ActionEvent&gt; action) { removeBt.setOnAction(action); }</span>
+	
+	public void setBillItemStockListener(EventHandler&lt;CellEditEvent&lt;Entry&lt;BookInventoryDTO, Integer&gt;, Integer&gt;&gt; action) {
+<span class="fc" id="L61">		tcQuantity.setOnEditCommit(action);</span>
+<span class="fc" id="L62">	}</span>
+	
+<span class="fc" id="L64">	public int getQuantity() { return Integer.parseInt(quantityTf.getText()); }</span>
+	
+<span class="fc" id="L66">	public int getSelectedBillItemIndex() { return billTv.getSelectionModel().getSelectedIndex(); }</span>
+	
+<span class="fc" id="L68">	public BookInventoryDTO getSelectedBookItem() { return booksTv.getSelectionModel().getSelectedItem(); }</span>
+	
+<span class="fc" id="L70">	public List&lt;Map.Entry&lt;BookInventoryDTO, Integer&gt;&gt; getBill() { return billTv.getItems(); }</span>
+	
+	public boolean billContainsBook(BookInventoryDTO instance) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		for(Map.Entry&lt;BookInventoryDTO, Integer&gt; entry: billTv.getItems())</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">			if(entry.getKey().equals(instance))</span>
+<span class="fc" id="L75">				return true;</span>
+		
+<span class="fc" id="L77">		return false;</span>
+	}
+	
+	public void addItemToBill(BookInventoryDTO instance, int quantity) { 
+<span class="fc" id="L81">		billTv.getItems().add(new AbstractMap.SimpleEntry&lt;BookInventoryDTO, Integer&gt;(instance, quantity)); </span>
+<span class="fc" id="L82">	}</span>
+	
+	public void removeBillItem(int index) {
+<span class="fc" id="L85">		billTv.getItems().remove(index);</span>
+<span class="fc" id="L86">	}</span>
+	
+	public void refreshBillView() {
+<span class="fc" id="L89">		billTv.refresh();</span>
+<span class="fc" id="L90">	}</span>
+	
+	public void refreshView(ObservableList&lt;BookInventoryDTO&gt; list) {
+<span class="fc" id="L93">		billTv.getItems().clear();</span>
+<span class="fc" id="L94">		booksTv.getItems().clear();</span>
+<span class="fc" id="L95">		booksTv.setItems(list);</span>
+<span class="fc" id="L96">	}</span>
+	
+	private void setbooksTv(ObservableList&lt;BookInventoryDTO&gt; books) {
+<span class="fc" id="L99">		TableColumn&lt;BookInventoryDTO, String&gt; tcIsbn = new TableColumn&lt;&gt;(&quot;ISBN&quot;);</span>
+<span class="fc" id="L100">		TableColumn&lt;BookInventoryDTO, String&gt; tcTitle = new TableColumn&lt;&gt;(&quot;Title&quot;);</span>
+<span class="fc" id="L101">		TableColumn&lt;BookInventoryDTO, Integer&gt; tcStock = new TableColumn&lt;&gt;(&quot;Stock&quot;);</span>
+		
+<span class="fc" id="L103">		tcIsbn.setCellValueFactory(e -&gt; new SimpleStringProperty(e.getValue().getBook().getIsbn()));</span>
+<span class="fc" id="L104">		tcTitle.setCellValueFactory(e -&gt; new SimpleStringProperty(e.getValue().getBook().getTitle()));</span>
+<span class="fc" id="L105">		tcStock.setCellValueFactory(new PropertyValueFactory&lt;BookInventoryDTO, Integer&gt;(&quot;stock&quot;));</span>
+		
+<span class="fc" id="L107">		booksTv.getColumns().add(tcIsbn);</span>
+<span class="fc" id="L108">		booksTv.getColumns().add(tcTitle);</span>
+<span class="fc" id="L109">		booksTv.getColumns().add(tcStock);</span>
+		
+<span class="fc" id="L111">		booksTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);</span>
+<span class="fc" id="L112">		booksTv.setPrefSize(350, 500);</span>
+<span class="fc" id="L113">		booksTv.setItems(books);</span>
+<span class="fc" id="L114">	}</span>
+	
+	private void setbillTv() {
+<span class="fc" id="L117">		TableColumn&lt;Map.Entry&lt;BookInventoryDTO, Integer&gt;, String&gt; tcIsbn = new TableColumn&lt;&gt;(&quot;ISBN&quot;);</span>
+<span class="fc" id="L118">		TableColumn&lt;Map.Entry&lt;BookInventoryDTO, Integer&gt;, String&gt; tcTitle = new TableColumn&lt;&gt;(&quot;Title&quot;);</span>
+
+<span class="fc" id="L120">		tcIsbn.setCellValueFactory(new BookISBNTableColumnCellFactory());		</span>
+<span class="fc" id="L121">		tcTitle.setCellValueFactory(new BookTitleTableColumnCellFactory());</span>
+<span class="fc" id="L122">		tcQuantity.setCellValueFactory(new BookQuantityTableColumnCellFactory());</span>
+		
+<span class="fc" id="L124">		tcQuantity.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));</span>
+		
+<span class="fc" id="L126">		billTv.getColumns().add(tcIsbn);</span>
+<span class="fc" id="L127">		billTv.getColumns().add(tcTitle);</span>
+<span class="fc" id="L128">		billTv.getColumns().add(tcQuantity);</span>
+		
+<span class="fc" id="L130">		billTv.setEditable(true);</span>
+<span class="fc" id="L131">		billTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);</span>
+<span class="fc" id="L132">		billTv.setPrefSize(350, 500);</span>
+<span class="fc" id="L133">	}</span>
+	
+	private void createLayout() {
+<span class="fc" id="L136">		HBox quantityPane = new HBox(quantityTf, addBt), billButtonsPane = new HBox(removeBt, submitBt);</span>
+<span class="fc" id="L137">		VBox bookListPane = new VBox(booksTv, quantityPane), billPane = new VBox(billTv, billButtonsPane);</span>
+		
+<span class="fc" id="L139">		quantityTf.setTextFormatter(Forms.getPositiveNumberFormatter());</span>
+<span class="fc" id="L140">		quantityPane.setSpacing(5);</span>
+<span class="fc" id="L141">		billButtonsPane.setSpacing(10);</span>
+<span class="fc" id="L142">		bookListPane.setSpacing(20);</span>
+<span class="fc" id="L143">		billPane.setSpacing(20);</span>
+<span class="fc" id="L144">		billButtonsPane.setAlignment(Pos.BASELINE_RIGHT);</span>
+		
+<span class="fc" id="L146">		pane.setPadding(new Insets(20));</span>
+<span class="fc" id="L147">		pane.setSpacing(10);</span>
+<span class="fc" id="L148">		pane.getChildren().addAll(bookListPane, billPane);</span>
+<span class="fc" id="L149">	}</span>
+	
+	private static class BookISBNTableColumnCellFactory implements Callback&lt;TableColumn.CellDataFeatures&lt;Entry&lt;BookInventoryDTO,Integer&gt;,String&gt;, ObservableValue&lt;String&gt;&gt; {
+		@Override
+		public ObservableValue&lt;String&gt; call(CellDataFeatures&lt;Entry&lt;BookInventoryDTO, Integer&gt;, String&gt; book) {
+<span class="fc" id="L154">			return new SimpleStringProperty(book.getValue().getKey().getBook().getIsbn());</span>
+		}
+	}
+	
+	private static class BookTitleTableColumnCellFactory implements Callback&lt;TableColumn.CellDataFeatures&lt;Entry&lt;BookInventoryDTO,Integer&gt;, String&gt;, ObservableValue&lt;String&gt;&gt; {
+		@Override
+		public ObservableValue&lt;String&gt; call(CellDataFeatures&lt;Entry&lt;BookInventoryDTO, Integer&gt;, String&gt; book) {
+<span class="fc" id="L161">			return new SimpleStringProperty(book.getValue().getKey().getBook().getTitle());</span>
+		}
+	}
+	
+	private static class BookQuantityTableColumnCellFactory implements Callback&lt;TableColumn.CellDataFeatures&lt;Entry&lt;BookInventoryDTO,Integer&gt;,Integer&gt;, ObservableValue&lt;Integer&gt;&gt; {
+		@Override
+		public ObservableValue&lt;Integer&gt; call(CellDataFeatures&lt;Entry&lt;BookInventoryDTO, Integer&gt;, Integer&gt; value) {
+<span class="fc" id="L168">			return new SimpleIntegerProperty(value.getValue().getValue()).asObject();</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

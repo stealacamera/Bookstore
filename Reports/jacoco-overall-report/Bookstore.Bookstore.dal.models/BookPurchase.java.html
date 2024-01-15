@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookPurchase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.dal.models</a> &gt; <span class="el_source">BookPurchase.java</span></div><h1>BookPurchase.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.dal.models;
+
+import java.io.Serializable;
+
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+
+public class BookPurchase implements Serializable {
+	private static final long serialVersionUID = 8258344977448667240L;
+	
+	private double amount;
+	private CustomDate date;
+	
+<span class="fc" id="L15">	public BookPurchase(double amount) throws NonPositiveInputException {</span>
+<span class="fc" id="L16">		setAmount(amount);</span>
+<span class="fc" id="L17">		this.date = new CustomDate();</span>
+<span class="fc" id="L18">	}</span>
+	
+<span class="fc" id="L20">	public BookPurchase(double amount, CustomDate date) throws NonPositiveInputException, EmptyInputException {</span>
+<span class="fc" id="L21">		setAmount(amount);</span>
+<span class="fc" id="L22">		setDate(date);</span>
+<span class="fc" id="L23">	}</span>
+
+	public void setAmount(double amount) throws NonPositiveInputException {
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		if(amount &lt;= 0)</span>
+<span class="fc" id="L27">			throw new NonPositiveInputException(&quot;sale amount&quot;);</span>
+			
+<span class="fc" id="L29">		this.amount = amount;</span>
+<span class="fc" id="L30">	}</span>
+
+	public double getAmount() {
+<span class="fc" id="L33">		return amount;</span>
+	}
+
+	public CustomDate getDate() {
+		try {
+<span class="fc" id="L38">			return new CustomDate(date.getDate());</span>
+<span class="nc" id="L39">		} catch (EmptyInputException e) {</span>
+			// Error won't be thrown because date is always instantiated
+<span class="nc" id="L41">			e.printStackTrace();</span>
+<span class="nc" id="L42">			return null;</span>
+		}
+	}
+	
+	public void setDate(CustomDate date) throws EmptyInputException {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if(date == null)</span>
+<span class="fc" id="L48">			throw new EmptyInputException(&quot;date&quot;);</span>
+		
+<span class="fc" id="L50">		this.date = new CustomDate(date.getDate());</span>
+<span class="fc" id="L51">	}</span>
+	
+	@Override
+	public boolean equals(Object o) {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		if(!(o instanceof BookPurchase))</span>
+<span class="fc" id="L56">			return false;</span>
+		
+<span class="fc" id="L58">		BookPurchase model = (BookPurchase) o;</span>
+<span class="pc bpc" id="L59" title="1 of 4 branches missed.">		return getAmount() == model.getAmount() &amp;&amp; getDate().equals(model.getDate());</span>
+	}
+	
+	@Override
+	public String toString() {
+<span class="nc" id="L64">		return String.format(&quot;Amount: %.3f, Date: %s&quot;, getAmount(), getDate());</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

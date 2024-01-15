@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Role.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.dal.models.utils</a> &gt; <span class="el_source">Role.java</span></div><h1>Role.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.dal.models.utils;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+<span class="fc" id="L8">public enum Role implements Serializable {</span>
+<span class="fc" id="L9">	CREATE_BILL(&quot;Create bill&quot;),</span>
+<span class="fc" id="L10">	MANAGE_BOOKS(&quot;Manage books&quot;),</span>
+<span class="fc" id="L11">	ADD_NEW_CATEGORY(&quot;Add new category&quot;),</span>
+<span class="fc" id="L12">	GET_BOOK_STATS(&quot;Get book statistics&quot;),</span>
+<span class="fc" id="L13">	GET_REVENUE_STATS(&quot;Get store revenue statistics&quot;),</span>
+<span class="fc" id="L14">	GET_LIBR_PERFORMANCE(&quot;Get librarians' performance&quot;),</span>
+<span class="fc" id="L15">	MANAGE_EMPLOYEES(&quot;Manage employees&quot;);</span>
+	
+	private final String text;
+	
+<span class="fc" id="L19">	Role(String text) {</span>
+<span class="fc" id="L20">		this.text = text;</span>
+<span class="fc" id="L21">	}</span>
+	
+	@Override
+	public String toString() {
+<span class="fc" id="L25">		return text;</span>
+	}
+	
+	public static Set&lt;Role&gt; getLibrarianPermissions() {
+<span class="fc" id="L29">		return new HashSet&lt;Role&gt;(Arrays.asList(CREATE_BILL));</span>
+	}
+	
+	public static Set&lt;Role&gt; getManagerPermissions() {
+<span class="fc" id="L33">		return new HashSet&lt;Role&gt;(Arrays.asList(MANAGE_BOOKS, ADD_NEW_CATEGORY, </span>
+				GET_BOOK_STATS, GET_LIBR_PERFORMANCE));
+	}
+	
+	public static Set&lt;Role&gt; getAdminPermissions() {
+<span class="fc" id="L38">		Set&lt;Role&gt; adminPermissions = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L39">		adminPermissions.addAll(getLibrarianPermissions());</span>
+<span class="fc" id="L40">		adminPermissions.addAll(getManagerPermissions());</span>
+		
+<span class="fc" id="L42">		adminPermissions.add(GET_REVENUE_STATS);</span>
+<span class="fc" id="L43">		adminPermissions.add(MANAGE_EMPLOYEES);</span>
+		
+<span class="fc" id="L45">		return adminPermissions;</span>
+	}
+	
+	public static Role fromString(String permission) {
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		for(Role role: Role.values()) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			if(role.text.equals(permission))</span>
+<span class="fc" id="L51">				return role;</span>
+		}
+		
+<span class="nc" id="L54">		return null;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

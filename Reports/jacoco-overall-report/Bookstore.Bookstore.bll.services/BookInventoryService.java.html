@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookInventoryService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.bll.services</a> &gt; <span class="el_source">BookInventoryService.java</span></div><h1>BookInventoryService.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.bll.services;
+
+import java.util.Collections;
+import java.util.Comparator;
+
+import Bookstore.Bookstore.dal.models.Book;
+import Bookstore.Bookstore.dal.models.BookInventory;
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+import Bookstore.Bookstore.dal.repositories.irepositories.IBookInventoryRepository;
+import Bookstore.Bookstore.bll.services.iservices.IBookInventoryService;
+import Bookstore.Bookstore.bll.dto.BookDTO;
+import Bookstore.Bookstore.bll.dto.BookInventoryDTO;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.ExistingObjectException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
+import Bookstore.Bookstore.commons.utils.Utils;
+
+public class BookInventoryService extends Service&lt;BookInventory, BookInventoryDTO&gt; implements IBookInventoryService {
+	private final IBookInventoryRepository db;
+<span class="fc" id="L22">	private static Comparator&lt;BookInventory&gt; compareByTitle = new Comparator&lt;BookInventory&gt;() {</span>
+		@Override
+		public int compare(BookInventory o1, BookInventory o2) {
+<span class="fc" id="L25">			return o1.getBook().getTitle().compareToIgnoreCase(o2.getBook().getTitle());</span>
+		}
+	};
+	
+	public BookInventoryService(IBookInventoryRepository db) {
+<span class="fc" id="L30">		super(db);</span>
+<span class="fc" id="L31">		this.db = db;</span>
+<span class="fc" id="L32">	}</span>
+	
+	@Override
+	public BookInventoryDTO getByISBN(String isbn) throws EmptyInputException {
+<span class="pc bpc" id="L36" title="2 of 4 branches missed.">		if(isbn == null || isbn.isBlank())</span>
+<span class="nc" id="L37">			throw new EmptyInputException(&quot;ISBN&quot;);</span>
+		
+<span class="fc" id="L39">		BookInventory book = db.getByISBN(isbn);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		return book == null ? null : convertToDTO(book);</span>
+	}
+	
+	// Adds only books with unique ISBNs
+	// Objects are added alphabetically by title
+	@Override
+	public boolean add(BookInventoryDTO instance) throws ExistingObjectException, EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if(instance == null)</span>
+<span class="fc" id="L48">			return false;</span>
+		
+<span class="fc" id="L50">		add(convertToDAO(instance));</span>
+<span class="fc" id="L51">		db.saveChanges();</span>
+<span class="fc" id="L52">		return true;</span>
+	}
+	
+	@Override
+	public void updateStock(BookInventoryDTO instance, int newStock) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+<span class="fc" id="L57">		BookInventory model = db.getByISBN(instance.getBook().getIsbn());</span>
+		
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if(model == null)</span>
+<span class="fc" id="L60">			throw new EmptyInputException(&quot;book&quot;);</span>
+				
+<span class="fc" id="L62">		model.setStock(newStock);</span>
+<span class="fc" id="L63">		db.saveChanges();</span>
+<span class="fc" id="L64">	}</span>
+	
+	private void add(BookInventory model) throws ExistingObjectException {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if(db.getByISBN(model.getBook().getIsbn()) != null)</span>
+<span class="fc" id="L68">			throw new ExistingObjectException(&quot;ISBN&quot;);</span>
+		
+<span class="fc" id="L70">		int listIndex = Collections.binarySearch(db.getAll(), model, compareByTitle);</span>
+<span class="fc" id="L71">		db.add(Utils.getOrderedListIndex(listIndex), model);</span>
+<span class="fc" id="L72">	}</span>
+	
+	@Override
+	protected BookInventoryDTO convertToDTO(BookInventory model) {
+<span class="fc" id="L76">		BookDTO instanceBook = new BookDTO(</span>
+<span class="fc" id="L77">				model.getBook().getIsbn(), model.getBook().getTitle(),</span>
+<span class="fc" id="L78">				model.getBook().getAuthor(), model.getBook().getSupplier(),</span>
+<span class="fc" id="L79">				model.getBook().getCategoryId());</span>
+		
+<span class="fc" id="L81">		BookInventoryDTO instance = new BookInventoryDTO(</span>
+<span class="fc" id="L82">				instanceBook, model.getPurchasedPrice(), </span>
+<span class="fc" id="L83">				model.getOriginalPrice(), model.getSellingPrice(), </span>
+<span class="fc" id="L84">				model.getStock(), model.getPurchasedDate().getDate());</span>
+		
+<span class="fc" id="L86">		return instance;</span>
+	}
+
+	@Override
+	protected BookInventory convertToDAO(BookInventoryDTO model) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+<span class="fc" id="L91">		Book instanceBook = new Book(</span>
+<span class="fc" id="L92">				model.getBook().getIsbn(), model.getBook().getTitle(), </span>
+<span class="fc" id="L93">				model.getBook().getAuthor(), model.getBook().getSupplier(), </span>
+<span class="fc" id="L94">				model.getBook().getCategoryId());</span>
+		
+<span class="fc" id="L96">		return new BookInventory(</span>
+<span class="fc" id="L97">				instanceBook, model.getPurchasedPrice(), </span>
+<span class="fc" id="L98">				model.getOriginalPrice(), model.getSellingPrice(), </span>
+<span class="fc" id="L99">				model.getStock(), new CustomDate(model.getPurchasedDate()));</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

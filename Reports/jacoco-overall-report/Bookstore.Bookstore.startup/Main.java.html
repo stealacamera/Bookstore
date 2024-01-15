@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.startup</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.startup;
+
+import java.time.LocalDate;
+
+import Bookstore.Bookstore.bll.dto.CategoryDTO;
+import Bookstore.Bookstore.bll.dto.EmployeeDTO;
+import Bookstore.Bookstore.bll.dto.UserDTO;
+import Bookstore.Bookstore.bll.services.BillService;
+import Bookstore.Bookstore.bll.services.BookInventoryService;
+import Bookstore.Bookstore.bll.services.BookPurchaseService;
+import Bookstore.Bookstore.bll.services.CategoryService;
+import Bookstore.Bookstore.bll.services.EmployeeService;
+import Bookstore.Bookstore.bll.services.iservices.IBillService;
+import Bookstore.Bookstore.bll.services.iservices.IBookInventoryService;
+import Bookstore.Bookstore.bll.services.iservices.IBookPurchaseService;
+import Bookstore.Bookstore.bll.services.iservices.ICategoryService;
+import Bookstore.Bookstore.bll.services.iservices.IEmployeeService;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.exceptions.ExistingObjectException;
+import Bookstore.Bookstore.commons.exceptions.IncorrectPermissionsException;
+import Bookstore.Bookstore.commons.exceptions.NonPositiveInputException;
+import Bookstore.Bookstore.commons.exceptions.WrongFormatException;
+import Bookstore.Bookstore.commons.exceptions.WrongLengthException;
+import Bookstore.Bookstore.commons.utils.Utils;
+import Bookstore.Bookstore.controllers.HomepageController;
+import Bookstore.Bookstore.controllers.LoginController;
+import Bookstore.Bookstore.dal.repositories.BillRepository;
+import Bookstore.Bookstore.dal.repositories.BookInventoryRepository;
+import Bookstore.Bookstore.dal.repositories.BookPurchaseRepository;
+import Bookstore.Bookstore.dal.repositories.CategoryRepository;
+import Bookstore.Bookstore.dal.repositories.DbContext;
+import Bookstore.Bookstore.dal.repositories.EmployeeRepository;
+import Bookstore.Bookstore.dal.repositories.irepositories.IBillRepository;
+import Bookstore.Bookstore.dal.repositories.irepositories.IBookInventoryRepository;
+import Bookstore.Bookstore.dal.repositories.irepositories.IBookPurchaseRepository;
+import Bookstore.Bookstore.dal.repositories.irepositories.ICategoryRepository;
+import Bookstore.Bookstore.dal.repositories.irepositories.IEmployeeRepository;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+<span class="nc" id="L42">public class Main extends Application {</span>
+		
+	public static void main(String[] args) {
+<span class="nc" id="L45">		registerDependencies();</span>
+<span class="nc" id="L46">		seedData(</span>
+<span class="nc" id="L47">			Injector.getDependency(IEmployeeService.class), </span>
+<span class="nc" id="L48">			Injector.getDependency(ICategoryService.class)</span>
+		);
+		
+<span class="nc" id="L51">		Application.launch(args);</span>
+<span class="nc" id="L52">	}</span>
+	
+	@Override
+	public void start(Stage primaryStage) {
+<span class="nc" id="L56">		setUpApplication(</span>
+			primaryStage, 
+<span class="nc" id="L58">			Injector.getDependency(IBookInventoryService.class), </span>
+<span class="nc" id="L59">			Injector.getDependency(ICategoryService.class),</span>
+<span class="nc" id="L60">			Injector.getDependency(IBillService.class),</span>
+<span class="nc" id="L61">			Injector.getDependency(IBookPurchaseService.class),</span>
+<span class="nc" id="L62">			Injector.getDependency(IEmployeeService.class)</span>
+		);
+<span class="nc" id="L64">	}</span>
+	
+	public static void setUpApplication(Stage stage,
+			IBookInventoryService bookService, 
+			ICategoryService categoryService, 
+			IBillService billService,
+			IBookPurchaseService bookPurchaseService,
+			IEmployeeService employeeService) 
+	{
+<span class="fc" id="L73">		LoginController loginCtrl = new LoginController(employeeService);</span>
+		
+<span class="fc" id="L75">		Stage loginStage = new Stage();</span>
+<span class="fc" id="L76">		loginStage.setTitle(&quot;Log in&quot;); </span>
+<span class="fc" id="L77">		loginStage.setScene(new Scene(loginCtrl.getIndexView()));</span>
+		
+<span class="fc" id="L79">		loginStage.setOnHidden(e -&gt; {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			if(Session.getCurrentUser() == null)</span>
+<span class="fc" id="L81">				return;</span>
+			
+<span class="fc" id="L83">			HomepageController homepageCtrl = new HomepageController(</span>
+				bookService, categoryService, billService, 
+				bookPurchaseService, employeeService
+			);
+					
+<span class="fc" id="L88">			stage.setTitle(&quot;Homepage&quot;);</span>
+<span class="fc" id="L89">			stage.setScene(new Scene(homepageCtrl.getIndexView()));</span>
+<span class="fc" id="L90">			stage.show();</span>
+<span class="fc" id="L91">		});</span>
+		
+<span class="fc" id="L93">		loginStage.show();</span>
+<span class="fc" id="L94">	}</span>
+	
+	public static void registerDependencies() {
+<span class="nc" id="L97">		Injector.addDbContext(new DbContext());</span>
+		
+		// Repositories
+<span class="nc" id="L100">		Injector.addDependency(IBillRepository.class, new BillRepository(Utils.dataDirPath, Injector.getDbContext()));</span>
+<span class="nc" id="L101">		Injector.addDependency(IBookPurchaseRepository.class, new BookPurchaseRepository(Utils.dataDirPath, Injector.getDbContext()));</span>
+<span class="nc" id="L102">		Injector.addDependency(IBookInventoryRepository.class, new BookInventoryRepository(Utils.dataDirPath, Injector.getDbContext()));</span>
+<span class="nc" id="L103">		Injector.addDependency(ICategoryRepository.class, new CategoryRepository(Utils.dataDirPath, Injector.getDbContext()));</span>
+<span class="nc" id="L104">		Injector.addDependency(IEmployeeRepository.class, new EmployeeRepository(Utils.dataDirPath, Injector.getDbContext()));</span>
+		
+		// Services
+<span class="nc" id="L107">		Injector.addDependency(IBillService.class, new BillService(Injector.getDependency(IBillRepository.class)));</span>
+<span class="nc" id="L108">		Injector.addDependency(IBookPurchaseService.class, new BookPurchaseService(Injector.getDependency(IBookPurchaseRepository.class)));</span>
+<span class="nc" id="L109">		Injector.addDependency(IBookInventoryService.class, new BookInventoryService(Injector.getDependency(IBookInventoryRepository.class)));</span>
+<span class="nc" id="L110">		Injector.addDependency(ICategoryService.class, new CategoryService(Injector.getDependency(ICategoryRepository.class)));</span>
+<span class="nc" id="L111">		Injector.addDependency(IEmployeeService.class, new EmployeeService(Injector.getDependency(IEmployeeRepository.class)));</span>
+<span class="nc" id="L112">	}</span>
+	
+	public static void seedData(IEmployeeService employeeService, ICategoryService categoryService) {		
+<span class="nc bnc" id="L115" title="All 2 branches missed.">		if(employeeService.count() == 0) {</span>
+			UserDTO librarian, manager, admin;
+			
+			try {
+<span class="nc" id="L119">				librarian = new UserDTO(&quot;librarian&quot;, &quot;Name Surname&quot;, &quot;librarian@gmail.com&quot;, &quot;Password123&quot;, &quot;069 123 1233&quot;, LocalDate.now());</span>
+<span class="nc" id="L120">				manager = new UserDTO(&quot;manager&quot;, &quot;Name Surname&quot;, &quot;manager@gmail.com&quot;, &quot;Password123&quot;, &quot;069 123 3123&quot;, LocalDate.now());</span>
+<span class="nc" id="L121">				admin = new UserDTO(&quot;admin&quot;, &quot;Name Surname&quot;, &quot;admin@gmail.com&quot;, &quot;Password123&quot;, &quot;069 123 1323&quot;, LocalDate.now());</span>
+				
+<span class="nc" id="L123">				employeeService.add(new EmployeeDTO(admin, 1400.89, 3));</span>
+<span class="nc" id="L124">				employeeService.add(new EmployeeDTO(librarian, 500, 1));</span>
+<span class="nc" id="L125">				employeeService.add(new EmployeeDTO(manager, 655.45, 2));</span>
+<span class="nc" id="L126">			} catch (EmptyInputException | NonPositiveInputException | WrongFormatException | ExistingObjectException | WrongLengthException | IncorrectPermissionsException e) {</span>
+<span class="nc" id="L127">				e.printStackTrace();</span>
+<span class="nc" id="L128">			}</span>
+		}
+		
+<span class="nc bnc" id="L131" title="All 2 branches missed.">		if(categoryService.count() == 0) {</span>
+			try {
+<span class="nc" id="L133">				categoryService.add(new CategoryDTO(&quot;Drama&quot;));</span>
+<span class="nc" id="L134">				categoryService.add(new CategoryDTO(&quot;Comedy&quot;));</span>
+<span class="nc" id="L135">				categoryService.add(new CategoryDTO(&quot;Science fiction&quot;));</span>
+<span class="nc" id="L136">				categoryService.add(new CategoryDTO(&quot;Mystery&quot;));</span>
+<span class="nc" id="L137">				categoryService.add(new CategoryDTO(&quot;Horror&quot;));</span>
+<span class="nc" id="L138">				categoryService.add(new CategoryDTO(&quot;Romance&quot;));</span>
+<span class="nc" id="L139">				categoryService.add(new CategoryDTO(&quot;Fantasy&quot;));</span>
+<span class="nc" id="L140">			} catch (EmptyInputException | ExistingObjectException | NonPositiveInputException | WrongFormatException | WrongLengthException | IncorrectPermissionsException e) {</span>
+<span class="nc" id="L141">				e.printStackTrace();</span>
+<span class="nc" id="L142">			}</span>
+		}
+<span class="nc" id="L144">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

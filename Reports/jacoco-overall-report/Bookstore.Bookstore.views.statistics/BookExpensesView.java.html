@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookExpensesView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.views.statistics</a> &gt; <span class="el_source">BookExpensesView.java</span></div><h1>BookExpensesView.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.views.statistics;
+
+import java.text.DateFormatSymbols;
+import java.time.LocalDate;
+
+import Bookstore.Bookstore.dal.models.utils.CustomDate;
+import Bookstore.Bookstore.views.IView;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+public class BookExpensesView extends IView {
+<span class="fc" id="L29">	private BorderPane pane = new BorderPane();</span>
+<span class="fc" id="L30">	private FlowPane chartPane = new FlowPane();</span>
+<span class="fc" id="L31">	private PieChart dailyChart = new PieChart(), totalChart = new PieChart();</span>
+	private BarChart&lt;String, Number&gt; monthlyChart;
+	
+<span class="fc" id="L34">	private DatePicker dateDp = new DatePicker(LocalDate.now());</span>
+<span class="fc" id="L35">	private RadioButton dailyBox = new RadioButton(&quot;Daily&quot;), monthlyBox = new RadioButton(&quot;Monthly&quot;), totalBox = new RadioButton(&quot;Total&quot;);</span>
+	
+<span class="fc" id="L37">	public BookExpensesView() {</span>
+<span class="fc" id="L38">		createLayout();</span>
+		
+<span class="fc" id="L40">		dateDp.setId(&quot;date-picker&quot;);</span>
+<span class="fc" id="L41">		dailyBox.setId(&quot;daily-toggle&quot;);</span>
+<span class="fc" id="L42">		monthlyBox.setId(&quot;monthly-toggle&quot;);</span>
+<span class="fc" id="L43">		totalBox.setId(&quot;total-toggle&quot;);</span>
+
+<span class="fc" id="L45">		super.getChildren().add(pane);</span>
+<span class="fc" id="L46">	}</span>
+	
+<span class="fc" id="L48">	public LocalDate getDateValue() { return dateDp.getValue(); }</span>
+	
+	public void setDateListener(ChangeListener&lt;LocalDate&gt; action) { 
+<span class="fc" id="L51">		dateDp.valueProperty().addListener(action); </span>
+<span class="fc" id="L52">		dateDp.addEventFilter(KeyEvent.KEY_PRESSED, e -&gt; {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			if(e.getCode() == KeyCode.ENTER)</span>
+<span class="fc" id="L54">				dateDp.setValue(LocalDate.parse(dateDp.getEditor().getText(), CustomDate.dateFormat));</span>
+<span class="fc" id="L55">		});</span>
+<span class="fc" id="L56">	}</span>
+	
+	private void createLayout() {
+<span class="fc" id="L59">		ToggleGroup radios = new ToggleGroup();</span>
+<span class="fc" id="L60">		dailyBox.setToggleGroup(radios);</span>
+<span class="fc" id="L61">		monthlyBox.setToggleGroup(radios);</span>
+<span class="fc" id="L62">		totalBox.setToggleGroup(radios);</span>
+
+<span class="fc" id="L64">		dailyBox.setOnAction(e -&gt; pane.setCenter(dailyChart));</span>
+<span class="fc" id="L65">		monthlyBox.setOnAction(e -&gt; pane.setCenter(monthlyChart));</span>
+<span class="fc" id="L66">		totalBox.setOnAction(e -&gt; pane.setCenter(totalChart));</span>
+		
+<span class="fc" id="L68">		HBox dailyOptionPane = new HBox(dailyBox, dateDp);</span>
+<span class="fc" id="L69">		VBox optionsPane = new VBox(dailyOptionPane, monthlyBox, totalBox);</span>
+		
+<span class="fc" id="L71">		dailyOptionPane.setAlignment(Pos.BASELINE_CENTER);</span>
+<span class="fc" id="L72">		dailyOptionPane.setSpacing(10);</span>
+<span class="fc" id="L73">		optionsPane.setSpacing(10);</span>
+		
+<span class="fc" id="L75">		pane.setLeft(optionsPane);</span>
+<span class="fc" id="L76">		pane.setCenter(chartPane);</span>
+<span class="fc" id="L77">		pane.setPadding(new Insets(20));</span>
+<span class="fc" id="L78">		pane.setPrefSize(600, 600);</span>
+<span class="fc" id="L79">	}</span>
+	
+	public void setDailyChart(double sales, double purchases) {
+<span class="fc" id="L82">		ObservableList&lt;PieChart.Data&gt; data = FXCollections.observableArrayList(</span>
+				new PieChart.Data(&quot;Book sales&quot;, sales),
+				new PieChart.Data(&quot;Book stock costs&quot;, purchases));
+		
+<span class="fc" id="L86">		dailyChart.setData(data);</span>
+<span class="fc" id="L87">		dailyChart.setTitle(&quot;Daily cash flow&quot;);</span>
+<span class="fc" id="L88">		dailyChart.setId(&quot;daily-chart&quot;);</span>
+<span class="fc" id="L89">	}</span>
+	
+	public void setMonthlyChart(double[] sales, double[] purchases) {
+<span class="fc" id="L92">		CategoryAxis xAxis = new CategoryAxis();</span>
+<span class="fc" id="L93">		NumberAxis yAxis = new NumberAxis();</span>
+<span class="fc" id="L94">		xAxis.setLabel(&quot;Month&quot;);</span>
+<span class="fc" id="L95">		yAxis.setLabel(&quot;Cash flow&quot;);</span>
+		
+<span class="fc" id="L97">		XYChart.Series&lt;String, Number&gt; salesSeries = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L98">		XYChart.Series&lt;String, Number&gt; purchasesSeries = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L99">		salesSeries.setName(&quot;Sales&quot;);</span>
+<span class="fc" id="L100">		purchasesSeries.setName(&quot;Purchases&quot;);</span>
+		
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for(int i = 0; i &lt; sales.length; i++) {</span>
+<span class="fc" id="L103">			salesSeries.getData().add(new XYChart.Data&lt;String, Number&gt;(new DateFormatSymbols().getMonths()[i], sales[i]));</span>
+<span class="fc" id="L104">			purchasesSeries.getData().add(new XYChart.Data&lt;String, Number&gt;(new DateFormatSymbols().getMonths()[i], purchases[i]));</span>
+		}
+		
+<span class="fc" id="L107">		monthlyChart = new BarChart&lt;String, Number&gt;(xAxis, yAxis);</span>
+<span class="fc" id="L108">		monthlyChart.setId(&quot;monthly-chart&quot;);</span>
+<span class="fc" id="L109">		monthlyChart.setTitle(&quot;Monthly cash flow&quot;);</span>
+		
+<span class="fc" id="L111">		monthlyChart.getData().add(salesSeries);</span>
+<span class="fc" id="L112">		monthlyChart.getData().add(purchasesSeries);		</span>
+<span class="fc" id="L113">	}</span>
+	
+	public void setTotalChart(double sales, double purchases) {
+<span class="fc" id="L116">		ObservableList&lt;PieChart.Data&gt; data = FXCollections.observableArrayList(</span>
+				new PieChart.Data(&quot;Book sales&quot;, sales),
+				new PieChart.Data(&quot;Book stock purchases&quot;, purchases));
+		
+<span class="fc" id="L120">		totalChart = new PieChart(data);</span>
+<span class="fc" id="L121">		totalChart.setId(&quot;total-chart&quot;);</span>
+<span class="fc" id="L122">		totalChart.setTitle(&quot;Total cash flow&quot;);</span>
+<span class="fc" id="L123">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

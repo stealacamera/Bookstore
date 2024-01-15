@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LibrarianPerformanceView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.views.statistics</a> &gt; <span class="el_source">LibrarianPerformanceView.java</span></div><h1>LibrarianPerformanceView.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.views.statistics;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import Bookstore.Bookstore.bll.dto.LibrarianPerformanceDTO;
+import Bookstore.Bookstore.views.IView;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+public class LibrarianPerformanceView extends IView {
+<span class="fc" id="L25">	private VBox pane = new VBox();</span>
+<span class="fc" id="L26">	private DatePicker startDateDp = new DatePicker(LocalDate.now()), endDateDp = new DatePicker(LocalDate.now());</span>
+<span class="fc" id="L27">	private Button submitBt = new Button(&quot;Submit&quot;);</span>
+	
+<span class="fc" id="L29">	private TableView&lt;LibrarianPerformanceDTO&gt; performanceDataTv = new TableView&lt;&gt;();</span>
+<span class="fc" id="L30">	private TableColumn&lt;LibrarianPerformanceDTO, String&gt; tcEmployee = new TableColumn&lt;&gt;(&quot;Employee&quot;);</span>
+<span class="fc" id="L31">	private	TableColumn&lt;LibrarianPerformanceDTO, Integer&gt; tcBills = new TableColumn&lt;&gt;(&quot;No. of bills&quot;), tcBooks = new TableColumn&lt;&gt;(&quot;No. of books sold&quot;);</span>
+<span class="fc" id="L32">	private TableColumn&lt;LibrarianPerformanceDTO, Double&gt; tcSalesAmount = new TableColumn&lt;&gt;(&quot;Sales amount&quot;);</span>
+	
+<span class="fc" id="L34">	public LibrarianPerformanceView() {</span>
+<span class="fc" id="L35">		startDateDp.setId(&quot;start-date&quot;);</span>
+<span class="fc" id="L36">		endDateDp.setId(&quot;end-date&quot;);</span>
+<span class="fc" id="L37">		submitBt.setId(&quot;submit-btn&quot;);</span>
+		
+<span class="fc" id="L39">		performanceDataTv.setId(&quot;performance-table&quot;);</span>
+		
+<span class="fc" id="L41">		setId(&quot;libr-performance-view&quot;);</span>
+		
+<span class="fc" id="L43">		createLayout();</span>
+<span class="fc" id="L44">		super.getChildren().add(pane);</span>
+<span class="fc" id="L45">	}</span>
+	
+<span class="fc" id="L47">	public LocalDate getStartDate() { return startDateDp.getValue(); }</span>
+<span class="fc" id="L48">	public LocalDate getEndDate() { return endDateDp.getValue(); }</span>
+	
+<span class="fc" id="L50">	public void setSubmitListener(EventHandler&lt;ActionEvent&gt; action) { submitBt.setOnAction(action); }</span>
+	
+	public void setPerformanceList(List&lt;LibrarianPerformanceDTO&gt; list) {
+<span class="fc" id="L53">		performanceDataTv.setItems(FXCollections.observableArrayList(list));</span>
+<span class="fc" id="L54">	}</span>
+	
+	private void setPerformanceDataTv() {		
+<span class="fc" id="L57">		tcEmployee.setCellValueFactory(new PropertyValueFactory&lt;LibrarianPerformanceDTO, String&gt;(&quot;employeeDescription&quot;));</span>
+<span class="fc" id="L58">		tcBills.setCellValueFactory(new PropertyValueFactory&lt;LibrarianPerformanceDTO, Integer&gt;(&quot;numOfBills&quot;));</span>
+<span class="fc" id="L59">		tcBooks.setCellValueFactory(new PropertyValueFactory&lt;LibrarianPerformanceDTO, Integer&gt;(&quot;numOfBooks&quot;));</span>
+		
+<span class="fc" id="L61">		tcSalesAmount.setCellValueFactory(new PropertyValueFactory&lt;LibrarianPerformanceDTO, Double&gt;(&quot;salesAmount&quot;));</span>
+<span class="fc" id="L62">		tcSalesAmount.setCellFactory(cell -&gt; new SalesAmountTableCellFactory());</span>
+		
+<span class="fc" id="L64">		performanceDataTv.getColumns().add(tcEmployee);</span>
+<span class="fc" id="L65">		performanceDataTv.getColumns().add(tcBills);</span>
+<span class="fc" id="L66">		performanceDataTv.getColumns().add(tcBooks);</span>
+<span class="fc" id="L67">		performanceDataTv.getColumns().add(tcSalesAmount);</span>
+		
+<span class="fc" id="L69">		performanceDataTv.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);</span>
+<span class="fc" id="L70">		performanceDataTv.setPrefWidth(500);</span>
+<span class="fc" id="L71">	}</span>
+	
+	private void createLayout() {
+<span class="fc" id="L74">		GridPane dpPane = new GridPane();</span>
+<span class="fc" id="L75">		HBox fieldsPane = new HBox(dpPane, submitBt);</span>
+<span class="fc" id="L76">		setPerformanceDataTv();</span>
+		
+<span class="fc" id="L78">		dpPane.add(new Label(&quot;Start date:&quot;), 0, 0);</span>
+<span class="fc" id="L79">		dpPane.add(new Label(&quot;End date:&quot;), 1, 0);</span>
+<span class="fc" id="L80">		dpPane.add(startDateDp, 0, 1);</span>
+<span class="fc" id="L81">		dpPane.add(endDateDp, 1, 1);</span>
+		
+<span class="fc" id="L83">		dpPane.setHgap(10);</span>
+<span class="fc" id="L84">		dpPane.setVgap(5);</span>
+		
+<span class="fc" id="L86">		fieldsPane.setSpacing(30);</span>
+<span class="fc" id="L87">		fieldsPane.setAlignment(Pos.BOTTOM_CENTER);</span>
+		
+<span class="fc" id="L89">		pane.setPadding(new Insets(20));</span>
+<span class="fc" id="L90">		pane.setSpacing(20);</span>
+		
+<span class="fc" id="L92">		pane.getChildren().addAll(fieldsPane, performanceDataTv);</span>
+<span class="fc" id="L93">	}</span>
+	
+	private static class SalesAmountTableCellFactory extends TableCell&lt;LibrarianPerformanceDTO, Double&gt; {
+		@Override
+		protected void updateItem(Double sales, boolean empty) {
+<span class="fc" id="L98">			super.updateItem(sales, empty);</span>
+			
+<span class="pc bpc" id="L100" title="1 of 4 branches missed.">			if(empty || sales == null) {</span>
+<span class="fc" id="L101">				setText(null);</span>
+<span class="fc" id="L102">				setGraphic(null);</span>
+			} else
+<span class="fc" id="L104">				setText(String.format(&quot;%.3f&quot;, sales));</span>
+<span class="fc" id="L105">		}</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

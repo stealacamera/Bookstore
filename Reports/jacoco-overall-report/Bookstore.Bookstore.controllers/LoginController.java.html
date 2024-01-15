@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.controllers</a> &gt; <span class="el_source">LoginController.java</span></div><h1>LoginController.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.controllers;
+
+import Bookstore.Bookstore.startup.Session;
+import Bookstore.Bookstore.views.IView;
+import Bookstore.Bookstore.bll.services.iservices.IEmployeeService;
+import Bookstore.Bookstore.commons.exceptions.EmptyInputException;
+import Bookstore.Bookstore.commons.utils.Utils;
+import Bookstore.Bookstore.views.LoginView;
+
+public class LoginController {
+	private IEmployeeService employeeService;
+	
+<span class="fc" id="L13">	public LoginController(IEmployeeService employeeService) {</span>
+<span class="fc" id="L14">		this.employeeService = employeeService;		</span>
+<span class="fc" id="L15">	}</span>
+	
+	public IView getIndexView() {
+<span class="fc" id="L18">		LoginView view = new LoginView();</span>
+		
+<span class="fc" id="L20">		view.setLoginAction(e -&gt; {</span>
+<span class="fc" id="L21">			String username = view.getUsername(), password = view.getPassword();</span>
+			
+			try {
+<span class="fc bfc" id="L24" title="All 2 branches covered.">				if(!employeeService.canLogin(username, password))</span>
+<span class="fc" id="L25">					view.displayError(&quot;Incorrect username and/or password. Please try again.&quot;);</span>
+				else {
+<span class="fc" id="L27">					Session.setCurrentUser(employeeService.getByUsername(username));</span>
+<span class="fc" id="L28">					Utils.getCurrentStage(e).close();</span>
+				}
+<span class="fc" id="L30">			} catch(EmptyInputException ex) {</span>
+<span class="fc" id="L31">				view.displayError(ex.getLocalizedMessage());					</span>
+<span class="fc" id="L32">			}</span>
+<span class="fc" id="L33">		});</span>
+		
+<span class="fc" id="L35">		return view;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

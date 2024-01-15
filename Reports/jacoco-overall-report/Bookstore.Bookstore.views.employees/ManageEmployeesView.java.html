@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManageEmployeesView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bookstore</a> &gt; <a href="index.source.html" class="el_package">Bookstore.Bookstore.views.employees</a> &gt; <span class="el_source">ManageEmployeesView.java</span></div><h1>ManageEmployeesView.java</h1><pre class="source lang-java linenums">package Bookstore.Bookstore.views.employees;
+
+import Bookstore.Bookstore.bll.dto.EmployeeDTO;
+import Bookstore.Bookstore.views.IView;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+
+public class ManageEmployeesView extends IView {
+<span class="fc" id="L17">	private VBox pane = new VBox();</span>
+<span class="fc" id="L18">	private Button addBt = new Button(&quot;Add new employee&quot;), modifyBt = new Button(&quot;Modify&quot;), </span>
+			deleteBt = new Button(&quot;Delete&quot;);
+<span class="fc" id="L20">	private ListView&lt;EmployeeDTO&gt; employeesLv = new ListView&lt;&gt;();</span>
+	
+<span class="fc" id="L22">	public ManageEmployeesView(ObservableList&lt;EmployeeDTO&gt; employees) {</span>
+<span class="fc" id="L23">		addBt.setId(&quot;add-btn&quot;);</span>
+<span class="fc" id="L24">		modifyBt.setId(&quot;modify-btn&quot;);</span>
+<span class="fc" id="L25">		deleteBt.setId(&quot;delete-btn&quot;);</span>
+<span class="fc" id="L26">		employeesLv.setId(&quot;employees-list&quot;);</span>
+<span class="fc" id="L27">		setId(&quot;manage-employees-view&quot;);</span>
+		
+<span class="fc" id="L29">		setList(employees);</span>
+<span class="fc" id="L30">		createLayout();</span>
+<span class="fc" id="L31">		super.getChildren().add(pane);</span>
+<span class="fc" id="L32">	}</span>
+	
+	public void setInsertListener(EventHandler&lt;ActionEvent&gt; action) {
+<span class="fc" id="L35">		addBt.setOnAction(action);</span>
+<span class="fc" id="L36">	}</span>
+	
+	public void setModifyListener(EventHandler&lt;ActionEvent&gt; action) {
+<span class="fc" id="L39">		modifyBt.setOnAction(action);</span>
+<span class="fc" id="L40">	}</span>
+	
+	public void setDeleteListener(EventHandler&lt;ActionEvent&gt; action) {
+<span class="fc" id="L43">		deleteBt.setOnAction(action);</span>
+<span class="fc" id="L44">	}</span>
+	
+	public int getSelectedIndex() {
+<span class="fc" id="L47">		return employeesLv.getSelectionModel().getSelectedIndex();</span>
+	}
+	
+	public EmployeeDTO getSelectedItem() {
+<span class="fc" id="L51">		return employeesLv.getSelectionModel().getSelectedItem();</span>
+	}
+	
+	public void refreshList(ObservableList&lt;EmployeeDTO&gt; employees) {
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if(employees != null)</span>
+<span class="fc" id="L56">			employeesLv.setItems(employees);</span>
+		
+<span class="fc" id="L58">		employeesLv.refresh();</span>
+<span class="fc" id="L59">	}</span>
+	
+	private void createLayout() {
+<span class="fc" id="L62">		addBt.setPrefHeight(40);</span>
+<span class="fc" id="L63">		modifyBt.setPrefHeight(40);</span>
+<span class="fc" id="L64">		deleteBt.setPrefHeight(40);</span>
+<span class="fc" id="L65">		employeesLv.setPrefWidth(300);</span>
+		
+<span class="fc" id="L67">		HBox btPane = new HBox(addBt, modifyBt, deleteBt);</span>
+<span class="fc" id="L68">		btPane.setSpacing(10);</span>
+<span class="fc" id="L69">		btPane.setPrefWidth(200);</span>
+		
+<span class="fc" id="L71">		pane.getChildren().addAll(btPane, employeesLv);</span>
+<span class="fc" id="L72">		pane.setSpacing(20);</span>
+<span class="fc" id="L73">		pane.setPadding(new Insets(30));		</span>
+<span class="fc" id="L74">	}</span>
+	
+	private void setList(ObservableList&lt;EmployeeDTO&gt; employees) {
+<span class="fc" id="L77">		employeesLv.setItems(employees);</span>
+<span class="fc" id="L78">		employeesLv.setFocusTraversable(false);</span>
+		
+<span class="fc" id="L80">		employeesLv.setCellFactory(cell -&gt; new EmployeesListViewCell());</span>
+<span class="fc" id="L81">	}</span>
+	
+	private static class EmployeesListViewCell extends ListCell&lt;EmployeeDTO&gt; {
+		@Override
+		protected void updateItem(EmployeeDTO employee, boolean empty) {
+<span class="fc" id="L86">			super.updateItem(employee, empty);</span>
+			
+<span class="pc bpc" id="L88" title="1 of 4 branches missed.">			if(empty || employee == null) {</span>
+<span class="fc" id="L89">				setText(null);</span>
+<span class="fc" id="L90">				setGraphic(null);</span>
+			} else {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				if(employee.getAccessLvl() == 3) {</span>
+<span class="fc" id="L93">					setDisable(true);</span>
+<span class="fc" id="L94">					setTextFill(Color.GRAY);</span>
+				}
+				
+<span class="fc" id="L97">				setText(employee.toString());</span>
+			}
+<span class="fc" id="L99">		}</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
