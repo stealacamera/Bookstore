@@ -25,12 +25,12 @@
 		<version>0.8.11</version>
 	</dependency>
   
-    <dependency>
+    <!-- <dependency>
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>
 		<version>4.13.2</version>
 		<scope>test</scope>
-    </dependency>   
+    </dependency>   -->
 
     <dependency>
 	    <groupId>org.junit.jupiter</groupId>
@@ -101,13 +101,13 @@
 			<version>0.8.11</version>
 			<executions>
 				<execution>
-					<id>agent</id>
+					<id>jacoco-agent</id>
 					<goals>
 						<goal>prepare-agent</goal>
 					</goals>
 				</execution>
 				<execution>
-					<id>generate-report</id>
+					<id>code-coverage-report</id>
 					<phase>test</phase>
 					<goals>
 						<goal>report</goal>
@@ -115,7 +115,42 @@
 				</execution>
 			</executions>
 		</plugin>
+		
+  		<plugin>
+	    	<groupId>org.pitest</groupId>
+		    <artifactId>pitest-maven</artifactId>
+		    <version>1.15.3</version>
+		    <executions>
+		    	<execution>
+		    		<id>pit-report</id>
+		    		<phase>test</phase>
+		    		<goals>
+		    			<goal>mutationCoverage</goal>
+		    		</goals>
+		    	</execution>
+		    </executions>
+		    <configuration>
+		    	<excludedClasses>
+		    		<param>Bookstore.Bookstore.startup.*</param>
+		    		<param>Bookstore.Bookstore.commons.exceptions.*</param>
+		    	</excludedClasses>
+		    	<verbose>true</verbose>
+		    </configuration>
+		    <dependencies>
+		    	<dependency>
+			        <groupId>org.pitest</groupId>
+			        <artifactId>pitest-junit5-plugin</artifactId>
+			        <version>1.2.1</version>
+				</dependency>
+				<!--<dependency>
+				    <groupId>com.github.alexvictoor</groupId>
+				    <artifactId>pitest-cucumber-plugin</artifactId>
+				    <version>0.11.1</version>
+				</dependency>-->
+		    </dependencies>
+		</plugin>
   	</plugins>
+  	
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
@@ -127,7 +162,6 @@
 	            <mainClass>Bookstore.Bookstore</mainClass>
 	        </configuration>
 	    </plugin>
-        
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
@@ -144,10 +178,10 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.2.3</version>
-          <configuration>
+          <!--<configuration>
 	        <reuseForks>false</reuseForks>
 	        <forkCount>1</forkCount>
-    	  </configuration>
+    	  </configuration>-->
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
