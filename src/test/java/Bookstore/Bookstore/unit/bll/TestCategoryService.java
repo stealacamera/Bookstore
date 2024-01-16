@@ -39,7 +39,7 @@ public class TestCategoryService {
 	private static CategoryDTO[] modelDTOs;
 	
 	@BeforeAll
-	static void setUpDummyData() throws EmptyInputException {
+	public static void setUpDummyData() throws EmptyInputException {
 		models = new Category[7];
 		modelDTOs = new CategoryDTO[models.length];
 		
@@ -50,7 +50,7 @@ public class TestCategoryService {
 	}
 	
 	@BeforeEach
-	void setUp() {
+	public void setUp() {
 		mockRepository = new CategoryRepositoryMock();
 		mockRepository.addDummyData(models);
 		
@@ -58,38 +58,38 @@ public class TestCategoryService {
 	}
 	
 	@Test
-	void testGetAll_Empty() {
+	public void testGetAll_Empty() {
 		service = new CategoryService(new CategoryRepositoryMock());
 		assertIterableEquals(FXCollections.observableArrayList(), service.getAll());
 	}
 	
 	@Test
-	void testGetAll_NonEmpty() {
+	public void testGetAll_NonEmpty() {
 		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 	
 	@ParameterizedTest
 	@NullSource
 	@ValueSource(strings = {"", "  "})
-	void testAdd_InvalidValues(String input) {
+	public void testAdd_InvalidValues(String input) {
 		Exception exception = assertThrows(EmptyInputException.class, () -> service.add(new CategoryDTO(0, input)));
 		assertTrue(exception.getMessage().contains("Input fields cannot be empty: Please enter a value for name"));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingNames")
-	void testAdd_ExistingName(CategoryDTO model) {
+	public void testAdd_ExistingName(CategoryDTO model) {
 		Exception exception = assertThrows(ExistingObjectException.class, () -> service.add(model));
 		assertTrue(exception.getMessage().contains("Element with these details already exists"));
 	}
 	
 	@Test
-	void testAdd_NullValue() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+	public void testAdd_NullValue() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		assertFalse(service.add(null));
 	}
 	
 	@Test
-	void testAdd_NonExistingName() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+	public void testAdd_NonExistingName() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		CategoryDTO model = new CategoryDTO(0, "nonexisting name");
 		
 		assertTrue(service.add(model));
@@ -100,14 +100,14 @@ public class TestCategoryService {
 	}
 	
 	@Test
-	void testGetById_NotInDatabase() {
+	public void testGetById_NotInDatabase() {
 		assertNull(service.getById(0));
 		assertNull(service.getById(models[models.length - 1].getId() + 1));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingData")
-	void testGetById_InDatabase(Category expected) {
+	public void testGetById_InDatabase(Category expected) {
 		assertEquals(new CategoryDTO(expected.getId(), expected.getName()), service.getById(expected.getId()));
 	}
 	

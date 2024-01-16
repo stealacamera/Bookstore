@@ -37,7 +37,7 @@ public class TestEmployeeIndexViewNeighborhood extends TestViewNeighborHoodBase 
 	private static EmployeesController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		employeeService = new EmployeeService(new EmployeeRepository(Utils.testDataDirPath, new DbContext()));
 		controller = new EmployeesController(employeeService);
 		
@@ -66,7 +66,7 @@ public class TestEmployeeIndexViewNeighborhood extends TestViewNeighborHoodBase 
 	}
 	
 	@Test
-	void testIndexList(FxRobot robot) {
+	public void testIndexList(FxRobot robot) {
 		ListView<EmployeeDTO> employeeList = robot.lookup("#employees-list").queryListView();
 		
 		assertEquals(2, employeeList.getItems().size());
@@ -74,14 +74,14 @@ public class TestEmployeeIndexViewNeighborhood extends TestViewNeighborHoodBase 
 	}
 	
 	@Test
-	void testModifyEmployeeFormFill_EntityNotClicked(FxRobot robot) {
+	public void testModifyEmployeeFormFill_EntityNotClicked(FxRobot robot) {
 		robot.clickOn("#modify-btn");
 		
 		TestingUtils.testErrorMessage(robot, "Please select an employee");
 	}
 	
 	@Test
-	void testModifyEmployeeFormFill_EntityClicked(FxRobot robot) {
+	public void testModifyEmployeeFormFill_EntityClicked(FxRobot robot) {
 		robot.clickOn(robot.lookup(".list-cell").nth(0).queryAs(Cell.class));
 		robot.clickOn("#modify-btn");
 		
@@ -103,7 +103,7 @@ public class TestEmployeeIndexViewNeighborhood extends TestViewNeighborHoodBase 
 	}
 	
 	@Test
-	void testDeleteEmployee_EntityNotClicked(FxRobot robot) {
+	public void testDeleteEmployee_EntityNotClicked(FxRobot robot) {
 		robot.clickOn("#delete-btn");
 		
 		TestingUtils.testErrorMessage(robot, "Please select an employee");
@@ -114,7 +114,7 @@ public class TestEmployeeIndexViewNeighborhood extends TestViewNeighborHoodBase 
 	}
 	
 	@Test
-	void testDeleteEmployee_EntityClicked(FxRobot robot) {
+	public void testDeleteEmployee_EntityClicked(FxRobot robot) {
 		robot.clickOn(robot.lookup(".list-cell").nth(0).queryAs(Cell.class));
 		robot.clickOn("#delete-btn");
 		

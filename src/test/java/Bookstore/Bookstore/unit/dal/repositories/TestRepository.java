@@ -18,20 +18,20 @@ public class TestRepository extends TestRepositoryBase {
 	private IRepository<String> repository;
 	
 	@BeforeEach
-	void setUpEach() throws IOException {
+	public void setUpEach() throws IOException {
 		dataFile = new File(dataDir, fileName);
 		dataFile.createNewFile();
 	}
 	
 	@Test
-	void testGetAll_WithNoElements() throws ClassNotFoundException, IOException {
+	public void testGetAll_WithNoElements() throws ClassNotFoundException, IOException {
 				
 		repository = new RepositoryStub(dbContext, dataDirPath);
 		assertIterableEquals(repository.getAll(), getDataFromFile());
 	}
 	
 	@Test
-	void testGetAll_WithElements() throws NoSuchFieldException, SecurityException, Exception {
+	public void testGetAll_WithElements() throws NoSuchFieldException, SecurityException, Exception {
 		setTempDataToFile(new ArrayList<>(Arrays.asList("foo", "bar")));
 		
 		repository = new RepositoryStub(dbContext, dataDirPath);
@@ -39,7 +39,7 @@ public class TestRepository extends TestRepositoryBase {
 	}
 	
 	@Test
-	void testSaveChanges_AddElement() throws ClassNotFoundException, IOException {
+	public void testSaveChanges_AddElement() throws ClassNotFoundException, IOException {
 		repository = new RepositoryStub(dbContext, dataDirPath);
 		
 		repository.add("foo");
@@ -49,7 +49,7 @@ public class TestRepository extends TestRepositoryBase {
 	}
 	
 	@Test
-	void testSaveChanges_RemoveElements() throws ClassNotFoundException, IOException {
+	public void testSaveChanges_RemoveElements() throws ClassNotFoundException, IOException {
 		setTempDataToFile(new ArrayList<>(Arrays.asList("foo", "bar")));
 		repository = new RepositoryStub(dbContext, dataDirPath);
 		

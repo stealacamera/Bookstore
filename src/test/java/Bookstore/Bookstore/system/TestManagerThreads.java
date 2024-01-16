@@ -44,7 +44,7 @@ public class TestManagerThreads extends TestThreadBase {
 	private static EmployeeDTO manager;
 	
 	@BeforeAll
-	static void preconditions_AddManager() throws Exception {
+	public static void preconditions_AddManager() throws Exception {
 		manager = new EmployeeDTO(
 			new UserDTO("manager", "foo bar", "foo@gmail.com", "password123", "069 123 1346", LocalDate.now()), 
 			100, 2
@@ -54,7 +54,7 @@ public class TestManagerThreads extends TestThreadBase {
 	}
 	
 	@BeforeAll
-	static void preconditions_AddBook() throws Exception {
+	public static void preconditions_AddBook() throws Exception {
 		CategoryDTO category = new CategoryDTO("category");
 		
 		BookInventoryDTO book = new BookInventoryDTO(
@@ -67,7 +67,7 @@ public class TestManagerThreads extends TestThreadBase {
 	}
 	
 	@BeforeAll
-	static void preconditions_AddLibrariansAndBills() throws Exception {
+	public static void preconditions_AddLibrariansAndBills() throws Exception {
 		for(int i = 0; i < 3; i++) {
 			librarian = new EmployeeDTO(
 				new UserDTO("librarian" + i, "foo bar", "foo@gmail.com", "password123", "069 123 1346", LocalDate.now()), 
@@ -82,7 +82,7 @@ public class TestManagerThreads extends TestThreadBase {
 	}
 	
 	@Start
-	private void start(Stage stage) throws Exception {
+	public void start(Stage stage) throws Exception {
 		Main.setUpApplication(
 			stage, bookInventoryService, categoryService, 
 			billService, bookPurchaseService, employeeService
@@ -90,7 +90,7 @@ public class TestManagerThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testAddNewBook() throws Exception {			
+	public void testAddNewBook() throws Exception {			
 		// Move to add book page
 		preconditions_LogInUser(manager.getUsername(), manager.getPassword());
 		
@@ -132,7 +132,7 @@ public class TestManagerThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testDeleteBook() throws EmptyInputException {
+	public void testDeleteBook() throws EmptyInputException {
 		preconditions_LogInUser(manager.getUsername(), manager.getPassword());
 		
 		robot.clickOn("#" + Role.MANAGE_BOOKS.name());
@@ -148,7 +148,7 @@ public class TestManagerThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testCheckLibrariansPerformance() {
+	public void testCheckLibrariansPerformance() {
 		preconditions_LogInUser(manager.getUsername(), manager.getPassword());
 		
 		robot.clickOn("#" + Role.GET_LIBR_PERFORMANCE.name());
@@ -167,7 +167,7 @@ public class TestManagerThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testBookExpenses() {
+	public void testBookExpenses() {
 		// Preconditions
 		preconditions_LogInUser(manager.getUsername(), manager.getPassword());
 		

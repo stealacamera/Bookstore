@@ -40,7 +40,7 @@ public class TestEmployeeService {
 	private EmployeeService service;
 		
 	@BeforeAll
-	static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
+	public static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
 		models = new Employee[7];
 		modelDTOs = new EmployeeDTO[models.length];
 		
@@ -59,7 +59,7 @@ public class TestEmployeeService {
 	}
 	
 	@BeforeEach
-	void setUp() {
+	public void setUp() {
 		mockRepository = new EmployeeRepositoryMock();
 		mockRepository.addDummyData(models);
 		
@@ -67,48 +67,48 @@ public class TestEmployeeService {
 	}
 	
 	@Test
-	void testGetAll_Empty() {
+	public void testGetAll_Empty() {
 		service = new EmployeeService(new EmployeeRepositoryMock());
 		assertEquals(0, service.count());
 	}
 	
 	@Test
-	void testGetAll_NonEmpty() {
+	public void testGetAll_NonEmpty() {
 		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 	
 	@Test
-	void testGetById_NotInDatabase() {
+	public void testGetById_NotInDatabase() {
 		assertNull(service.getById(0));
 		assertNull(service.getById(models[models.length - 1].getId() + 1));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingValues")
-	void testGetById_InDatabase(EmployeeDTO expected) {
+	public void testGetById_InDatabase(EmployeeDTO expected) {
 		assertEquals(expected, service.getById(expected.getId()));
 	}
 	
 	@ParameterizedTest
 	@ValueSource(strings = {"anonymous", "fakeSample"})
-	void testGetByUsername_NotInDatabase(String username) {
+	public void testGetByUsername_NotInDatabase(String username) {
 		assertNull(service.getByUsername(username));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForGetByUsername")
-	void testGetByUsername_InDatabase(EmployeeDTO expected, String input) {
+	public void testGetByUsername_InDatabase(EmployeeDTO expected, String input) {
 		assertEquals(expected, service.getByUsername(input));
 	}
 	
 	@Test
-	void testAdd_NullValue() throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, ExistingObjectException, IncorrectPermissionsException {
+	public void testAdd_NullValue() throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, ExistingObjectException, IncorrectPermissionsException {
 		assertFalse(service.add(null));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForInvalidValues")
-	void testAdd_InvalidValues(EmployeeDTO model, Class<Exception> exceptionClass, String expectedError) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, ExistingObjectException, IncorrectPermissionsException {
+	public void testAdd_InvalidValues(EmployeeDTO model, Class<Exception> exceptionClass, String expectedError) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, ExistingObjectException, IncorrectPermissionsException {
 		Exception exception = assertThrows(exceptionClass, () -> service.add(model));
 		assertTrue(exception.getMessage().contains(expectedError));
 		
@@ -116,14 +116,14 @@ public class TestEmployeeService {
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingValues")
-	void testAdd_ExistingUsername(EmployeeDTO model) {
+	public void testAdd_ExistingUsername(EmployeeDTO model) {
 		Exception exception = assertThrows(ExistingObjectException.class, () -> service.add(model));
 		assertTrue(exception.getMessage().contains("Element with these details (username) already exists"));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForNonExistingUsername")
-	void testAdd_NonExistingUsername(String username, int indexOfInsert) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, ExistingObjectException, IncorrectPermissionsException {
+	public void testAdd_NonExistingUsername(String username, int indexOfInsert) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, ExistingObjectException, IncorrectPermissionsException {
 		EmployeeDTO model = new EmployeeDTO(modelDTOs[0]);
 		model.setUsername(username);
 		
@@ -133,14 +133,14 @@ public class TestEmployeeService {
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForInvalidValues")
-	void testUpdate_InvalidValues(EmployeeDTO model, Class<Exception> exceptionClass, String expectedError) {
+	public void testUpdate_InvalidValues(EmployeeDTO model, Class<Exception> exceptionClass, String expectedError) {
 		Exception exception = assertThrows(exceptionClass, () -> service.update(model, model));
 		assertTrue(exception.getMessage().contains(expectedError));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForChangeToExistingUsername")
-	void testUpdate_ChangeToExistingUsername(EmployeeDTO model, String newUsername) {
+	public void testUpdate_ChangeToExistingUsername(EmployeeDTO model, String newUsername) {
 		EmployeeDTO changedModel = new EmployeeDTO(model);
 		changedModel.setUsername(newUsername);
 		
@@ -150,7 +150,7 @@ public class TestEmployeeService {
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingValues")
-	void testUpdate_ChangeToNonExistingUsername(EmployeeDTO model) throws ExistingObjectException, IncorrectPermissionsException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException {
+	public void testUpdate_ChangeToNonExistingUsername(EmployeeDTO model) throws ExistingObjectException, IncorrectPermissionsException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException {
 		double newSalary = 25000;
 		EmployeeDTO changedModel = new EmployeeDTO(model);
 		changedModel.setSalary(newSalary);
@@ -160,20 +160,20 @@ public class TestEmployeeService {
 	}
 	
 	@Test
-	void testChangePassword_IncorrectOldPassword() throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+	public void testChangePassword_IncorrectOldPassword() throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		assertFalse(service.changePassword(modelDTOs[0], "foobar", ""));
 	}
 	
 	@ParameterizedTest
 	@ValueSource(strings = {"foo", "foobarsample", "1", "123456789", "foo123"})
-	void testChangePassword_CorrectOldPassword_InvalidValues(String newPassword) throws EmptyInputException, WrongFormatException {
+	public void testChangePassword_CorrectOldPassword_InvalidValues(String newPassword) throws EmptyInputException, WrongFormatException {
 		Exception exception = assertThrows(WrongFormatException.class, () -> service.changePassword(modelDTOs[0], modelDTOs[0].getPassword(), newPassword));
 		assertTrue(exception.getMessage().contains("Incorrect password format"));
 	}
 	
 	@ParameterizedTest
 	@ValueSource(strings = {"foobarsample1", "1foobarsample", "12345678a", "a12345678", "foobar123sample"})
-	void testChangePassword_CorrectOldPassword_ValidValues(String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+	public void testChangePassword_CorrectOldPassword_ValidValues(String newPassword) throws EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		assertTrue(service.changePassword(modelDTOs[0], modelDTOs[0].getPassword(), newPassword));
 		
 		modelDTOs[0].setPassword(newPassword);
@@ -182,25 +182,25 @@ public class TestEmployeeService {
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForInvalidLogin")
-	void testCanLogin_InvalidValues(String username, String password) {
+	public void testCanLogin_InvalidValues(String username, String password) {
 		Exception exception = assertThrows(EmptyInputException.class, () -> service.canLogin(username, password));
 		assertTrue(exception.getMessage().contains("Input fields cannot be empty"));
 	}
 	
 	@Test
-	void testCanLogin_UserDoesntExist() throws EmptyInputException, WrongFormatException {
+	public void testCanLogin_UserDoesntExist() throws EmptyInputException, WrongFormatException {
 		assertFalse(service.canLogin("nonExistingUser", "password123"));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingValues")
-	void testCanLogin_ExistingUserWrongPassword(EmployeeDTO model) throws EmptyInputException {
+	public void testCanLogin_ExistingUserWrongPassword(EmployeeDTO model) throws EmptyInputException {
 		assertFalse(service.canLogin(model.getUsername(), "wrongPassword"));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingValues")
-	void testCanLogin_ExistingUserCorrectPassword(EmployeeDTO model) throws EmptyInputException {
+	public void testCanLogin_ExistingUserCorrectPassword(EmployeeDTO model) throws EmptyInputException {
 		assertTrue(service.canLogin(model.getUsername(), model.getPassword()));
 	}
 	

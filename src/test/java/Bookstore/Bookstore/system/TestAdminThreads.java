@@ -32,7 +32,7 @@ public class TestAdminThreads extends TestThreadBase {
 	private static EmployeeDTO admin;
 	
 	@BeforeAll
-	static void preconditions_AddAdminUser() throws Exception {
+	public static void preconditions_AddAdminUser() throws Exception {
 		admin = new EmployeeDTO(
 			new UserDTO("admin", "foo bar", "admin@gmail.com", "password123", "069 123 1234", LocalDate.now()), 
 			100, 3
@@ -42,7 +42,7 @@ public class TestAdminThreads extends TestThreadBase {
 	}
 	
 	@BeforeAll
-	static void preconditions_AddEmployees() throws Exception {
+	public static void preconditions_AddEmployees() throws Exception {
 		for(int i = 0; i < 2; i++) {
 			EmployeeDTO user = new EmployeeDTO(
 				new UserDTO("employee" + i, "foo bar", "employee@gmail.com", "password123", "069 123 1324", LocalDate.now()), 
@@ -54,7 +54,7 @@ public class TestAdminThreads extends TestThreadBase {
 	}
 	
 	@BeforeAll
-	static void preconditions_AddBillsAndPurchases() throws Exception {
+	public static void preconditions_AddBillsAndPurchases() throws Exception {
 		for(int i = 0; i < 3; i++) {
 			bookPurchaseService.add(new BookPurchaseDTO(100 + i, transactionsDate));
 			billService.add(new BillDTO(1, 123 + i, 2 + i, transactionsDate));
@@ -62,7 +62,7 @@ public class TestAdminThreads extends TestThreadBase {
 	}
 	
 	@Start
-	private void start(Stage stage) {
+	public void start(Stage stage) {
 		Main.setUpApplication(
 			stage, bookInventoryService, categoryService, 
 			billService, bookPurchaseService, employeeService
@@ -71,7 +71,7 @@ public class TestAdminThreads extends TestThreadBase {
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	void testCheckCashflowStatistics() {
+	public void testCheckCashflowStatistics() {
 		// Preconditions
 		preconditions_LogInUser(admin.getUsername(), admin.getPassword());
 		
@@ -106,7 +106,7 @@ public class TestAdminThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testAddNewEmployee() {
+	public void testAddNewEmployee() {
 		// Preconditions
 		preconditions_LogInUser(admin.getUsername(), admin.getPassword());
 		
@@ -132,7 +132,7 @@ public class TestAdminThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testDeleteEmployee() {
+	public void testDeleteEmployee() {
 		// Preconditions
 		preconditions_LogInUser(admin.getUsername(), admin.getPassword());
 		
@@ -149,7 +149,7 @@ public class TestAdminThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testModifyEmployee() {
+	public void testModifyEmployee() {
 		// Preconditions
 		preconditions_LogInUser(admin.getUsername(), admin.getPassword());
 		
@@ -170,7 +170,7 @@ public class TestAdminThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testChangeEmployeePermissions() {
+	public void testChangeEmployeePermissions() {
 		// Preconditions
 		preconditions_LogInUser(admin.getUsername(), admin.getPassword());
 		

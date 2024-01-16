@@ -16,7 +16,7 @@ class TestUtils {
 		"-3,2",
 		"-5,4"
 	})
-	void TestGetOrderedList(int index, int result) {
+	public void TestGetOrderedList(int index, int result) {
 		assertEquals(result,Utils.getOrderedListIndex(index));
 	}
 

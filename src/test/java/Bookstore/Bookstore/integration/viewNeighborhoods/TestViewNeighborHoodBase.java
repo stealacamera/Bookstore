@@ -14,12 +14,12 @@ public abstract class TestViewNeighborHoodBase {
 	protected static File tempDataDir;
 	
 	@BeforeAll
-	protected static void setUpDataFolder() {
+	public static void setUpDataFolder() {
 		tempDataDir = new File(Utils.testDataDirPath);
 	}
 	
 	@AfterAll
-	protected static void tearDown() {
+	public static void tearDown() {
 		TestingUtils.deleteTestDatabase(tempDataDir);
 	}
 }

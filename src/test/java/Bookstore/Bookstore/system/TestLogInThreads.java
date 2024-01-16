@@ -30,7 +30,7 @@ public class TestLogInThreads extends TestThreadBase {
 	private static List<EmployeeDTO> users;
 	
 	@BeforeAll
-	static void preconditions() {
+	public static void preconditions() {
 		users = new ArrayList<>();
 
 		for(int i = 0; i < 3; i++) {
@@ -49,7 +49,7 @@ public class TestLogInThreads extends TestThreadBase {
 	}
 	
 	@Start
-	private void start(Stage stage) {
+	public void start(Stage stage) {
 		Session.clear();
 		
 		Main.setUpApplication(
@@ -59,7 +59,7 @@ public class TestLogInThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testLogInAsExistingUser(FxRobot robot) {
+	public void testLogInAsExistingUser(FxRobot robot) {
 		currentUser = users.get(users.size() - 1);
 		
 		robot.clickOn("#username").write(currentUser.getUsername());
@@ -73,7 +73,7 @@ public class TestLogInThreads extends TestThreadBase {
 	}
 	
 	@Test
-	void testLogInAsNonexistingUser(FxRobot robot) {
+	public void testLogInAsNonexistingUser(FxRobot robot) {
 		currentUser = null;
 		
 		robot.clickOn("#username").write("none existant user");
@@ -88,7 +88,7 @@ public class TestLogInThreads extends TestThreadBase {
 	}
 	
 	@AfterEach
-	void postconditions() {
+	public void postconditions() {
 		assertEquals(currentUser, Session.getCurrentUser());
 	}
 }

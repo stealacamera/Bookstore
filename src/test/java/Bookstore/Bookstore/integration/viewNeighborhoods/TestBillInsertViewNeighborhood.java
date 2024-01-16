@@ -53,7 +53,7 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	private static BillController controller;
 	
 	@BeforeAll
-	static void setUp() throws Exception {
+	public static void setUp() throws Exception {
 		DbContext dbContext = new DbContext();
 		
 		billService = new BillService(new BillRepository(Utils.testDataDirPath, dbContext));
@@ -93,7 +93,7 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testBooksIndexList() {
+	public void testBooksIndexList() {
 		List<Object> viewList = robot.lookup("#books-list").queryTableView().getItems();
 		
 		assertEquals(books.size(), viewList.size());
@@ -101,7 +101,7 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testAddBookToBill_InvalidValues_BookNotSelected() {
+	public void testAddBookToBill_InvalidValues_BookNotSelected() {
 		robot.clickOn("#add-btn");
 		
 		TestingUtils.testErrorMessage(robot, "Please select a book");
@@ -109,7 +109,7 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testAddBookToBill_InvalidValues_ExistingBillItem() {
+	public void testAddBookToBill_InvalidValues_ExistingBillItem() {
 		for(int i = 0; i < 2; i++) {
 			robot.clickOn(robot.lookup("#books-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));
 			robot.clickOn("#quantity").eraseText(2).write("1");
@@ -121,7 +121,7 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	
 	@ParameterizedTest
 	@MethodSource("provideBookQuantityInvalidValues")
-	void testAddBookToBill_InvalidValues(String quantity, String errorMessage) {
+	public void testAddBookToBill_InvalidValues(String quantity, String errorMessage) {
 		robot.clickOn(robot.lookup("#books-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));
 		robot.clickOn("#quantity").eraseText(2).write(quantity);
 		robot.clickOn("#add-btn");
@@ -132,7 +132,7 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	void testAddBookToBill_ValidValues() {
+	public void testAddBookToBill_ValidValues() {
 		robot.clickOn(robot.lookup("#books-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));
 		robot.clickOn("#quantity").eraseText(2).write("1");
 		robot.clickOn("#add-btn");
@@ -148,7 +148,7 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	
 	@ParameterizedTest
 	@MethodSource("provideBookQuantityInvalidValues")
-	void testChangeBillItemStock_InvalidValues(String newQuantity, String errorMessage) {
+	public void testChangeBillItemStock_InvalidValues(String newQuantity, String errorMessage) {
 		robot.clickOn(robot.lookup("#books-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));
 		robot.clickOn("#quantity").eraseText(2).write("1");
 		robot.clickOn("#add-btn");
@@ -160,13 +160,13 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testRemoveBillItem_InvalidValues() {
+	public void testRemoveBillItem_InvalidValues() {
 		robot.clickOn("#remove-btn");
 		TestingUtils.testErrorMessage(robot, "Please select an item in the bill");
 	}
 	
 	@Test
-	void testRemoveBillItem_ValidValues() {
+	public void testRemoveBillItem_ValidValues() {
 		robot.clickOn(robot.lookup("#books-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));
 		robot.clickOn("#quantity").eraseText(2).write("1");
 		robot.clickOn("#add-btn");
@@ -178,7 +178,7 @@ public class TestBillInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testSubmitBill() {
+	public void testSubmitBill() {
 		int quantity = 3;
 		
 		robot.clickOn(robot.lookup("#books-list").lookup(".table-cell").nth(0).queryAs(TableCell.class));

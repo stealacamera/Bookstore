@@ -60,7 +60,7 @@ public class TestHomepageViewNeighborhood extends TestViewNeighborHoodBase {
 	private static HomepageController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		DbContext dbContext = new DbContext();
 		
 		bookService = new BookInventoryService(new BookInventoryRepository(Utils.testDataDirPath, dbContext));
@@ -104,7 +104,7 @@ public class TestHomepageViewNeighborhood extends TestViewNeighborHoodBase {
 		}
 	}
 	
-	void changeUserLevel(int accessLevel) {
+	private void changeUserLevel(int accessLevel) {
 		try {
 			loggedInUser.setId(0);
 			loggedInUser.setAccessLvl(accessLevel);
@@ -133,7 +133,7 @@ public class TestHomepageViewNeighborhood extends TestViewNeighborHoodBase {
 	
 	@Order(1)
 	@Test
-	void testLowStockWarning(FxRobot robot) {
+	public void testLowStockWarning(FxRobot robot) {
 		WaitForAsyncUtils.waitForFxEvents();
 		
 		Node alert = robot.lookup(".dialog-pane").query();
@@ -142,23 +142,23 @@ public class TestHomepageViewNeighborhood extends TestViewNeighborHoodBase {
 	
 	@Test
 	@Order(2)
-	void testHomeActionButtons_LibrarianUser(FxRobot robot) {
+	public void testHomeActionButtons_LibrarianUser(FxRobot robot) {
 		testHomeActionButtons(robot);
 	}
 	
 	@Test
 	@Order(3)
-	void testHomeActionButtons_ManagerUser(FxRobot robot) {
+	public void testHomeActionButtons_ManagerUser(FxRobot robot) {
 		testHomeActionButtons(robot);
 	}
 	
 	@Test
 	@Order(4)
-	void testHomeActionButtons_AdminUser(FxRobot robot) {
+	public void testHomeActionButtons_AdminUser(FxRobot robot) {
 		testHomeActionButtons(robot);
 	}
 	
-	void testHomeActionButtons(FxRobot robot) {
+	private void testHomeActionButtons(FxRobot robot) {
 		Map<Role, Boolean> permissions = loggedInUser.getPermissions();
 		Pane actionsPane =  robot.lookup("#user-actions").queryAs(Pane.class);
 			

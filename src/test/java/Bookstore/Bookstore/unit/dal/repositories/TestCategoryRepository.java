@@ -26,7 +26,7 @@ public class TestCategoryRepository extends TestRepositoryBase {
 	private static Category[] categories;
 	
 	@BeforeAll
-	static void setUpDummyData() throws EmptyInputException {
+	public static void setUpDummyData() throws EmptyInputException {
 		categories = new Category[7];
 		
 		for(int i = 0; i < categories.length; i++)
@@ -34,7 +34,7 @@ public class TestCategoryRepository extends TestRepositoryBase {
 	}
 	
 	@BeforeEach
-	void setUpEach() throws IOException {
+	public void setUpEach() throws IOException {
 		dataFile = new File(dataDir, Category.class.getSimpleName());
 		dataFile.createNewFile();
 		
@@ -43,26 +43,26 @@ public class TestCategoryRepository extends TestRepositoryBase {
 	}
 	
 	@Test
-	void testGetById_NotInDatabase() throws EmptyInputException, IOException {
+	public void testGetById_NotInDatabase() throws EmptyInputException, IOException {
 		assertNull(repository.getById(0));
 		assertNull(repository.getById(categories[categories.length - 1].getId() + 1));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingData")
-	void testGetById_InDatabase(Category model) throws EmptyInputException, IOException {
+	public void testGetById_InDatabase(Category model) throws EmptyInputException, IOException {
 		assertEquals(model, repository.getById(model.getId()));
 	}
 	
 	@ParameterizedTest
 	@ValueSource(strings = {"foo", "foo bar"})
-	void testGetByName_NotInDatabase(String input) throws EmptyInputException, IOException {
+	public void testGetByName_NotInDatabase(String input) throws EmptyInputException, IOException {
 		assertNull(repository.getByName(input));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingData")
-	void testGetByName_InDatabase(Category model) throws EmptyInputException, IOException {
+	public void testGetByName_InDatabase(Category model) throws EmptyInputException, IOException {
 		assertEquals(model, repository.getByName(model.getName()));
 	}
 	

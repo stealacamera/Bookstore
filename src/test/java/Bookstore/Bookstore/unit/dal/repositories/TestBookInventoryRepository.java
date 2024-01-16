@@ -30,7 +30,7 @@ public class TestBookInventoryRepository extends TestRepositoryBase {
 	private static BookInventory[] models;
 	
 	@BeforeAll
-	static void setUpDummyData() throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
+	public static void setUpDummyData() throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException {
 		models = new BookInventory[7];
 		
 		for(int i = 0; i < models.length; i++) {
@@ -40,7 +40,7 @@ public class TestBookInventoryRepository extends TestRepositoryBase {
 	}
 	
 	@BeforeEach
-	void setUpEach() throws IOException {
+	public void setUpEach() throws IOException {
 		dataFile = new File(dataDir, BookInventory.class.getSimpleName());
 		dataFile.createNewFile();
 		
@@ -49,13 +49,13 @@ public class TestBookInventoryRepository extends TestRepositoryBase {
 	}
 	
 	@Test
-	void testGetByISBN_NotInDatabase() {
+	public void testGetByISBN_NotInDatabase() {
 		assertNull(repository.getByISBN("211-1-11-111111-1"));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingData")
-	void testGetByISBN_InDatabase(BookInventory model) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException, IOException {
+	public void testGetByISBN_InDatabase(BookInventory model) throws EmptyInputException, WrongFormatException, WrongLengthException, NonPositiveInputException, IOException {
 		assertEquals(model, repository.getByISBN(model.getBook().getIsbn()));
 	}
 	

@@ -29,7 +29,7 @@ public class TestCategoryInsertViewNeighborhood extends TestViewNeighborHoodBase
 	private static HomepageController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		categoryService = new CategoryService(new CategoryRepository(Utils.testDataDirPath, new DbContext()));
 		controller = new HomepageController(null, categoryService, null, null, null);
 	}
@@ -42,7 +42,7 @@ public class TestCategoryInsertViewNeighborhood extends TestViewNeighborHoodBase
 	
 	@Order(1)
 	@Test
-	void testInsert_InvalidValues(FxRobot robot) {
+	public void testInsert_InvalidValues(FxRobot robot) {
 		robot.clickOn("#submit-btn");
 		
 		TestingUtils.testErrorMessage(robot, "Input fields cannot be empty: Please enter a value for name");
@@ -51,7 +51,7 @@ public class TestCategoryInsertViewNeighborhood extends TestViewNeighborHoodBase
 	
 	@Order(2)
 	@Test
-	void testInsert_ValidValues(FxRobot robot) {
+	public void testInsert_ValidValues(FxRobot robot) {
 		String name = "category";
 		robot.clickOn("#category-name").write(name);
 		robot.clickOn("#submit-btn");

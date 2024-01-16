@@ -41,7 +41,7 @@ public class TestBookInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	private static BookController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		DbContext dbContext = new DbContext();
 		bookService = new BookInventoryService(new BookInventoryRepository(Utils.testDataDirPath, dbContext));
 		bookPurchaseService = new BookPurchaseService(new BookPurchaseRepository(Utils.testDataDirPath, dbContext));
@@ -68,7 +68,7 @@ public class TestBookInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testAddBook_InvalidValues(FxRobot robot) {
+	public void testAddBook_InvalidValues(FxRobot robot) {
 		submitForm(
 			robot, book.getBook().getIsbn(), "", book.getBook().getAuthor(), 
 			book.getBook().getCategoryId(), book.getBook().getSupplier(), book.getPurchasedPrice(), 
@@ -82,7 +82,7 @@ public class TestBookInsertViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testAddBook_ValidValues(FxRobot robot) {
+	public void testAddBook_ValidValues(FxRobot robot) {
 		submitForm(
 			robot, book.getBook().getIsbn(), book.getBook().getTitle(), book.getBook().getAuthor(), 
 			book.getBook().getCategoryId(), book.getBook().getSupplier(), book.getPurchasedPrice(),
@@ -95,7 +95,7 @@ public class TestBookInsertViewNeighborhood extends TestViewNeighborHoodBase {
 		assertEquals(book.getSellingPrice() * book.getStock(), bookPurchaseService.get(0).getAmount());
 	}
 	
-	void submitForm(FxRobot robot, String isbn, String title, String author, int categoryId, String supplier, double purchasedPrice, double originalPrice, double sellingPrice, int stock) {
+	private void submitForm(FxRobot robot, String isbn, String title, String author, int categoryId, String supplier, double purchasedPrice, double originalPrice, double sellingPrice, int stock) {
 		robot.clickOn("#isbn").write(isbn);
 		robot.clickOn("#title").write(title);
 		robot.clickOn("#author").write(author);

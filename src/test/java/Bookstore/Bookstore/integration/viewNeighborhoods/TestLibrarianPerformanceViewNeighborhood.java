@@ -44,7 +44,7 @@ public class TestLibrarianPerformanceViewNeighborhood extends TestViewNeighborHo
 	private static Map<String, Map.Entry<Integer, Double>> librarianBills;
 	
 	@BeforeAll
-	private static void setUp() throws Exception {		
+	public static void setUp() throws Exception {		
 		DbContext dbContext = new DbContext();
 		IBillService billService = new BillService(new BillRepository(Utils.testDataDirPath, dbContext));
 		IEmployeeService employeeService = new EmployeeService(new EmployeeRepository(Utils.testDataDirPath, dbContext));
@@ -95,7 +95,7 @@ public class TestLibrarianPerformanceViewNeighborhood extends TestViewNeighborHo
 	}
 	
 	@Test
-	void testShowLibrarianPerformance_InvalidValues_NonsequentialDates(FxRobot robot) throws InterruptedException {
+	public void testShowLibrarianPerformance_InvalidValues_NonsequentialDates(FxRobot robot) throws InterruptedException {
 		String startDate = "12/12/2000", endDate = "10/12/2000";
 		
 		robot.clickOn("#start-date").eraseText(startDate.length()).write(startDate);
@@ -107,7 +107,7 @@ public class TestLibrarianPerformanceViewNeighborhood extends TestViewNeighborHo
 	}
 	
 	@Test
-	void testShowLibrarianPerformance_ValidValues(FxRobot robot) {
+	public void testShowLibrarianPerformance_ValidValues(FxRobot robot) {
 		robot.clickOn("#submit-btn");
 		
 		WaitForAsyncUtils.waitForFxEvents();

@@ -42,7 +42,7 @@ public class TestLoginIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	FxRobot robot = new FxRobot();	
 	
 	@BeforeAll
-	private static void setUp() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+	public static void setUp() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		repository = new EmployeeRepository(Utils.testDataDirPath, new DbContext());
 		service = new EmployeeService(repository);
 		controller = new LoginController(service);
@@ -68,7 +68,7 @@ public class TestLoginIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	
 	@ParameterizedTest
 	@MethodSource("provideInvalidValues")
-	void testLogin_InvalidValues(String username, String password, String errorMessage) {		
+	public void testLogin_InvalidValues(String username, String password, String errorMessage) {		
 		fillForm(username, password);
 		
 		// Check for error pop-up
@@ -76,7 +76,7 @@ public class TestLoginIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testLogin_ValidValues_NonexistingUser() {
+	public void testLogin_ValidValues_NonexistingUser() {
 		String errorMessage = "Incorrect username and/or password. Please try again.";
 		
 		fillForm("fake user", "fakepassword");
@@ -86,7 +86,7 @@ public class TestLoginIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testLogin_ValidValues_ExistingUser() {
+	public void testLogin_ValidValues_ExistingUser() {
 		fillForm("foobar1", "password123");
 		assertTrue(robot.listWindows().size() == 0);
 	}

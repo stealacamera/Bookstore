@@ -50,7 +50,7 @@ public class TestBookIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	private static BookController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		DbContext dbContext = new DbContext();
 		bookService = new BookInventoryService(new BookInventoryRepository(Utils.testDataDirPath, dbContext));
 		bookPurchaseService = new BookPurchaseService(new BookPurchaseRepository(Utils.testDataDirPath, dbContext));
@@ -85,13 +85,13 @@ public class TestBookIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testIndexList(FxRobot robot) {
+	public void testIndexList(FxRobot robot) {
 		assertEquals(bookService.count(), robot.lookup("#books-list").queryTableView().getItems().size());
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideStockChangeValidValues")
-	void testChangeBookStock_ValidValues(int oldStock, int newStock) throws EmptyInputException {
+	public void testChangeBookStock_ValidValues(int oldStock, int newStock) throws EmptyInputException {
 		robot.doubleClickOn(robot.lookup(".table-cell").nth(2).queryAs(TableCell.class))
 			 .eraseText(5).write(Integer.toString(newStock)).press(KeyCode.ENTER);
 		
@@ -109,7 +109,7 @@ public class TestBookIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	
 	@ParameterizedTest
 	@MethodSource("provideStockChangeInvalidValues")
-	void testChangeBookStock_InvalidValues(BookInventoryDTO book, String newStock, String errorMessage) throws EmptyInputException {
+	public void testChangeBookStock_InvalidValues(BookInventoryDTO book, String newStock, String errorMessage) throws EmptyInputException {
 		robot.doubleClickOn(robot.lookup(".table-cell").nth(2).queryAs(TableCell.class))
 			 .eraseText(5).write(newStock).press(KeyCode.ENTER);
 		
@@ -119,7 +119,7 @@ public class TestBookIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testDeleteBook_EntityNotSelected(FxRobot robot) {
+	public void testDeleteBook_EntityNotSelected(FxRobot robot) {
 		robot.clickOn("#delete-btn");
 		
 		TestingUtils.testErrorMessage(robot, "Please select an item");
@@ -128,7 +128,7 @@ public class TestBookIndexViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testDeleteBook_EntitySelected(FxRobot robot) throws EmptyInputException {
+	public void testDeleteBook_EntitySelected(FxRobot robot) throws EmptyInputException {
 		robot.clickOn(robot.lookup(".table-cell").nth(0).queryAs(TableCell.class));
 		robot.clickOn("#delete-btn");
 		

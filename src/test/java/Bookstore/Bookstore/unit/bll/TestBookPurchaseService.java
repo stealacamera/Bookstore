@@ -27,7 +27,7 @@ public class TestBookPurchaseService {
 	private static BookPurchaseDTO[] modelDTOs;
 	
 	@BeforeAll
-	static void setUpDummyData() throws NonPositiveInputException {
+	public static void setUpDummyData() throws NonPositiveInputException {
 		models = new BookPurchase[7];
 		modelDTOs = new BookPurchaseDTO[models.length];
 		
@@ -38,7 +38,7 @@ public class TestBookPurchaseService {
 	}
 	
 	@BeforeEach
-	void setUp() {
+	public void setUp() {
 		mockRepository = new BookPurchaseRepositoryMock();
 		mockRepository.addDummyData(models);
 		
@@ -46,19 +46,19 @@ public class TestBookPurchaseService {
 	}
 	
 	@Test
-	void testGetAll_Empty() {
+	public void testGetAll_Empty() {
 		service = new BookPurchaseService(new BookPurchaseRepositoryMock());
 		assertIterableEquals(FXCollections.observableArrayList(), service.getAll());
 	}
 	
 	@Test
-	void testGetAll_NonEmpty() {
+	public void testGetAll_NonEmpty() {
 		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 		
 	@ParameterizedTest
 	@MethodSource("provideValuesForGet")
-	void testGet(BookPurchaseDTO model, int index) {
+	public void testGet(BookPurchaseDTO model, int index) {
 		assertEquals(model, service.get(index));
 	}
 	

@@ -41,7 +41,7 @@ public class TestCashFlowStatsViewNeighborhood extends TestViewNeighborHoodBase 
 	private static StatisticsController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		DbContext dbContext = new DbContext();
 		IBillService billService = new BillService(new BillRepository(Utils.testDataDirPath, dbContext));
 		IBookPurchaseService bookPurchaseService = new BookPurchaseService(new BookPurchaseRepository(Utils.testDataDirPath, dbContext));
@@ -51,7 +51,7 @@ public class TestCashFlowStatsViewNeighborhood extends TestViewNeighborHoodBase 
 		createDummyData(billService, bookPurchaseService, employeeService);
 	}
 	
-	static void createDummyData(
+	public static void createDummyData(
 		IBillService billService, 
 		IBookPurchaseService bookPurchaseService, 
 		IEmployeeService employeeService) 
@@ -100,7 +100,7 @@ public class TestCashFlowStatsViewNeighborhood extends TestViewNeighborHoodBase 
 	}
 	
 	@Test
-	void testCashFlowStatistics_InvalidValues(FxRobot robot) {
+	public void testCashFlowStatistics_InvalidValues(FxRobot robot) {
 		String startDate = "12/12/2000", endDate = "10/12/2000";
 		
 		robot.clickOn("#start-date").eraseText(startDate.length()).write(startDate);
@@ -112,7 +112,7 @@ public class TestCashFlowStatsViewNeighborhood extends TestViewNeighborHoodBase 
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	void testCashFlowStatistics_ValidValues(FxRobot robot) {
+	public void testCashFlowStatistics_ValidValues(FxRobot robot) {
 		String date = TestCashFlowStatsViewNeighborhood.date.format(CustomDate.dateFormat);
 		
 		robot.clickOn("#start-date").eraseText(date.length()).write(date);

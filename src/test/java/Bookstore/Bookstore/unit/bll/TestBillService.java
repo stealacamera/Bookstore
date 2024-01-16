@@ -34,7 +34,7 @@ public class TestBillService {
 	private static BillDTO[] modelDTOs;
 	
 	@BeforeAll
-	static void setUpDummyData() throws NonPositiveInputException {
+	public static void setUpDummyData() throws NonPositiveInputException {
 		models = new Bill[7];
 		modelDTOs = new BillDTO[models.length];
 		
@@ -45,7 +45,7 @@ public class TestBillService {
 	}
 	
 	@BeforeEach
-	void setUp() {
+	public void setUp() {
 		mockRepository = new BillRepositoryMock();
 		mockRepository.addDummyData(models);
 		
@@ -53,36 +53,36 @@ public class TestBillService {
 	}
 	
 	@Test
-	void testGetAll_Empty() {
+	public void testGetAll_Empty() {
 		service = new BillService(new BillRepositoryMock());
 		assertEquals(0, service.count());
 	}
 	
 	@Test
-	void testGetAll_NonEmpty() {
+	public void testGetAll_NonEmpty() {
 		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForGet")
-	void testGet(BillDTO expected, int index) {
+	public void testGet(BillDTO expected, int index) {
 		assertEquals(expected, service.get(index));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForInvalidAdd")
-	void testAdd_InvalidValues(Class<Exception> exceptionType, BillDTO model, String errorMessage) {
+	public void testAdd_InvalidValues(Class<Exception> exceptionType, BillDTO model, String errorMessage) {
 		Exception exception = assertThrows(exceptionType, () -> service.add(model));
 		assertTrue(exception.getMessage().contains(errorMessage));
 	}
 	
 	@Test
-	void testAdd_Null() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+	public void testAdd_Null() throws ExistingObjectException, EmptyInputException, NonPositiveInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		assertFalse(service.add(null));
 	}
 	
 	@Test
-	void testAdd_ValidValues() throws NonPositiveInputException, ExistingObjectException, EmptyInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
+	public void testAdd_ValidValues() throws NonPositiveInputException, ExistingObjectException, EmptyInputException, WrongFormatException, WrongLengthException, IncorrectPermissionsException {
 		BillDTO model = new BillDTO(9, 123, 123);
 		
 		service.add(model);

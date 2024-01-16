@@ -43,7 +43,7 @@ public class TestBookExpensesViewNeighborhood extends TestViewNeighborHoodBase {
 	private static StatisticsController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		DbContext context = new DbContext();
 		billService = new BillService(new BillRepository(Utils.testDataDirPath, context));
 		bookPurchaseService = new BookPurchaseService(new BookPurchaseRepository(Utils.testDataDirPath, context));
@@ -86,7 +86,7 @@ public class TestBookExpensesViewNeighborhood extends TestViewNeighborHoodBase {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void testGetPeriodStatistics(FxRobot robot) {
+	public void testGetPeriodStatistics(FxRobot robot) {
 		// Check monthly chart
 		robot.clickOn("#monthly-toggle");
 		
@@ -105,7 +105,7 @@ public class TestBookExpensesViewNeighborhood extends TestViewNeighborHoodBase {
 	}
 	
 	@Test
-	void testDayStatistics(FxRobot robot) {
+	public void testDayStatistics(FxRobot robot) {
 		String dateBeforeString = dateBefore.format(CustomDate.dateFormat);
 				
 		robot.clickOn("#daily-toggle");

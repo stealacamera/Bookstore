@@ -38,7 +38,7 @@ public class TestEmployeeModifyViewNeighborhood extends TestViewNeighborHoodBase
 	private static EmployeesController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		employeeService = new EmployeeService(new EmployeeRepository(Utils.testDataDirPath, new DbContext()));
 		controller = new EmployeesController(employeeService);
 		
@@ -61,7 +61,7 @@ public class TestEmployeeModifyViewNeighborhood extends TestViewNeighborHoodBase
 	}
 	
 	@Test
-	void testFormIsFilledCorrectly() {		
+	public void testFormIsFilledCorrectly() {		
 		assertAll(
 			"Form values",
 			() -> assertEquals(robot.lookup("#birthdate").queryAs(DatePicker.class).getValue(), employee.getBirthdate()),
@@ -75,7 +75,7 @@ public class TestEmployeeModifyViewNeighborhood extends TestViewNeighborHoodBase
 	
 	@ParameterizedTest
 	@MethodSource("provideInvalidValues")
-	void testModifyEmployee_InvalidValues(String fieldId, int nrCharsToRemove, String newValue, String errorMessage) {
+	public void testModifyEmployee_InvalidValues(String fieldId, int nrCharsToRemove, String newValue, String errorMessage) {
 		// Input change		
 		robot.clickOn(fieldId).eraseText(nrCharsToRemove).write(newValue);
 		robot.clickOn("#submit-btn");
@@ -89,7 +89,7 @@ public class TestEmployeeModifyViewNeighborhood extends TestViewNeighborHoodBase
 	
 	@ParameterizedTest
 	@MethodSource("provideValidValues")
-	void testModifyEmployee_ValidValues(String fieldId, int nrCharsToRemove, String newValue, Consumer<EmployeeDTO> updateModel) {
+	public void testModifyEmployee_ValidValues(String fieldId, int nrCharsToRemove, String newValue, Consumer<EmployeeDTO> updateModel) {
 		// Input change
 		robot.clickOn(fieldId).eraseText(nrCharsToRemove).write(newValue);
 		robot.clickOn("#submit-btn");

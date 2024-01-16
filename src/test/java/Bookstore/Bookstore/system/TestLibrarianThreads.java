@@ -30,7 +30,7 @@ public class TestLibrarianThreads extends TestThreadBase {
 	private static EmployeeDTO currentUser;
 	
 	@BeforeAll
-	static void preconditions_AddLibrarian() throws Exception {
+	public static void preconditions_AddLibrarian() throws Exception {
 		currentUser = new EmployeeDTO(
 			new UserDTO("foobar", "foo bar", "foo@gmail.com", "password123", "069 123 1345", LocalDate.now()), 
 			123, 1
@@ -41,7 +41,7 @@ public class TestLibrarianThreads extends TestThreadBase {
 	}
 	
 	@BeforeAll
-	static void preconditions_AddBooks() throws Exception {
+	public static void preconditions_AddBooks() throws Exception {
 		for(int i = 0; i < 3; i++)
 			bookInventoryService.add(new BookInventoryDTO(
 				new BookDTO("123-1-12-123123-" + i, "foobar", "foo bar", "foo", 1), 
@@ -50,7 +50,7 @@ public class TestLibrarianThreads extends TestThreadBase {
 	}
 	
 	@Start
-	private void start(Stage stage) {
+	public void start(Stage stage) {
 		Main.setUpApplication(
 			stage, bookInventoryService, categoryService, 
 			billService, bookPurchaseService, employeeService
@@ -59,7 +59,7 @@ public class TestLibrarianThreads extends TestThreadBase {
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	void testBillCreation() {
+	public void testBillCreation() {
 		// Preconditions
 		preconditions_LogInUser(currentUser.getUsername(), currentUser.getPassword());
 		
@@ -86,7 +86,7 @@ public class TestLibrarianThreads extends TestThreadBase {
 		postconditions_BillReceiptSavedInSystem();
 	}
 
-	void postconditions_BillReceiptSavedInSystem() {
+	private void postconditions_BillReceiptSavedInSystem() {
 		File billFiles = new File(Utils.billsDirPath);
 		assertTrue(billFiles.exists());
 
@@ -94,7 +94,7 @@ public class TestLibrarianThreads extends TestThreadBase {
 		new File(Utils.billsDirPath, billService.count() + ".txt").delete();
 	}
 	
-	void postconditions_BillAddedInDatabase(double sellingPrice, int quantity) {
+	private void postconditions_BillAddedInDatabase(double sellingPrice, int quantity) {
 		assertEquals(1, billService.count());
 		assertEquals(new BillDTO(currentUser.getId(), quantity * sellingPrice, quantity), billService.get(0));
 	}

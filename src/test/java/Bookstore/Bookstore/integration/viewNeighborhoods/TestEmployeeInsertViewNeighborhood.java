@@ -39,7 +39,7 @@ public class TestEmployeeInsertViewNeighborhood extends TestViewNeighborHoodBase
 	private static EmployeesController controller;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		employeeService = new EmployeeService(new EmployeeRepository(Utils.testDataDirPath, new DbContext()));
 		controller = new EmployeesController(employeeService);
 		
@@ -52,7 +52,7 @@ public class TestEmployeeInsertViewNeighborhood extends TestViewNeighborHoodBase
 		stage.show();
 	}
 	
-	void submitForm(FxRobot robot, String username, String fullName, String email, String birthdate, String phoneNr, double salary, String password, int accessLvl) {
+	private void submitForm(FxRobot robot, String username, String fullName, String email, String birthdate, String phoneNr, double salary, String password, int accessLvl) {
 		robot.clickOn("#username").write(username);
 		robot.clickOn("#full-name").write(fullName);
 		robot.clickOn("#email").write(email);
@@ -69,7 +69,7 @@ public class TestEmployeeInsertViewNeighborhood extends TestViewNeighborHoodBase
 	
 	@Test
 	@Order(1)
-	void testAddEmployee_ValidValues(FxRobot robot) {
+	public void testAddEmployee_ValidValues(FxRobot robot) {
 		submitForm(
 			robot, employee.getUsername(), employee.getFullName(), 
 			employee.getEmail(), CustomDate.format(employee.getBirthdate()), employee.getPhoneNum(),
@@ -85,7 +85,7 @@ public class TestEmployeeInsertViewNeighborhood extends TestViewNeighborHoodBase
 	
 	@Test
 	@Order(2)
-	void testAddEmployee_InvalidValues(FxRobot robot) {
+	public void testAddEmployee_InvalidValues(FxRobot robot) {
 		submitForm(
 			robot, employee.getUsername(), employee.getFullName(), 
 			employee.getEmail(), CustomDate.format(employee.getBirthdate()), "123",

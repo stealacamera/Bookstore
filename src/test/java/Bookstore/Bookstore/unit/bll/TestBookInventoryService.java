@@ -38,7 +38,7 @@ public class TestBookInventoryService {
 	private static BookInventoryDTO[] modelDTOs; 
 	
 	@BeforeAll
-	static void setUpDummyData() throws Exception {
+	public static void setUpDummyData() throws Exception {
 		models = new BookInventory[7];
 		modelDTOs = new BookInventoryDTO[models.length];
 		
@@ -50,7 +50,7 @@ public class TestBookInventoryService {
 	}
 	
 	@BeforeEach
-	void setUp() {
+	public void setUp() {
 		mockRepository = new BookInventoryRepositoryMock();
 		mockRepository.addDummyData(models);
 		
@@ -58,38 +58,38 @@ public class TestBookInventoryService {
 	}
 	
 	@Test
-	void testGetAll_Empty() {
+	public void testGetAll_Empty() {
 		service = new BookInventoryService(new BookInventoryRepositoryMock());
 		assertIterableEquals(FXCollections.observableArrayList(), service.getAll());
 	}
 	
 	@Test
-	void testGetAll_NonEmpty() {
+	public void testGetAll_NonEmpty() {
 		assertIterableEquals(Arrays.asList(modelDTOs), service.getAll());
 	}
 	
 	@Test
-	void testAdd_NullValue() throws Exception {
+	public void testAdd_NullValue() throws Exception {
 		assertFalse(service.add(null));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForInvalidValues")
-	void testAdd_InvalidValues(BookInventoryDTO model, Class<Exception> exceptionType, String expectedError) {
+	public void testAdd_InvalidValues(BookInventoryDTO model, Class<Exception> exceptionType, String expectedError) {
 		Exception exception = assertThrows(exceptionType, () -> service.add(model));
 		assertTrue(exception.getMessage().contains(expectedError));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingValues")
-	void testAdd_ExistingISBN(BookInventoryDTO model) {		
+	public void testAdd_ExistingISBN(BookInventoryDTO model) {		
 		Exception exception = assertThrows(ExistingObjectException.class, () -> service.add(model));
 		assertTrue(exception.getMessage().contains("with these details (ISBN) already exists"));
 	}
 	
 	@ParameterizedTest
 	@ValueSource(strings = { "888-8-88-888888-8", "999-9-99-999999-9" })
-	void testAdd_NonExistingISBN(String isbn) throws Exception {
+	public void testAdd_NonExistingISBN(String isbn) throws Exception {
 		BookInventory model = new BookInventory(
 				new Book(isbn, "foo bar", "foobar", "foo", 1), 
 				1, 1, 1, 1, new CustomDate());
@@ -100,14 +100,14 @@ public class TestBookInventoryService {
 	
 	@ParameterizedTest
 	@ValueSource(ints = { 0, -1 })
-	void testUpdateStock_InvalidValues_InvalidStock(int newStock) {		
+	public void testUpdateStock_InvalidValues_InvalidStock(int newStock) {		
 		Exception exception = assertThrows(NonPositiveInputException.class, () -> service.updateStock(modelDTOs[0], newStock));
 		assertTrue(exception.getMessage().contains("Please enter a positive number for the field"));
 	}
 	
 	@ParameterizedTest
 	@ValueSource(strings = { "888-8-88-888888-8", "999-9-99-999999-9" })
-	void testUpdateStock_InvalidValues_NonExistingISBN(String isbn) {
+	public void testUpdateStock_InvalidValues_NonExistingISBN(String isbn) {
 		BookInventoryDTO model = new BookInventoryDTO(
 				new BookDTO(isbn, "foo bar", "foobar", "foo", 1), 
 				1, 1, 1, 1, LocalDate.now());
@@ -118,7 +118,7 @@ public class TestBookInventoryService {
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForUpdateStock")
-	void testUpdateStock_ValidValues(BookInventoryDTO model, BookInventory base) throws Exception {		
+	public void testUpdateStock_ValidValues(BookInventoryDTO model, BookInventory base) throws Exception {		
 		int newStock = 12;
 		service.updateStock(model, newStock);
 		

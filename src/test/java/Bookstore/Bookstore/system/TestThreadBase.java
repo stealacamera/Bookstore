@@ -34,7 +34,7 @@ public abstract class TestThreadBase {
 	protected static IEmployeeService employeeService;
 	
 	@BeforeAll
-	static void setUp() {
+	public static void setUp() {
 		DbContext dbContext = new DbContext();
 
 		bookInventoryService = new BookInventoryService(new BookInventoryRepository(Utils.testDataDirPath, dbContext));
@@ -45,11 +45,11 @@ public abstract class TestThreadBase {
 	}
 	
 	@AfterAll
-	protected static void tearDown() {
+	public static void tearDown() {
 		TestingUtils.deleteTestDatabase(null);
 	}
 	
-	void preconditions_LogInUser(String username, String password) {
+	protected void preconditions_LogInUser(String username, String password) {
 		robot.clickOn("#username").write(username);
 		robot.clickOn("#password").write(password);
 		robot.clickOn("#loginBtn");

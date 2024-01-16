@@ -29,7 +29,7 @@ public class TestEmployeeRepository extends TestRepositoryBase {
 	private static Employee[] employees;
 	
 	@BeforeAll
-	static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
+	public static void setUpDummyData() throws EmptyInputException, WrongFormatException, NonPositiveInputException {
 		employees = new Employee[7];
 		
 		for(int i = 0; i < employees.length; i++) {
@@ -43,7 +43,7 @@ public class TestEmployeeRepository extends TestRepositoryBase {
 	}
 	
 	@BeforeEach
-	void setUpEach() throws IOException {
+	public void setUpEach() throws IOException {
 		dataFile = new File(dataDir, Employee.class.getSimpleName());
 		dataFile.createNewFile();
 		
@@ -52,26 +52,26 @@ public class TestEmployeeRepository extends TestRepositoryBase {
 	}
 	
 	@Test
-	void testGetByUsername_NotInDatabase() {
+	public void testGetByUsername_NotInDatabase() {
 		repository = new EmployeeRepository(dataDirPath, dbContext);
 		assertNull(repository.getByUsername("nonExistingUsername"));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingData")
-	void testGetByUsername_InDatabase(Employee model) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException, ClassNotFoundException {
+	public void testGetByUsername_InDatabase(Employee model) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException, ClassNotFoundException {
 		assertEquals(model, repository.getByUsername(model.getUsername()));
 	}
 	
 	@Test
-	void testGetById_NotInDatabase() throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {		
+	public void testGetById_NotInDatabase() throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {		
 		assertNull(repository.getById(0));
 		assertNull(repository.getById(employees[employees.length - 1].getId() + 1));
 	}
 	
 	@ParameterizedTest
 	@MethodSource("provideValuesForExistingData")
-	void testGetById_InDatabase(Employee model) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {
+	public void testGetById_InDatabase(Employee model) throws EmptyInputException, WrongFormatException, NonPositiveInputException, IOException {
 		assertEquals(model, repository.getById(model.getId()));
 	}
 	
